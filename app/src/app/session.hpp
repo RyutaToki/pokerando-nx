@@ -48,7 +48,11 @@ JobResult runRandomization(const std::string& romPath, const OptState& opts, int
 std::vector<pr::GameRandomizer::Phase> activePhases(const OptState& o);
 const char* phaseName(pr::GameRandomizer::Phase p);
 
-// nombre de archivo de salida: {carpeta}/randomizadas/{Juego}_{semilla}.gba
+// nombre de archivo de salida: {carpeta de la ROM}/{Juego}_{semilla}.gba
 std::string outputPath(const std::string& romPath, const pr::RomInfo& info, int64_t seed);
+
+// Borra de la carpeta de la ROM las randomizadas anteriores de ese juego ({Juego}_{números}.gba/.nds y su
+// .log.txt), salvo los archivos de «keep» y la propia ROM de origen. Devuelve las rutas borradas.
+std::vector<std::string> removeOldRandomized(const std::string& romPath, const pr::RomInfo& info, const std::vector<std::string>& keep);
 
 }  // namespace app

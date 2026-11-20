@@ -18,10 +18,83 @@ Preset make(const char* name, S s) {
     p.date = "de serie";
     return p;
 }
+// Base común de los randomlocke: lo que casi todo el mundo activa para jugar un nuzlocke aleatorio.
+S randomlockeBase() {
+    S s;
+    // iniciales aleatorias con dos evoluciones y tipos distintos
+    s.startersMod = S::StartersMod::RANDOM_WITH_TWO_EVOLUTIONS;
+    s.startersTypeMod = S::StartersTypeMod::UNIQUE;
+    // salvajes: cada zona 1 a 1, fuerza parecida, sin legendarios y todas las especies capturables
+    s.randomizeWildPokemon = true;
+    s.wildPokemonZoneMod = S::WildPokemonZoneMod::ENCOUNTER_SET;
+    s.similarStrengthEncounters = true;
+    s.catchEmAllEncounters = true;
+    s.blockWildLegendaries = true;
+    // entrenadores aleatorios con fuerza parecida; el rival lleva tu inicial
+    s.trainersMod = S::TrainersMod::RANDOM;
+    s.trainersUsePokemonOfSimilarStrength = true;
+    s.rivalCarriesStarterThroughout = true;
+    // regalos, legendarios fijos e intercambios
+    s.staticPokemonMod = S::StaticPokemonMod::RANDOM_MATCHING;
+    s.inGameTradesMod = S::InGameTradesMod::RANDOMIZE_GIVEN;
+    // evoluciones posibles sin intercambio y algo más fáciles
+    s.changeImpossibleEvolutions = true;
+    s.makeEvolutionsEasier = true;
+    // compatibilidad de MT según el tipo, para que las MT sigan sirviendo
+    s.tmsHmsCompatibilityMod = S::TMsHMsCompatibilityMod::RANDOM_PREFER_TYPE;
+    // comodidad
+    s.currentMiscTweaks = pr::misctweak::FASTEST_TEXT.value | pr::misctweak::RUNNING_SHOES_INDOORS.value;
+    return s;
+}
+
+// Añade lo «completo»: habilidades, movimientos, MT, tutores y objetos aleatorios (sin cosas rotas).
+void randomlockeFull(S& s) {
+    s.abilitiesMod = S::AbilitiesMod::RANDOMIZE;
+    s.abilitiesFollowEvolutions = true;
+    s.banTrappingAbilities = s.banNegativeAbilities = s.banBadAbilities = true;
+    s.movesetsMod = S::MovesetsMod::RANDOM_PREFER_SAME_TYPE;
+    s.startWithGuaranteedMoves = true;
+    s.guaranteedMoveCount = 4;
+    s.movesetsForceGoodDamaging = true;
+    s.movesetsGoodDamagingPercent = 50;
+    s.blockBrokenMovesetMoves = true;
+    s.tmsMod = S::TMsMod::RANDOM;
+    s.keepFieldMoveTMs = true;
+    s.blockBrokenTMMoves = true;
+    s.moveTutorMovesMod = S::MoveTutorMovesMod::RANDOM;
+    s.keepFieldMoveTutors = true;
+    s.blockBrokenTutorMoves = true;
+    s.fieldItemsMod = S::FieldItemsMod::RANDOM;
+    s.banBadRandomFieldItems = true;
+    s.guaranteeEvolutionItems = true;
+}
 }  // namespace
 
 std::vector<Preset> builtinPresets() {
     std::vector<Preset> out;
+    {
+        // Randomlocke básico: lo justo para un nuzlocke aleatorio; el juego sigue siendo reconocible
+        out.push_back(make("Randomlocke básico", randomlockeBase()));
+    }
+    {
+        // Randomlocke completo: además habilidades, movimientos, MT, tutores y objetos aleatorios
+        S s = randomlockeBase();
+        randomlockeFull(s);
+        out.push_back(make("Randomlocke completo", s));
+    }
+    {
+        // Randomlocke difícil: el completo con rivales más fuertes y mejor preparados
+        S s = randomlockeBase();
+        randomlockeFull(s);
+        s.trainersLevelModified = true;
+        s.trainersLevelModifier = 15;
+        s.trainersEvolveTheirPokemon = true;
+        s.additionalBossTrainerPokemon = 1;
+        s.randomizeHeldItemsForBossTrainerPokemon = true;
+        s.sensibleItemsOnlyForTrainerPokemon = true;
+        s.betterBossTrainerMovesets = s.betterImportantTrainerMovesets = true;
+        out.push_back(make("Randomlocke difícil", s));
+    }
     {
         S s;  // Caos total: todo aleatorio
         s.baseStatisticsMod = S::BaseStatisticsMod::RANDOM;
@@ -54,25 +127,6 @@ std::vector<Preset> builtinPresets() {
         s.randomizeWildPokemon = true;
         s.similarStrengthEncounters = true;
         out.push_back(make("Solo salvajes", s));
-    }
-    {
-        S s;  // Nuzlocke justo: zonas 1 a 1, fuerza similar y evoluciones posibles
-        s.startersMod = S::StartersMod::RANDOM_WITH_TWO_EVOLUTIONS;
-        s.startersTypeMod = S::StartersTypeMod::UNIQUE;
-        s.randomizeWildPokemon = true;
-        s.wildPokemonZoneMod = S::WildPokemonZoneMod::ENCOUNTER_SET;
-        s.similarStrengthEncounters = true;
-        s.catchEmAllEncounters = true;
-        s.blockWildLegendaries = true;
-        s.trainersMod = S::TrainersMod::RANDOM;
-        s.trainersUsePokemonOfSimilarStrength = true;
-        s.rivalCarriesStarterThroughout = true;
-        s.tmsHmsCompatibilityMod = S::TMsHMsCompatibilityMod::RANDOM_PREFER_TYPE;
-        s.changeImpossibleEvolutions = true;
-        s.makeEvolutionsEasier = true;
-        s.fieldItemsMod = S::FieldItemsMod::SHUFFLE;
-        s.currentMiscTweaks = pr::misctweak::FASTEST_TEXT.value | pr::misctweak::RUNNING_SHOES_INDOORS.value;
-        out.push_back(make("Nuzlocke justo", s));
     }
     {
         S s;  // Kaizo: rivales mucho más duros

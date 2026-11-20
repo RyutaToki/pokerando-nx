@@ -312,7 +312,7 @@ std::vector<TabDef> build() {
         tab.title = "Pokémon salvajes";
         tab.available = always;
         using Z = S::WildPokemonZoneMod;
-        tab.mode = ModeDef{"MODO", {"Sin cambios", "Por zona", "Zona 1 a 1", "Global 1 a 1", "Familia a familia"},
+        tab.mode = ModeDef{"MODO", {"Sin cambios", "Aleatorio", "Zona 1 a 1", "Global 1 a 1", "Familia a familia"},
                            [](const OptState& o) {
                                if (!o.s.randomizeWildPokemon) return 0;
                                switch (o.s.wildPokemonZoneMod) {

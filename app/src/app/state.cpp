@@ -127,7 +127,7 @@ void loadConfig() {
     c.hideUnsupported = j.value("hideUnsupported", c.hideUnsupported);
     c.gbaEmulator = j.value("gbaEmulator", c.gbaEmulator);
     c.ndsEmulator = j.value("ndsEmulator", c.ndsEmulator);
-    c.hideStarters = j.value("hideStarters", c.hideStarters);
+    c.keepRandomized = j.value("keepRandomized", c.keepRandomized);
     c.spoilerLog = j.value("spoilerLog", c.spoilerLog);
     c.language = j.value("language", c.language);
 }
@@ -136,7 +136,7 @@ void saveConfig() {
     const Config& c = config();
     json j = {{"accent", c.accent},           {"lastDir", c.lastDir}, {"startAtLast", c.startAtLast},         {"favorites", c.favorites},
               {"hideUnsupported", c.hideUnsupported}, {"gbaEmulator", c.gbaEmulator}, {"ndsEmulator", c.ndsEmulator},
-              {"hideStarters", c.hideStarters}, {"spoilerLog", c.spoilerLog}, {"language", c.language}};
+              {"keepRandomized", c.keepRandomized}, {"spoilerLog", c.spoilerLog}, {"language", c.language}};
     writeJson(dataDir() + "config.json", j);
 }
 

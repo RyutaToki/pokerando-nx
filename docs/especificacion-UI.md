@@ -214,7 +214,7 @@ Esta pantalla tiene dos estados.
   - Abajo, dos botones en fila con 12 px de separación: **Jugar en mGBA** (principal) y **Ver log de spoilers** (secundario). Para NDS, el principal dice «Jugar en melonDS» o el emulador configurado.
   - «Jugar» lanza el emulador con la ROM a través de `envSetNextLoad`. Si el emulador no está instalado, el botón queda desactivado con la nota «Emulador no encontrado».
 - **Pie:** A Aceptar · Y Otra semilla (repite con las mismas opciones y una semilla nueva) · B Volver al inicio.
-- **Archivo de salida:** `{carpeta de la ROM}/randomizadas/{JuegoCorto}_{semilla}.{gba|nds}` y el log en `{...}_{semilla}.log.txt`.
+- **Archivo de salida:** `{carpeta de la ROM}/{JuegoCorto}_{semilla}.{gba|nds}` y el log en `{...}_{semilla}.log.txt`, junto a la ROM original. Por defecto se borran las randomizadas anteriores de ese juego en esa carpeta (Ajustes › Conservar ROMs randomizadas para guardarlas). El Resultado no muestra las iniciales.
 
 ### 6.5 Pantallas sin maqueta, con el mismo estilo
 - **Presets guardados:** lista (§5.2) con los presets de `sdmc:/switch/pokerandonx/presets/*.json`. Cada fila muestra el nombre, el juego o generación para el que se creó y la fecha. A Cargar · X Renombrar · Y Duplicar · − Borrar (con confirmación). Incluye presets de serie: «Caos total», «Solo salvajes», «Nuzlocke justo» y «Kaizo».
@@ -302,7 +302,7 @@ Para cada pestaña: modo (selección única), interruptores, slider y su equival
 | Configuración | `sdmc:/switch/pokerandonx/config.json` (acento, última carpeta, emuladores, favoritos) |
 | Presets | `sdmc:/switch/pokerandonx/presets/*.json` |
 | Historial | `sdmc:/switch/pokerandonx/history.json` |
-| Salida | `{carpeta de la ROM}/randomizadas/` |
+| Salida | `{carpeta de la ROM}/` (junto a la original) |
 
 ---
 

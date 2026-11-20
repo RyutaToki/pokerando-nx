@@ -29,7 +29,7 @@ struct Config {
     bool hideUnsupported = false;
     std::string gbaEmulator = "mgba";       // mgba | retroarch
     std::string ndsEmulator = "melonds";    // melonds | retroarch
-    bool hideStarters = false;
+    bool keepRandomized = false;  // conservar las ROMs randomizadas anteriores (por defecto se borran)
     bool spoilerLog = true;
     std::string language = "es";
 };

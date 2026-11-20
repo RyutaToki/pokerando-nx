@@ -74,8 +74,8 @@ public:
         t1->setWidth(10);
         t1->setMarginRight(8);
         grid->addView(t1);
-        auto* t2 = new Toggle("Ocultar iniciales en Resultado", cfg.hideStarters, [](bool b) {
-            app::config().hideStarters = b;
+        auto* t2 = new Toggle("Conservar ROMs randomizadas", cfg.keepRandomized, [](bool b) {
+            app::config().keepRandomized = b;
             app::saveConfig();
         });
         t2->setGrow(1);

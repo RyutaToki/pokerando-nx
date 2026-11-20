@@ -1,6 +1,9 @@
 #include "app/session.hpp"
 
+#include <algorithm>
+#include <cctype>
 #include <chrono>
+#include <filesystem>
 #include <cstdio>
 #include <fstream>
 #include <random>
@@ -111,7 +114,29 @@ static std::string asciiName(const std::string& s) {
 
 std::string outputPath(const std::string& romPath, const pr::RomInfo& info, int64_t seed) {
     std::string ext = info.platform == "NDS" ? ".nds" : ".gba";
-    return parentDir(romPath) + "randomizadas/" + asciiName(info.shortName) + "_" + std::to_string(seed) + ext;
+    return parentDir(romPath) + asciiName(info.shortName) + "_" + std::to_string(seed) + ext;
+}
+
+std::vector<std::string> removeOldRandomized(const std::string& romPath, const pr::RomInfo& info, const std::vector<std::string>& keep) {
+    std::vector<std::string> removed;
+    std::string dir = parentDir(romPath);
+    std::string prefix = asciiName(info.shortName) + "_";
+    std::error_code ec;
+    for (const auto& e : std::filesystem::directory_iterator(dir, ec)) {
+        if (!e.is_regular_file(ec)) continue;
+        std::string name = e.path().filename().string();
+        if (name.compare(0, prefix.size(), prefix) != 0) continue;
+        // {Juego}_{solo dígitos}{.gba|.nds|.log.txt}
+        size_t i = prefix.size(), j = i;
+        while (j < name.size() && std::isdigit(static_cast<unsigned char>(name[j]))) j++;
+        if (j == i) continue;
+        std::string rest = name.substr(j);
+        if (rest != ".gba" && rest != ".nds" && rest != ".log.txt") continue;
+        std::string full = dir + name;
+        if (full == romPath || std::find(keep.begin(), keep.end(), full) != keep.end()) continue;
+        if (std::filesystem::remove(e.path(), ec)) removed.push_back(full);
+    }
+    return removed;
 }
 
 JobResult runRandomization(const std::string& romPath, const OptState& opts, int64_t seed, const std::function<void(Phase)>& onPhase) {
@@ -148,6 +173,8 @@ JobResult runRandomization(const std::string& romPath, const OptState& opts, int
         for (pr::Species* sp : rh->getStarters()) r.starters.push_back(sp ? sp->fullName() : "?");
         r.romOut = out;
         r.ok = true;
+        // por defecto, solo se queda la última randomizada de cada juego en la carpeta
+        if (!config().keepRandomized) removeOldRandomized(romPath, info, {out, logPath});
     } catch (const std::exception& e) {
         r.error = e.what();
         // no dejar archivos a medias

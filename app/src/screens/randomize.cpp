@@ -1,4 +1,5 @@
 // §6.4 Randomizar (en curso) y Resultado (terminado)
+#include <algorithm>
 #include <atomic>
 #include <chrono>
 #include <cmath>
@@ -182,18 +183,6 @@ public:
         panel->addView(l1);
         panel->addView(new PathText(e.romPath));
 
-        if (!app::config().hideStarters && !e.starters.empty()) {
-            auto* l2 = sectionLabel("TUS INICIALES");
-            l2->setMarginTop(12);
-            l2->setMarginBottom(10);
-            panel->addView(l2);
-            auto* grid = new brls::Box(brls::Axis::ROW);
-            for (size_t i = 0; i < e.starters.size() && i < 3; i++) {
-                if (i) grid->addView(hspace(12));
-                grid->addView(new StarterCard(e.starters[i]));
-            }
-            panel->addView(grid);
-        }
         auto* spacer = new brls::Box();
         spacer->setGrow(1);
         panel->addView(spacer);
@@ -345,6 +334,8 @@ private:
         e.starters = r.starters;
         e.seconds = r.seconds;
         auto& h = app::history();
+        // las randomizadas anteriores se han podido borrar: fuera del historial
+        h.erase(std::remove_if(h.begin(), h.end(), [](const app::HistoryEntry& x) { return !app::exists(x.romPath); }), h.end());
         h.insert(h.begin(), e);
         app::saveHistory();
         // la siguiente vez, otra semilla
