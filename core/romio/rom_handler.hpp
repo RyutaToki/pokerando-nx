@@ -218,6 +218,11 @@ public:
     virtual std::vector<int> getMainPlaythroughTrainers() const { return {}; }
     virtual void makeDoubleBattleModePossible() {}
     virtual bool canChangeTrainerText() const { return true; }
+    enum class TrainerNameMode { SAME_LENGTH, MAX_LENGTH, MAX_LENGTH_WITH_CLASS };
+    // valores de Gen 3; Gen 4/5 los sobrescriben
+    virtual TrainerNameMode trainerNameMode() const { return TrainerNameMode::MAX_LENGTH; }
+    virtual std::vector<int> getTCNameLengthsByTrainer() const { return {}; }
+    virtual bool fixedTrainerClassNamesLength() const { return false; }
     SpeciesSet getMainGameWildPokemonSpecies(bool useTimeOfDay) const;
     const std::vector<std::unique_ptr<TrainerClass>>& getTrainerClasses() const { return trainerClasses_; }
     const std::vector<TrainerPtr>& getTrainers() const { return trainers_; }

@@ -124,4 +124,17 @@ std::string u32ToUtf8(std::u32string_view s) {
     return out;
 }
 
+std::string toUpperCase(std::string_view s) {
+    std::u32string out;
+    for (char32_t c : utf8ToU32(s)) {
+        if (c >= 'a' && c <= 'z') out += c - 0x20;
+        else if (c >= 0xE0 && c <= 0xFE && c != 0xF7) out += c - 0x20;
+        else if (c == 0xDF) out += U"SS";
+        else if (c == 0xFF) out += char32_t(0x178);
+        else if (c == 0xB5) out += char32_t(0x39C);
+        else out += c;
+    }
+    return u32ToUtf8(out);
+}
+
 }  // namespace pr::jc

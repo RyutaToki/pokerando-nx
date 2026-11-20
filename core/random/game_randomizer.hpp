@@ -7,6 +7,7 @@
 #include "random/evolution_randomizer.hpp"
 #include "random/misc_randomizers.hpp"
 #include "random/move_randomizers.hpp"
+#include "random/name_randomizers.hpp"
 #include "random/species_base_stat_randomizer.hpp"
 #include "random/species_moveset_randomizer.hpp"
 #include "random/species_type_ability_randomizers.hpp"
@@ -54,6 +55,8 @@ private:
     TMTutorMoveRandomizer tmt_;
     TMHMTutorCompatibilityRandomizer comp_;
     TrainerMovesetRandomizer trainerMoves_;
+    MoveNameRandomizer moveNames_;
+    TrainerNameRandomizer trainerNames_;
     SpeciesTypeRandomizer types_;
     SpeciesAbilityRandomizer abilities_;
     StarterRandomizer starter_;

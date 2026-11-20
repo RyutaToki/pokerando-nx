@@ -30,5 +30,7 @@ bool parseLongRadix(std::string_view s, int radix, int64_t& out);
 // UTF-8 <-> UTF-32 (los textos de las tablas .tbl contienen caracteres no ASCII).
 std::u32string utf8ToU32(std::string_view s);
 std::string u32ToUtf8(std::u32string_view s);
+// String.toUpperCase() de Java (ASCII y Latin-1, suficiente para los textos de Gen 3-5)
+std::string toUpperCase(std::string_view s);
 
 }  // namespace pr::jc
