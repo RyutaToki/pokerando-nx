@@ -140,9 +140,10 @@ JobResult runRandomization(const std::string& romPath, const OptState& opts, int
         } else {
             gr.randomize(out, seed);
         }
-        if (opts.shiny != 0) {
+        // (un preset con shiny cargado en un juego sin soporte se ignora: las fichas salen desactivadas)
+        if (opts.shiny != 0 && shinyPatchAvailable(romPath)) {
             std::string err;
-            if (!applyShinyPatch(out, *rh, kShinyOdds[opts.shiny].threshold, &err)) throw std::runtime_error(err);
+            if (!applyShinyPatch(out, kShinyOdds[opts.shiny].threshold, &err)) throw std::runtime_error(err);
         }
         for (pr::Species* sp : rh->getStarters()) r.starters.push_back(sp ? sp->fullName() : "?");
         r.romOut = out;

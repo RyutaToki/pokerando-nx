@@ -165,7 +165,7 @@ private:
         }
 
         if (tab.shinyPanel) {
-            bool avail = se.preview && app::shinyPatchAvailable(*se.preview);
+            bool avail = app::shinyPatchAvailable(se.romPath);
             auto* p = new Panel(c.surface, 12);
             p->setAxis(brls::Axis::COLUMN);
             p->setPadding(18, 20, 18, 20);
@@ -180,7 +180,7 @@ private:
             chips->setMarginTop(14);
             chips->setEnabled(avail);
             p->addView(chips);
-            auto* note = new Text(avail ? "Afecta a salvajes, huevos y regalos. Los entrenadores rivales no cambian."
+            auto* note = new Text(avail ? "Afecta a todos los Pokémon: salvajes, huevos, regalos y también los de los entrenadores rivales."
                                         : "No disponible para este juego.",
                                   font::regular, 15, c.textMuted, 30);
             note->setMarginTop(10);

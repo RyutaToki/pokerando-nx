@@ -79,6 +79,8 @@ int main(int argc, char* argv[]) {
     if (const char* pre = std::getenv("PR_PRESET"))
         for (const auto& p : app::loadPresets())
             if (p.name == pre) app::applyPreset(p);
+    if (const char* v = std::getenv("PR_SEED")) app::session().seed = std::atoll(v);
+    if (const char* v = std::getenv("PR_SHINY")) app::session().opts.shiny = std::atoi(v);
     std::string s = start ? start : "home";
     if (s == "home") screens::pushHome();
     else if (s == "browser") screens::pushBrowser();
