@@ -340,3 +340,27 @@ private:
 };
 
 }  // namespace pr
+
+#include <string>
+
+#include "util/java_compat.hpp"
+
+namespace pr {
+// String.hashCode() de Java: sobre unidades UTF-16
+template <>
+struct JavaHashCode<std::string> {
+    int operator()(const std::string& s) const {
+        uint32_t h = 0;
+        for (char32_t cp : jc::utf8ToU32(s)) {
+            if (cp >= 0x10000) {
+                cp -= 0x10000;
+                h = 31 * h + static_cast<uint32_t>(0xD800 + (cp >> 10));
+                h = 31 * h + static_cast<uint32_t>(0xDC00 + (cp & 0x3FF));
+            } else {
+                h = 31 * h + static_cast<uint32_t>(cp);
+            }
+        }
+        return static_cast<int>(h);
+    }
+};
+}  // namespace pr

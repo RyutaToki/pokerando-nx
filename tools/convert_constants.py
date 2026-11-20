@@ -14,7 +14,7 @@ import sys
 sys.path.insert(0, __import__("os").path.dirname(__file__))
 from j2cpp import convert  # noqa: E402
 
-DECL_RE = re.compile(r"public\s+static\s+final\s+([\w<>\[\], ]+?)\s+(\w+)\s*=", re.S)
+DECL_RE = re.compile(r"(?:public|private|protected)?\s*static\s+final\s+([\w<>\[\], ]+?)\s+(\w+)\s*=", re.S)
 
 
 def statements(text):
@@ -84,6 +84,13 @@ def main(src, dst, ns):
             if m:
                 ctype = "std::vector<int>" if jtype.startswith("List") else "std::set<int>"
                 lines.append("inline const %s %s = {%s};" % (ctype, name, m.group(1)))
+            else:
+                todo.append("%s %s" % (jtype, name))
+        elif jtype == "List<String>":
+            m = (re.match(r"^Collections\.unmodifiableList\((?:Arrays\.asList|List\.of)\((.*)\)\)$", flat)
+                 or re.match(r"^(?:Arrays\.asList|List\.of)\((.*)\)$", flat))
+            if m:
+                lines.append("inline const std::vector<std::string_view> %s = {%s};" % (name, m.group(1)))
             else:
                 todo.append("%s %s" % (jtype, name))
         elif jtype in ("byte[]", "int[]"):

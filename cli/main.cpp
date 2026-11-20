@@ -2,6 +2,7 @@
 //   pokerando-cli info <rom>        detecta el juego
 //   pokerando-cli dump <rom>        vuelca los datos leídos (para comparar con FVX)
 //   pokerando-cli resave <rom> <s>  abre y guarda sin cambios
+#include <algorithm>
 #include <cstdio>
 #include <fstream>
 #include <iterator>
@@ -78,6 +79,28 @@ void dumpMore(const pr::gen3::Gen3RomHandler& h) {
         for (const auto& m : ml) std::printf(" %d@%d", m.move, m.level);
         std::printf("\n");
     }
+    std::printf("== ENCOUNTERS\n");
+    auto dumpAreas = [](const std::vector<pr::EncounterArea>& areas) {
+        for (size_t i = 0; i < areas.size(); i++) {
+            const auto& a = areas[i];
+            std::printf("%zu|%s|rate=%d|%s|%s|pg=%d|cut=%d|ban=", i, a.displayName.c_str(), a.rate,
+                        a.encounterType ? pr::encounterTypeName(*a.encounterType) : "null",
+                        a.locationTag ? a.locationTag->c_str() : "null", a.postGame, a.partiallyPostGameCutoff);
+            auto banned = a.getBannedSpecies().toVector();
+            std::vector<int> nums;
+            for (auto* b : banned) nums.push_back(b->number());
+            std::sort(nums.begin(), nums.end());
+            for (int n : nums) std::printf("%d,", n);
+            std::printf("|");
+            for (const auto& e : a.encounters) std::printf(" %d@%d-%d", e->species()->number(), e->level, e->maxLevel);
+            std::printf("\n");
+        }
+    };
+    dumpAreas(h.getEncounters(false));
+    std::printf("== SORTED\n");
+    for (const auto& a : h.getSortedEncounters(false)) std::printf("%s\n", a.displayName.c_str());
+    std::printf("== WILDBANNED\n");
+    for (auto* b : h.getBannedForWildEncounters().toVector()) std::printf("%d\n", b->number());
     std::printf("== EGGMOVES\n");
     for (const auto& [n, ml] : h.getEggMoves()) {
         std::printf("%d:", n);

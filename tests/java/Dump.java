@@ -4,7 +4,7 @@ import com.uprfvx.romio.romhandlers.RomHandler;
 import java.io.File;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Locale;
+import java.util.*;
 
 // Vuelca con FVX los mismos datos (y en el mismo formato) que "pokerando-cli dump".
 public class Dump {
@@ -67,6 +67,24 @@ public class Dump {
             for (MoveLearnt m : en.getValue()) out.print(" " + m.move + "@" + m.level);
             out.println();
         }
+        out.println("== ENCOUNTERS");
+        List<EncounterArea> areas = h.getEncounters(false);
+        for (int i = 0; i < areas.size(); i++) {
+            EncounterArea a = areas.get(i);
+            out.printf("%d|%s|rate=%d|%s|%s|pg=%d|cut=%d|ban=", i, a.getDisplayName(), a.getRate(),
+                    s(a.getEncounterType()), s(a.getLocationTag()), a.isPostGame() ? 1 : 0, a.getPartiallyPostGameCutoff());
+            List<Integer> nums = new ArrayList<>();
+            for (Species b : a.getBannedSpecies()) nums.add(b.getNumber());
+            Collections.sort(nums);
+            for (int n : nums) out.print(n + ",");
+            out.print("|");
+            for (Encounter e : a) out.print(" " + e.getSpecies().getNumber() + "@" + e.getLevel() + "-" + e.getMaxLevel());
+            out.println();
+        }
+        out.println("== SORTED");
+        for (EncounterArea a : h.getSortedEncounters(false)) out.println(a.getDisplayName());
+        out.println("== WILDBANNED");
+        for (Species b : h.getBannedForWildEncounters()) out.println(b.getNumber());
         out.println("== EGGMOVES");
         for (var en : new java.util.TreeMap<>(h.getEggMoves()).entrySet()) {
             out.print(en.getKey() + ":");

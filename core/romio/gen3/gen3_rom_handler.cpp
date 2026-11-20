@@ -73,7 +73,9 @@ void Gen3RomHandler::loadRom(std::vector<uint8_t> bytes, const std::string& file
     initTextTables();
     isRomHack_ = false;
     jamboMovesetHack_ = false;
-    // TODO(port): basicBPRE10HackSupport (solo hacks de Rojo Fuego U 1.0), determineMapBankSizes, preprocessMaps
+    // TODO(port): basicBPRE10HackSupport (solo hacks de Rojo Fuego U 1.0)
+    determineMapBankSizes();
+    preprocessMaps();
     freeAllUnusedSpace();
 
     // loadGameData

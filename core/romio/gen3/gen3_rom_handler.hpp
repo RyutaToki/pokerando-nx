@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "gamedata/encounter.hpp"
 #include "gamedata/move.hpp"
 #include "gamedata/species.hpp"
 #include "gamedata/types.hpp"
@@ -61,6 +62,13 @@ public:
     void setEggMoves(const std::map<int, std::vector<int>>& eggMoves);
     int freeSpaceBytes() const { return freedSpace_.lengthSum(); }
 
+    // Encuentros salvajes
+    std::vector<EncounterArea> getEncounters(bool useTimeOfDay) const;
+    std::vector<EncounterArea> getSortedEncounters(bool useTimeOfDay) const;
+    void setEncounters(bool useTimeOfDay, const std::vector<EncounterArea>& areas);
+    SpeciesSet getBannedForWildEncounters() const;
+    bool hasEncounterLocations() const { return true; }
+
 private:
     void initRomEntry();
     void initTextTables();
@@ -78,6 +86,14 @@ private:
     void loadMiscMoveInfoFromEffect(Move& move, int secondaryEffectChance);
     int generationOf(const Species& pk) const;
 
+    int readPointerOrInvalid(int offset) const;  // readPointer(offset, true)
+    void determineMapBankSizes();
+    void preprocessMaps();
+    EncounterArea readEncounterArea(int offset, int numOfEntries, const std::string& name, EncounterType type) const;
+    void writeEncounterArea(int offset, int numOfEntries, const EncounterArea& area);
+    bool hasBattleTrappingAbility(const Species* s) const;
+    void tagEncounterAreas(std::vector<EncounterArea>& areas) const;
+    void attemptObedienceEvolutionPatches();
     void prepareSaveRom();
     void saveSpeciesStats();
     void saveBasicPokeStats(const Species& pk, int offset);
@@ -134,6 +150,9 @@ private:
     bool isRomHack_ = false;
     bool jamboMovesetHack_ = false;
     FreedSpace freedSpace_;
+    bool havePatchedObedience_ = false;
+    std::vector<int> itemOffs_;
+    std::vector<std::vector<std::string>> mapNames_;
 };
 
 }  // namespace pr::gen3
