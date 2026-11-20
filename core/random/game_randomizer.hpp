@@ -9,6 +9,7 @@
 #include "random/species_base_stat_randomizer.hpp"
 #include "random/species_type_ability_randomizers.hpp"
 #include "random/starter_randomizer.hpp"
+#include "random/static_pokemon_randomizer.hpp"
 #include "random/trade_item_randomizers.hpp"
 #include "random/trainer_pokemon_randomizer.hpp"
 #include "random/wild_encounter_randomizer.hpp"
@@ -47,6 +48,7 @@ private:
     SpeciesTypeRandomizer types_;
     SpeciesAbilityRandomizer abilities_;
     StarterRandomizer starter_;
+    StaticPokemonRandomizer statics_;
     TradeRandomizer trades_;
     ItemRandomizer items_;
     WildEncounterRandomizer wild_;
