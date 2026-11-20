@@ -1,6 +1,11 @@
 #include "gamedata/types.hpp"
 
+#include <cmath>
+#include <cstring>
+#include <optional>
 #include <stdexcept>
+#include <string>
+#include <vector>
 
 namespace pr {
 
@@ -81,9 +86,194 @@ int EVYield::toWord() const {
     return hp | (attack << 2) | (defense << 4) | (speed << 6) | (spatk << 8) | (spdef << 10);
 }
 
+double javaDoubleSum(const double* v, size_t n) {
+    double s0 = 0, s1 = 0, simple = 0;
+    for (size_t i = 0; i < n; i++) {
+        double tmp = v[i] - s1;
+        double velvel = s0 + tmp;
+        s1 = (velvel - s0) - tmp;
+        s0 = velvel;
+        simple += v[i];
+    }
+    double tmp = s0 - s1;
+    if (std::isnan(tmp) && std::isinf(simple)) return simple;
+    return tmp;
+}
+
+namespace {
+void rangeCheck(int v, const char* name) {
+    if (v < 0 || v > BaseStats::STAT_MAX) throw std::invalid_argument(std::string(name) + " must be between 0-255");
+}
+// Double.compare de Java
+int javaDoubleCompare(double a, double b) {
+    if (a < b) return -1;
+    if (a > b) return 1;
+    int64_t ab, bb;
+    std::memcpy(&ab, &a, 8);
+    std::memcpy(&bb, &b, 8);
+    if (std::isnan(a)) ab = 0x7ff8000000000000LL;
+    if (std::isnan(b)) bb = 0x7ff8000000000000LL;
+    return ab == bb ? 0 : (ab < bb ? -1 : 1);
+}
+
+// java.util.PriorityQueue (montículo binario) con un comparador
+template <class Cmp>
+struct JavaPriorityQueue {
+    std::vector<int> q;
+    Cmp cmp;
+    explicit JavaPriorityQueue(Cmp c) : cmp(c) {}
+    void add(int x) {
+        int k = static_cast<int>(q.size());
+        q.push_back(x);
+        while (k > 0) {
+            int parent = (k - 1) >> 1;
+            int e = q[parent];
+            if (cmp(x, e) >= 0) break;
+            q[k] = e;
+            k = parent;
+        }
+        q[k] = x;
+    }
+    std::optional<int> poll() {
+        if (q.empty()) return std::nullopt;
+        int result = q[0];
+        int n = static_cast<int>(q.size()) - 1;
+        int x = q[n];
+        q.pop_back();
+        if (n > 0) {
+            int k = 0, half = n >> 1;
+            while (k < half) {
+                int child = 2 * k + 1;
+                int c = q[child];
+                int right = child + 1;
+                if (right < n && cmp(c, q[right]) > 0) c = q[child = right];
+                if (cmp(x, c) <= 0) break;
+                q[k] = c;
+                k = child;
+            }
+            q[k] = x;
+        }
+        return result;
+    }
+};
+}  // namespace
+
+BaseStats::BaseStats(int h, int a, int d, int sa, int sd, int s) {
+    rangeCheck(h, "hp");
+    rangeCheck(a, "attack");
+    rangeCheck(d, "defense");
+    rangeCheck(sa, "spatk");
+    rangeCheck(sd, "spdef");
+    rangeCheck(s, "speed");
+    bst_ = h + a + d + sa + sd + s;
+    hpRatio = h;
+    attackRatio = a;
+    defenseRatio = d;
+    spatkRatio = sa;
+    spdefRatio = sd;
+    speedRatio = s;
+    calculateStats();
+}
+
+BaseStats BaseStats::makeShedinja(int a, int d, int sa, int sd, int s) {
+    // super(0, ...) ya llama a calculateStats con las proporciones de Shedinja
+    BaseStats b;
+    b.shedinja = true;
+    rangeCheck(a, "attack");
+    rangeCheck(d, "defense");
+    rangeCheck(sa, "spatk");
+    rangeCheck(sd, "spdef");
+    rangeCheck(s, "speed");
+    b.bst_ = a + d + sa + sd + s;
+    b.attackRatio = a;
+    b.defenseRatio = d;
+    b.spatkRatio = sa;
+    b.spdefRatio = sd;
+    b.speedRatio = s;
+    b.calculateStats();
+    b.bst_ = a + d + sa + sd + s;
+    b.bstForPowerLevels_ = b.bst_ * 6 / 5;
+    b.calculateStats();
+    return b;
+}
+
 int BaseStats::bst() const {
-    if (shedinja) return (attack + defense + spatk + spdef + speed) * 6 / 5;
+    if (shedinja) return bstForPowerLevels_;
     return hp + attack + defense + spatk + spdef + speed;
+}
+
+void BaseStats::setBST(int v) {
+    if (shedinja) {
+        bstForPowerLevels_ = v;
+        bst_ = v * 5 / 6;
+    } else {
+        if (v < 0) throw std::invalid_argument("bst must be positive.");
+        bst_ = v;
+    }
+    calculateStats();
+}
+
+void BaseStats::setStatRatios(double h, double a, double d, double sa, double sd, double s) {
+    if (shedinja) throw std::logic_error("Use the ShedinjaBaseStats-specific setStatRatios instead.");
+    for (double v : {h, a, d, sa, sd, s})
+        if (v < 0) throw std::invalid_argument("stat ratio must be positive.");
+    hpRatio = h;
+    attackRatio = a;
+    defenseRatio = d;
+    spatkRatio = sa;
+    spdefRatio = sd;
+    speedRatio = s;
+    calculateStats();
+}
+
+void BaseStats::setStatRatiosShedinja(double a, double d, double sa, double sd, double s) {
+    for (double v : {a, d, sa, sd, s})
+        if (v < 0) throw std::invalid_argument("stat ratio must be positive.");
+    attackRatio = a;
+    defenseRatio = d;
+    spatkRatio = sa;
+    spdefRatio = sd;
+    speedRatio = s;
+    calculateStats();
+}
+
+void BaseStats::calculateStats() {
+    std::vector<double> ratios = shedinja ? std::vector<double>{attackRatio, defenseRatio, spatkRatio, spdefRatio, speedRatio}
+                                          : std::vector<double>{hpRatio, attackRatio, defenseRatio, spatkRatio, spdefRatio, speedRatio};
+    double total = javaDoubleSum(ratios.data(), ratios.size());
+    std::vector<double> raw(ratios.size(), 0.0);
+    if (total == 0) {
+        if (bst_ != 0) throw std::logic_error("All stat ratios are 0, but BST is not 0.");
+    } else {
+        for (size_t i = 0; i < ratios.size(); i++) raw[i] = bst_ * (ratios[i] / total);
+    }
+    std::vector<int> stats(raw.size(), 0);
+    auto cmp = [&](int a, int b) {
+        return javaDoubleCompare((stats[a] - raw[a] + 0.000001) / raw[a], (stats[b] - raw[b] + 0.000001) / raw[b]);
+    };
+    JavaPriorityQueue<decltype(cmp)> pq(cmp);
+    for (int i = 0; i < static_cast<int>(raw.size()); i++)
+        if (raw[i] != 0) pq.add(i);  // las proporciones 0 no reciben puntos
+    for (int i = 0; i < bst_; i++) {
+        auto off = pq.poll();
+        if (!off) throw std::logic_error("Could not distribute all stat points.");
+        stats[*off]++;
+        if (stats[*off] < STAT_MAX) pq.add(*off);
+    }
+    if (shedinja) {
+        attack = stats[0];
+        defense = stats[1];
+        spatk = stats[2];
+        spdef = stats[3];
+        speed = stats[4];
+    } else {
+        hp = stats[0];
+        attack = stats[1];
+        defense = stats[2];
+        spatk = stats[3];
+        spdef = stats[4];
+        speed = stats[5];
+    }
 }
 
 }  // namespace pr

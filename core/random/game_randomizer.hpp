@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 
+#include "random/species_base_stat_randomizer.hpp"
 #include "random/starter_randomizer.hpp"
 #include "random/trainer_pokemon_randomizer.hpp"
 #include "random/wild_encounter_randomizer.hpp"
@@ -34,6 +35,7 @@ private:
     Settings& settings_;
     RomHandler& rh_;
     JavaRandom nonCosmetic_, cosmetic_;
+    SpeciesBaseStatRandomizer bs_;
     StarterRandomizer starter_;
     WildEncounterRandomizer wild_;
     TrainerPokemonRandomizer trainerPoke_;

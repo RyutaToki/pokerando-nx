@@ -381,13 +381,8 @@ void Gen3RomHandler::loadSpeciesStats() {
         int offset = find(prefix);
         if (offset > 0) {
             offset += static_cast<int>(prefix.size() / 2);
-            BaseStats bs;
-            bs.hp = readWord(offset) & 0xFF;
-            bs.attack = readWord(offset + 2) & 0xFF;
-            bs.defense = readWord(offset + 4) & 0xFF;
-            bs.spatk = readWord(offset + 8) & 0xFF;
-            bs.spdef = readWord(offset + 10) & 0xFF;
-            bs.speed = readWord(offset + 6) & 0xFF;
+            BaseStats bs(readWord(offset) & 0xFF, readWord(offset + 2) & 0xFF, readWord(offset + 4) & 0xFF,
+                         readWord(offset + 8) & 0xFF, readWord(offset + 10) & 0xFF, readWord(offset + 6) & 0xFF);
             pokes_.at(species::deoxys)->setBaseStats(bs);
         }
     }
@@ -417,14 +412,11 @@ int Gen3RomHandler::generationOf(const Species& pk) const {
 }
 
 void Gen3RomHandler::loadBasicPokeStats(Species& pk, int o) {
-    BaseStats bs;
-    bs.shedinja = pk.number() == species::shedinja;
-    bs.hp = bs.shedinja ? 0 : rom_.at(o + bsHPOffset);
-    bs.attack = rom_.at(o + bsAttackOffset);
-    bs.defense = rom_.at(o + bsDefenseOffset);
-    bs.spatk = rom_.at(o + bsSpAtkOffset);
-    bs.spdef = rom_.at(o + bsSpDefOffset);
-    bs.speed = rom_.at(o + bsSpeedOffset);
+    BaseStats bs = pk.number() == species::shedinja
+                       ? BaseStats::makeShedinja(rom_.at(o + bsAttackOffset), rom_.at(o + bsDefenseOffset),
+                                                 rom_.at(o + bsSpAtkOffset), rom_.at(o + bsSpDefOffset), rom_.at(o + bsSpeedOffset))
+                       : BaseStats(rom_.at(o + bsHPOffset), rom_.at(o + bsAttackOffset), rom_.at(o + bsDefenseOffset),
+                                   rom_.at(o + bsSpAtkOffset), rom_.at(o + bsSpDefOffset), rom_.at(o + bsSpeedOffset));
     pk.setBaseStats(bs);
 
     pk.setPrimaryType(typeFromByte(rom_.at(o + bsPrimaryTypeOffset)));
