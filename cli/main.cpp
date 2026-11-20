@@ -173,7 +173,7 @@ void dumpMore(const pr::gen3::Gen3RomHandler& h) {
         for (bool b : f) std::printf("%d", b ? 1 : 0);
         std::printf("\n");
     }
-    auto pset = [](const char* n, const pr::gen3::ItemSet& s) {
+    auto pset = [](const char* n, const pr::ItemSet& s) {
         std::printf("== %s", n);
         s.forEach([](const int& i) { std::printf(" %d", i); });
         std::printf("\n");

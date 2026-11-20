@@ -27,9 +27,6 @@
 
 namespace pr::gen3 {
 
-// Set<Item> de Java (HashSet; Item.hashCode() == id): ids en orden de iteración de Java
-using ItemSet = JavaHashSet<int>;
-
 std::vector<int> typeBoostingItems(std::optional<Type> t);
 std::vector<int> speciesBoostingItems(int speciesNumber);
 std::vector<int> allHeldItems();
@@ -62,7 +59,10 @@ public:
     const std::vector<Species*>& species() const { return speciesList_; }
     // objetos indexados por id estándar (posiciones vacías = nullopt)
     const std::vector<std::optional<Item>>& items() const { return items_; }
-    const std::string& abilityName(int n) const { return abilityNames_.at(n); }
+    const std::vector<std::optional<Item>>& getItems() const override { return items_; }
+    std::vector<std::optional<Item>>& getItemsMutable() override { return items_; }
+    const std::string& abilityName(int n) const override { return abilityNames_.at(n); }
+    std::vector<std::pair<int, std::vector<int>>> getAbilityVariations() const override { return abilityVariations(); }
     // movimientos por número (posición 0 vacía)
     const std::vector<std::optional<Move>>& moves() const { return moves_; }
     const std::vector<std::optional<Move>>& getMoves() const override { return moves_; }
@@ -73,111 +73,110 @@ public:
     // Movimientos por nivel: número de Pokédex -> lista (TreeMap en Java)
     std::map<int, std::vector<MoveLearnt>> getMovesLearnt() const override;
     void setMovesLearnt(const std::map<int, std::vector<MoveLearnt>>& movesets) override;
-    std::map<int, std::vector<int>> getEggMoves() const;
-    void setEggMoves(const std::map<int, std::vector<int>>& eggMoves);
+    std::map<int, std::vector<int>> getEggMoves() const override;
+    void setEggMoves(const std::map<int, std::vector<int>>& eggMoves) override;
     int freeSpaceBytes() const { return freedSpace_.lengthSum(); }
 
     // Encuentros salvajes
-    std::vector<EncounterArea> getEncounters(bool useTimeOfDay) const;
-    std::vector<EncounterArea> getSortedEncounters(bool useTimeOfDay) const;
-    void setEncounters(bool useTimeOfDay, const std::vector<EncounterArea>& areas);
-    SpeciesSet getBannedForWildEncounters() const;
-    bool hasEncounterLocations() const { return true; }
+    std::vector<EncounterArea> getEncounters(bool useTimeOfDay) const override;
+    std::vector<EncounterArea> getSortedEncounters(bool useTimeOfDay) const override;
+    void setEncounters(bool useTimeOfDay, const std::vector<EncounterArea>& areas) override;
+    SpeciesSet getBannedForWildEncounters() const override;
+    bool hasEncounterLocations() const override { return true; }
 
     // Entrenadores
-    std::vector<int> getEliteFourTrainers(bool isChallengeMode) const;
+    std::vector<int> getEliteFourTrainers(bool isChallengeMode) const override;
     // HashMap<String, Type> en Java; aquí en el orden de inserción del original
-    std::vector<std::pair<std::string, Type>> getGymAndEliteTypeThemes() const;
-    void saveTrainerClasses();
-    void saveTrainers();
+    std::vector<std::pair<std::string, Type>> getGymAndEliteTypeThemes() const override;
+    void saveTrainerClasses() override;
+    void saveTrainers() override;
 
     // Iniciales
-    std::vector<Species*> getStarters() const;
-    bool setStarters(const std::vector<Species*>& starters);
-    int starterCount() const { return 3; }
-    bool supportsStarterHeldItems() const { return true; }
-    std::vector<std::optional<int>> getStarterHeldItems() const;
-    void setStarterHeldItems(const std::vector<std::optional<int>>& items);
+    std::vector<Species*> getStarters() const override;
+    bool setStarters(const std::vector<Species*>& starters) override;
+    int starterCount() const override { return 3; }
+    bool supportsStarterHeldItems() const override { return true; }
+    std::vector<std::optional<int>> getStarterHeldItems() const override;
+    void setStarterHeldItems(const std::vector<std::optional<int>>& items) override;
 
     // Estáticos (¡ojo! leerlos puede aplicar parches a la ROM, igual que en FVX)
-    std::vector<StaticEncounter> getStaticPokemon();
-    bool setStaticPokemon(const std::vector<StaticEncounter>& statics);
-    bool canChangeStaticPokemon() const { return romEntry_->hasStaticPokemonSupport(); }
+    std::vector<StaticEncounter> getStaticPokemon() override;
+    bool setStaticPokemon(const std::vector<StaticEncounter>& statics) override;
+    bool canChangeStaticPokemon() const override { return romEntry_->hasStaticPokemonSupport(); }
 
     // MT / MO / tutores (compatibilidad: número de Pokédex -> flags, TreeMap en Java)
-    std::vector<int> getTMMoves() const;
-    std::vector<int> getHMMoves() const;
-    void setTMMoves(const std::vector<int>& moveIndexes);
-    int getTMCount() const { return 50; }
-    int getHMCount() const { return 8; }
-    std::map<int, std::vector<bool>> getTMHMCompatibility() const;
-    void setTMHMCompatibility(const std::map<int, std::vector<bool>>& data);
-    bool hasMoveTutors() const;
-    std::vector<int> getMoveTutorMoves() const;
-    void setMoveTutorMoves(const std::vector<int>& moveIndexes);
-    std::map<int, std::vector<bool>> getMoveTutorCompatibility() const;
-    void setMoveTutorCompatibility(const std::map<int, std::vector<bool>>& data);
+    std::vector<int> getTMMoves() const override;
+    std::vector<int> getHMMoves() const override;
+    void setTMMoves(const std::vector<int>& moveIndexes) override;
+    int getTMCount() const override { return 50; }
+    int getHMCount() const override { return 8; }
+    std::map<int, std::vector<bool>> getTMHMCompatibility() const override;
+    void setTMHMCompatibility(const std::map<int, std::vector<bool>>& data) override;
+    bool hasMoveTutors() const override;
+    std::vector<int> getMoveTutorMoves() const override;
+    void setMoveTutorMoves(const std::vector<int>& moveIndexes) override;
+    std::map<int, std::vector<bool>> getMoveTutorCompatibility() const override;
+    void setMoveTutorCompatibility(const std::map<int, std::vector<bool>>& data) override;
 
     // Objetos
-    ItemSet getEvolutionItems() const;
-    ItemSet getOPShopItems() const;
-    ItemSet getAllConsumableHeldItems() const;
-    ItemSet getRequiredFieldTMs() const;
-    std::vector<int> getFieldItems() const;
-    void setFieldItems(const std::vector<int>& fieldItems);
-    bool hasShopSupport() const { return true; }
-    bool canChangeShopSizes() const { return true; }
-    std::vector<Shop> getShops() const;
-    void setShops(const std::vector<Shop>& shops);
-    std::vector<int> getShopPrices() const;
-    void setShopPrices(const std::vector<int>& prices);
-    void setBalancedShopPrices();
-    std::vector<PickupItem> getPickupItems();
-    void setPickupItems(const std::vector<PickupItem>& items);
-    std::vector<InGameTrade> getInGameTrades() const;
-    void setInGameTrades(const std::vector<InGameTrade>& trades);
-    std::vector<std::optional<int>> getSensibleHeldItemsFor(const TrainerPokemon& tp, bool consumableOnly,
-                                                            const std::array<int, 4>& pokeMoves) const;
+    ItemSet getEvolutionItems() const override;
+    ItemSet getOPShopItems() const override;
+    ItemSet getAllConsumableHeldItems() const override;
+    ItemSet getRequiredFieldTMs() const override;
+    std::vector<int> getFieldItems() const override;
+    void setFieldItems(const std::vector<int>& fieldItems) override;
+    bool hasShopSupport() const override { return true; }
+    bool canChangeShopSizes() const override { return true; }
+    std::vector<Shop> getShops() const override;
+    void setShops(const std::vector<Shop>& shops) override;
+    std::vector<int> getShopPrices() const override;
+    void setShopPrices(const std::vector<int>& prices) override;
+    void setBalancedShopPrices() override;
+    std::vector<PickupItem> getPickupItems() override;
+    void setPickupItems(const std::vector<PickupItem>& items) override;
+    std::vector<InGameTrade> getInGameTrades() const override;
+    void setInGameTrades(const std::vector<InGameTrade>& trades) override;
+    std::vector<std::optional<int>> getSensibleHeldItemsFor(const TrainerPokemon& tp, bool consumableOnly, const std::array<int, 4>& pokeMoves) const override;
 
     // Varios
-    int maxTrainerNameLength() const { return romEntry_->getInt("TrainerNameLength") - 1; }
-    int maxTrainerClassNameLength() const { return romEntry_->getInt("TrainerClassNameLength") - 1; }
-    std::vector<int> getDoublesTrainerClasses() const { return romEntry_->getArray("DoublesTrainerClasses"); }
+    int maxTrainerNameLength() const override { return romEntry_->getInt("TrainerNameLength") - 1; }
+    int maxTrainerClassNameLength() const override { return romEntry_->getInt("TrainerClassNameLength") - 1; }
+    std::vector<int> getDoublesTrainerClasses() const override { return romEntry_->getArray("DoublesTrainerClasses"); }
     bool hasMainGameLegendaries() const { return true; }  // getArrayValue nunca es null en Java
-    std::vector<int> getMainGameLegendaries() const { return romEntry_->getArray("MainGameLegendaries"); }
-    std::vector<int> getSpecialMusicStatics() const { return romEntry_->getArray("SpecialMusicStatics"); }
-    bool hasStaticMusicFix() const { return romEntry_->hasTweakFile("NewIndexToMusicTweak"); }
-    int abilitiesPerSpecies() const { return 2; }
-    int highestAbilityIndex() const { return 77; }
-    std::vector<int> getUselessAbilities() const;
-    bool isTrainerPokemonAlwaysUseAbility1() const { return true; }
-    int internalStringLength(const std::string& s) const { return static_cast<int>(translateString(s).size()); }
-    int getMaxMoveNameLength() const { return 12; }
-    bool isEnglish() const { return romCode().size() >= 4 && romCode()[3] == 'E'; }
+    std::vector<int> getMainGameLegendaries() const override { return romEntry_->getArray("MainGameLegendaries"); }
+    std::vector<int> getSpecialMusicStatics() const override { return romEntry_->getArray("SpecialMusicStatics"); }
+    bool hasStaticMusicFix() const override { return romEntry_->hasTweakFile("NewIndexToMusicTweak"); }
+    int abilitiesPerSpecies() const override { return 2; }
+    int highestAbilityIndex() const override { return 77; }
+    std::vector<int> getUselessAbilities() const override;
+    bool isTrainerPokemonAlwaysUseAbility1() const override { return true; }
+    int internalStringLength(const std::string& s) const override { return static_cast<int>(translateString(s).size()); }
+    int getMaxMoveNameLength() const override { return 12; }
+    bool isEnglish() const override { return romCode().size() >= 4 && romCode()[3] == 'E'; }
 
     // Tipos, ajustes y evoluciones
-    TypeTable getTypeTable() const;
-    void setTypeTable(const TypeTable& t);
-    bool hasTypeEffectivenessSupport() const { return true; }
-    void removeImpossibleEvolutions(bool changeMoveEvos, bool useEstimatedLevels);
-    void makeEvolutionsEasier(bool changeWithOtherEvos, bool useEstimatedLevels);
-    void removeEvosForPokemonPool(const SpeciesSet& included);
-    int miscTweaksAvailable() const;
-    void applyMiscTweak(const MiscTweak& t);
-    bool setIntroPokemon(Species* pk);
-    bool setCatchingTutorial(Species* opponent, Species* player);
-    void setPCPotionItem(int item);
-    void enableGuaranteedPokemonCatching();
+    TypeTable getTypeTable() const override;
+    void setTypeTable(const TypeTable& t) override;
+    bool hasTypeEffectivenessSupport() const override { return true; }
+    void removeImpossibleEvolutions(bool changeMoveEvos, bool useEstimatedLevels) override;
+    void makeEvolutionsEasier(bool changeWithOtherEvos, bool useEstimatedLevels) override;
+    void removeEvosForPokemonPool(const SpeciesSet& included) override;
+    int miscTweaksAvailable() const override;
+    void applyMiscTweak(const MiscTweak& t) override;
+    bool setIntroPokemon(Species* pk) override;
+    bool setCatchingTutorial(Species* opponent, Species* player) override;
+    void setPCPotionItem(int item) override;
+    void enableGuaranteedPokemonCatching() override;
     // Map<Integer, Integer> (estático original -> nuevo), en el orden de iteración del mapa de Java
-    void applyCorrectStaticMusic(const std::vector<std::pair<int, int>>& changes);
-    ItemSet getAllHeldItems() const;
-    std::vector<int> getFieldMoves() const;
-    std::vector<int> getEarlyRequiredHMMoves() const;
+    void applyCorrectStaticMusic(const std::vector<std::pair<int, int>>& changes) override;
+    ItemSet getAllHeldItems() const override;
+    std::vector<int> getFieldMoves() const override;
+    std::vector<int> getEarlyRequiredHMMoves() const override;
     bool hasRivalFinalBattle() const { return romEntry_->romType() == 3; }  // RomType_FRLG
-    bool isTMsReusable() const { return tmsReusable_; }
-    bool canTMsBeHeld() const { return true; }
-    bool supportsFourStartingMoves() const { return true; }
-    bool hasDVs() const { return false; }
+    bool isTMsReusable() const override { return tmsReusable_; }
+    bool canTMsBeHeld() const override { return true; }
+    bool supportsFourStartingMoves() const override { return true; }
+    bool hasDVs() const override { return false; }
 
 private:
     void initRomEntry();
