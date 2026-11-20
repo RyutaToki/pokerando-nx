@@ -183,6 +183,14 @@ private:
     void saveSpeciesStats();
     void saveBasicPokeStats(const Species& pk, Bytes& stats);
     void loadPokemonPalettes();
+    // encuentros
+    void loadWildMapNames() const;
+    void tagEncounterAreas(std::vector<EncounterArea>& areas, bool useTimeOfDay) const;
+    void readMainEncountersDPPt(std::vector<EncounterArea>& areas, bool useTimeOfDay) const;
+    void readExtraEncountersDPPt(std::vector<EncounterArea>& areas) const;
+    void readMainEncountersHGSS(std::vector<EncounterArea>& areas, bool useTimeOfDay) const;
+    void readHeadbuttEncounters(std::vector<EncounterArea>& areas) const;
+    void readBugCatchingContestEncounters(std::vector<EncounterArea>& areas) const;
     void savePokemonPalettes();
 
     const Gen4RomEntry* romEntry_ = nullptr;
@@ -203,6 +211,10 @@ private:
     bool tmsReusable_ = false;
     bool roamerRandomizationEnabled_ = false;
     mutable bool lastStringsCompressed_ = false;
+    // nombres de mapas para los encuentros (HashMap en Java; getEncounters los amplía)
+    mutable JavaHashMap<int, std::string> wildMapNames_;
+    mutable std::map<int, std::string> headbuttMapNames_;
+    mutable bool loadedWildMapNames_ = false;
     uint32_t actualArm9CRC32_ = 0;
     JavaHashMap<int, uint32_t> actualOverlayCRC32s_;
     std::map<std::string, uint32_t> actualFileCRC32s_;

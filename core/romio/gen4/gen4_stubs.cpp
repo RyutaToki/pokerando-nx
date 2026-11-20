@@ -7,8 +7,6 @@
 
 namespace pr::gen4 {
 
-std::vector<EncounterArea> Gen4RomHandler::getEncounters(bool useTimeOfDay) const { throw std::logic_error("Gen 4: pendiente: getEncounters"); }
-std::vector<EncounterArea> Gen4RomHandler::getSortedEncounters(bool useTimeOfDay) const { throw std::logic_error("Gen 4: pendiente: getSortedEncounters"); }
 void Gen4RomHandler::setEncounters(bool useTimeOfDay, const std::vector<EncounterArea>& areas) { throw std::logic_error("Gen 4: pendiente: setEncounters"); }
 SpeciesSet Gen4RomHandler::getBannedForWildEncounters() const { throw std::logic_error("Gen 4: pendiente: getBannedForWildEncounters"); }
 std::vector<int> Gen4RomHandler::getEliteFourTrainers(bool isChallengeMode) const { throw std::logic_error("Gen 4: pendiente: getEliteFourTrainers"); }
