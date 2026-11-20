@@ -11,6 +11,12 @@ public class Dump {
     static String itemName(Item it) { return it == null ? "null" : it.getName(); }
     static String s(Object o) { return o == null ? "null" : o.toString(); }
 
+    static void printStatic(PrintStream out, StaticEncounter se, int depth) {
+        out.println(" ".repeat(depth * 2) + se.getSpecies().getNumber() + "@" + se.getLevel() + " egg=" + (se.isEgg() ? 1 : 0)
+                + " max=" + se.getMaxLevel());
+        for (StaticEncounter l : se.getLinkedEncounters()) printStatic(out, l, depth + 1);
+    }
+
     public static void main(String[] args) throws Exception {
         PrintStream out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         PrintStream realOut = System.out;
@@ -102,16 +108,47 @@ public class Dump {
         out.print("== E4 ");
         for (int i : h.getEliteFourTrainers(false)) out.print(i + ",");
         out.println();
+        out.print("== STARTERS");
+        for (Species st : h.getStarters()) out.print(" " + st.getNumber());
+        for (Item it : h.getStarterHeldItems()) out.print(" item=" + (it == null ? -1 : it.getId()));
+        out.print("\n== TMS");
+        for (int m : h.getTMMoves()) out.print(" " + m);
+        out.print("\n== HMS");
+        for (int m : h.getHMMoves()) out.print(" " + m);
+        out.print("\n== TUTORS");
+        for (int m : h.getMoveTutorMoves()) out.print(" " + m);
+        out.println("\n== TMCOMPAT");
+        for (var en : h.getTMHMCompatibility().entrySet()) {
+            out.print(en.getKey().getNumber() + ":");
+            for (boolean b : en.getValue()) out.print(b ? 1 : 0);
+            out.println();
+        }
+        out.println("== TUTORCOMPAT");
+        for (var en : h.getMoveTutorCompatibility().entrySet()) {
+            out.print(en.getKey().getNumber() + ":");
+            for (boolean b : en.getValue()) out.print(b ? 1 : 0);
+            out.println();
+        }
+        out.println();
         out.println("== EGGMOVES");
         for (var en : new java.util.TreeMap<>(h.getEggMoves()).entrySet()) {
             out.print(en.getKey() + ":");
             for (int m : en.getValue()) out.print(" " + m);
             out.println();
         }
+        out.println("== STATICS");
+        for (StaticEncounter se : h.getStaticPokemon()) printStatic(out, se, 0);
         if (args.length > 1) {
             System.setOut(new PrintStream(PrintStream.nullOutputStream()));
             h.setMovesLearnt(h.getMovesLearnt());
             h.setEggMoves(h.getEggMoves());
+            h.setStarters(h.getStarters());
+            h.setStarterHeldItems(h.getStarterHeldItems());
+            h.setStaticPokemon(h.getStaticPokemon());
+            h.setTMMoves(h.getTMMoves());
+            h.setTMHMCompatibility(h.getTMHMCompatibility());
+            h.setMoveTutorMoves(h.getMoveTutorMoves());
+            h.setMoveTutorCompatibility(h.getMoveTutorCompatibility());
             // solo las partes ya portadas a C++ (en vez de saveRom completo)
             var gen3 = (com.uprfvx.romio.romhandlers.Gen3RomHandler) h;
             gen3.saveSpeciesStats();

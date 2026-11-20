@@ -14,6 +14,8 @@
 #include "gamedata/encounter.hpp"
 #include "gamedata/move.hpp"
 #include "gamedata/species.hpp"
+#include "gamedata/static_encounter.hpp"
+#include "romio/rom_functions.hpp"
 #include "gamedata/types.hpp"
 #include "romio/gb/freed_space.hpp"
 #include "romio/rom_handler.hpp"
@@ -76,6 +78,33 @@ public:
     void saveTrainerClasses();
     void saveTrainers();
 
+    // Iniciales
+    std::vector<Species*> getStarters() const;
+    bool setStarters(const std::vector<Species*>& starters);
+    int starterCount() const { return 3; }
+    bool supportsStarterHeldItems() const { return true; }
+    std::vector<std::optional<int>> getStarterHeldItems() const;
+    void setStarterHeldItems(const std::vector<std::optional<int>>& items);
+
+    // Estáticos (¡ojo! leerlos puede aplicar parches a la ROM, igual que en FVX)
+    std::vector<StaticEncounter> getStaticPokemon();
+    bool setStaticPokemon(const std::vector<StaticEncounter>& statics);
+    bool canChangeStaticPokemon() const { return romEntry_->hasStaticPokemonSupport(); }
+
+    // MT / MO / tutores (compatibilidad: número de Pokédex -> flags, TreeMap en Java)
+    std::vector<int> getTMMoves() const;
+    std::vector<int> getHMMoves() const;
+    void setTMMoves(const std::vector<int>& moveIndexes);
+    int getTMCount() const { return 50; }
+    int getHMCount() const { return 8; }
+    std::map<int, std::vector<bool>> getTMHMCompatibility() const;
+    void setTMHMCompatibility(const std::map<int, std::vector<bool>>& data);
+    bool hasMoveTutors() const;
+    std::vector<int> getMoveTutorMoves() const;
+    void setMoveTutorMoves(const std::vector<int>& moveIndexes);
+    std::map<int, std::vector<bool>> getMoveTutorCompatibility() const;
+    void setMoveTutorCompatibility(const std::map<int, std::vector<bool>>& data);
+
 private:
     void initRomEntry();
     void initTextTables();
@@ -108,6 +137,24 @@ private:
     std::vector<uint8_t> trainerPokemonToBytes(const Trainer& t) const;
     int readTrainerPokemonDataLength(int trainerOffset) const;
     std::optional<int> itemAt(int internalId) const;  // items.get(itemIDToStandard(x)) puede ser null
+    int staticLevel(const StaticPokemonOffsets& sp, int i) const;
+    void setStaticSpecies(const StaticPokemonOffsets& sp, Species* s);
+    void setStaticLevel(const StaticPokemonOffsets& sp, int level, int i);
+    void getRoamers(std::vector<StaticEncounter>& statics);
+    void setRoamers(const std::vector<StaticEncounter>& statics);
+    void applyRubyRoamerPatch();
+    void applyEmeraldRoamerPatch();
+    void writeFullInt(int offset, int value);
+    void readByteIntoFlags(std::vector<bool>& flags, int offsetIntoFlags, int offsetIntoROM) const;
+    uint8_t getByteFromFlags(const std::vector<bool>& flags, int offsetIntoFlags) const;
+    romfn::StringSizeDeterminer ssd() const;
+    std::vector<uint8_t> variableLengthStringToBytes(const std::string& s) const;
+    int lengthOfStringAt(int offset) const;
+    void rewriteVariableLengthString(int pointerOffset, const std::string& s, const std::vector<int>& secondary = {});
+    std::vector<int> searchForPointerCopies(int pointerOffset) const;
+    void writeEventText(const std::vector<EventTextEntry>& entries,
+                        const std::function<std::vector<std::string>(int)>& idToReplacers,
+                        const std::vector<std::string>& targets, const std::string& description);
     void prepareSaveRom();
     void saveSpeciesStats();
     void saveBasicPokeStats(const Species& pk, int offset);

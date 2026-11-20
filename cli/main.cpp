@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <fstream>
+#include <functional>
 #include <iterator>
 #include <string>
 #include <vector>
@@ -64,6 +65,15 @@ void dump(const pr::gen3::Gen3RomHandler& h) {
     }
 }
 
+void dumpStatics(pr::gen3::Gen3RomHandler& h) {
+    std::printf("== STATICS\n");
+    std::function<void(const pr::StaticEncounter&, int)> pr1 = [&](const pr::StaticEncounter& se, int depth) {
+        std::printf("%*s%d@%d egg=%d max=%d\n", depth * 2, "", se.species()->number(), se.level, se.isEgg, se.maxLevel);
+        for (const auto& l : se.linkedEncounters) pr1(l, depth + 1);
+    };
+    for (const auto& se : h.getStaticPokemon()) pr1(se, 0);
+}
+
 void dumpMore(const pr::gen3::Gen3RomHandler& h) {
     std::printf("== EVOLUTIONS\n");
     for (const auto* pk : h.species()) {
@@ -116,6 +126,27 @@ void dumpMore(const pr::gen3::Gen3RomHandler& h) {
     }
     std::printf("== E4 ");
     for (int i : h.getEliteFourTrainers(false)) std::printf("%d,", i);
+    std::printf("\n== STARTERS");
+    for (auto* st : h.getStarters()) std::printf(" %d", st->number());
+    for (auto& it : h.getStarterHeldItems()) std::printf(" item=%d", it ? *it : -1);
+    std::printf("\n== TMS");
+    for (int m : h.getTMMoves()) std::printf(" %d", m);
+    std::printf("\n== HMS");
+    for (int m : h.getHMMoves()) std::printf(" %d", m);
+    std::printf("\n== TUTORS");
+    for (int m : h.getMoveTutorMoves()) std::printf(" %d", m);
+    std::printf("\n== TMCOMPAT\n");
+    for (auto& [n, f] : h.getTMHMCompatibility()) {
+        std::printf("%d:", n);
+        for (bool b : f) std::printf("%d", b ? 1 : 0);
+        std::printf("\n");
+    }
+    std::printf("== TUTORCOMPAT\n");
+    for (auto& [n, f] : h.getMoveTutorCompatibility()) {
+        std::printf("%d:", n);
+        for (bool b : f) std::printf("%d", b ? 1 : 0);
+        std::printf("\n");
+    }
     std::printf("\n== EGGMOVES\n");
     for (const auto& [n, ml] : h.getEggMoves()) {
         std::printf("%d:", n);
@@ -147,12 +178,20 @@ int main(int argc, char** argv) {
         } else if (cmd == "dump") {
             dump(h);
             dumpMore(h);
+            dumpStatics(h);
         } else if (cmd == "resave" && argc >= 4) {
             h.saveRomFileOnly(argv[3]);
         } else if (cmd == "rewrite" && argc >= 4) {
             // reescribe datos de tamaño variable sin cambiarlos y guarda como FVX
             h.setMovesLearnt(h.getMovesLearnt());
             h.setEggMoves(h.getEggMoves());
+            h.setStarters(h.getStarters());
+            h.setStarterHeldItems(h.getStarterHeldItems());
+            h.setStaticPokemon(h.getStaticPokemon());
+            h.setTMMoves(h.getTMMoves());
+            h.setTMHMCompatibility(h.getTMHMCompatibility());
+            h.setMoveTutorMoves(h.getMoveTutorMoves());
+            h.setMoveTutorCompatibility(h.getMoveTutorCompatibility());
             h.saveRom(argv[3]);
         } else {
             std::fprintf(stderr, "orden desconocida\n");
