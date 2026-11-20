@@ -5,8 +5,13 @@
 #include <stdexcept>
 
 #include "constants/item_ids.hpp"
+#include "romio/services/restricted_species_service.hpp"
 
 namespace pr {
+
+RomHandler::RomHandler()
+    : rPokeService_(std::make_unique<RestrictedSpeciesService>(*this)), typeService_(std::make_unique<TypeService>(*this)) {}
+RomHandler::~RomHandler() = default;
 
 namespace {
 // Math.round de Java para double
@@ -150,6 +155,26 @@ void RomHandler::markImprovedEvolutions(Species* pk) {
     std::vector<Evolution> copy;
     for (const auto& e : pk->evolutionsFrom()) copy.push_back(*e);
     preImprovedEvolutions_[pk->number()] = std::move(copy);
+}
+
+ItemSet RomHandler::getAllowedItems() const {
+    ItemSet s;
+    for (const auto& it : getItems())
+        if (it && it->allowed) s.add(it->id);
+    return s;
+}
+
+ItemSet RomHandler::getNonBadItems() const {
+    ItemSet s;
+    getAllowedItems().forEach([&](const int& id) {
+        if (!getItems()[id]->bad) s.add(id);
+    });
+    return s;
+}
+
+void RomHandler::setStarterTypeTriangle(const std::vector<Type>& t) {
+    if (t.size() != 3) throw std::invalid_argument("Type triangle must contain three types!");
+    starterTypeTriangle_ = t;
 }
 
 std::array<int, 4> RomHandler::getMovesAtLevel(const Species& pk,

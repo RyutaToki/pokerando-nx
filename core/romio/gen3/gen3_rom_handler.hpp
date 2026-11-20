@@ -42,6 +42,7 @@ public:
     void loadRom(std::vector<uint8_t> romBytes, const std::string& fileName);
     // Igual que AbstractRomHandler.saveRom: escribe los datos cargados y guarda el archivo
     void saveRom(const std::string& fileName);
+    void saveRomTo(const std::string& fileName) override { saveRom(fileName); }
     void saveRomFileOnly(const std::string& fileName) const;
 
     const Gen3RomEntry& romEntry() const { return *romEntry_; }

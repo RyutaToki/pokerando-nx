@@ -22,12 +22,22 @@
 
 namespace pr {
 
+class RestrictedSpeciesService;
+class TypeService;
+
 // Set<Item> de Java (HashSet; Item.hashCode() == id): ids en orden de iteración de Java
 using ItemSet = JavaHashSet<int>;
 
 class RomHandler {
 public:
-    virtual ~RomHandler() = default;
+    RomHandler();
+    virtual ~RomHandler();
+
+    RestrictedSpeciesService& getRestrictedSpeciesService() { return *rPokeService_; }
+    TypeService& getTypeService() { return *typeService_; }
+    virtual SpeciesSet getAltFormes() const { return SpeciesSet(); }
+    virtual SpeciesSet getIrregularFormes() const { return SpeciesSet(); }
+    virtual bool hasFunctionalFormes() const { return false; }
 
     // --- información de la ROM ---
     virtual std::string romName() const = 0;
@@ -35,6 +45,8 @@ public:
     virtual int romType() const = 0;
     virtual int generationOfPokemon() const = 0;
     virtual bool isRomValid() const = 0;
+    // AbstractRomHandler.saveRom: escribe los datos cargados y guarda el archivo
+    virtual void saveRomTo(const std::string& fileName) = 0;
 
     // --- Pokémon ---
     // lista con posición 0 vacía (nullptr), como getSpecies() en Java
@@ -184,6 +196,18 @@ public:
     virtual SpeciesSet getBannedForStaticPokemon() const { return SpeciesSet(); }
     virtual bool hasStarterTypeTriangleSupport() const { return starterCount() % 3 == 0; }
 
+    // Set<Item> de objetos permitidos / no malos (Collectors.toSet en Java)
+    ItemSet getAllowedItems() const;
+    ItemSet getNonBadItems() const;
+    // triángulo de tipos de los iniciales
+    void setStarterTypeTriangle(const std::vector<Type>& t);
+    std::vector<Type> getStarterTypeTriangle() const { return starterTypeTriangle_ ? *starterTypeTriangle_ : getStandardTypeTriangle(); }
+    bool isTypeTriangleChanged() const { return starterTypeTriangle_.has_value(); }
+    std::vector<Type> getStandardTypeTriangle() const {
+        if (generationOfPokemon() <= 2) return {Type::FIRE, Type::WATER, Type::GRASS};
+        return {Type::GRASS, Type::FIRE, Type::WATER};
+    }
+
     // --- entrenadores ---
     const std::vector<std::unique_ptr<TrainerClass>>& getTrainerClasses() const { return trainerClasses_; }
     const std::vector<TrainerPtr>& getTrainers() const { return trainers_; }
@@ -202,9 +226,12 @@ protected:
     void markImprovedEvolutions(Species* pk);
     bool hadEvolutionOfType(Species* pk, std::optional<EvolutionType> et) const;
 
+    std::unique_ptr<RestrictedSpeciesService> rPokeService_;
+    std::unique_ptr<TypeService> typeService_;
     int perfectAccuracy_ = 100;
     std::vector<std::unique_ptr<TrainerClass>> trainerClasses_;
     std::vector<TrainerPtr> trainers_;
+    std::optional<std::vector<Type>> starterTypeTriangle_;
 
 private:
     void calculateEstimatedLevels(const std::vector<EvolutionPtr>& targetEvos);

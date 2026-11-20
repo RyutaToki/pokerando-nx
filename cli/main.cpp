@@ -11,7 +11,9 @@
 #include <vector>
 
 #include "constants/item_ids.hpp"
+#include "random/game_randomizer.hpp"
 #include "romio/gen3/gen3_rom_handler.hpp"
+#include "settings/settings.hpp"
 #include "util/java_compat.hpp"
 
 namespace {
@@ -245,6 +247,12 @@ int main(int argc, char** argv) {
             dumpPickup(h);
         } else if (cmd == "resave" && argc >= 4) {
             h.saveRomFileOnly(argv[3]);
+        } else if (cmd == "randomize" && argc >= 6) {
+            // randomize <rom> <settings string> <semilla> <salida>
+            pr::Settings settings = pr::Settings::fromString(argv[3]);
+            settings.tweakForRom(h);
+            pr::GameRandomizer gr(settings, h);
+            gr.randomize(argv[5], std::stoll(argv[4]));
         } else if (cmd == "rewrite" && argc >= 4) {
             // reescribe datos de tamaño variable sin cambiarlos y guarda como FVX
             h.setMovesLearnt(h.getMovesLearnt());
