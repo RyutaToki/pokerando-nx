@@ -219,6 +219,7 @@ private:
     void getRoamers(std::vector<StaticEncounter>& statics);
     void setRoamers(std::vector<StaticEncounter>::const_iterator& it);
     void patchDistortionWorldGroundCheck();
+    void applyForgettableHMsPatch();
     // textos
     void replaceAllStringsInEntry(int entry, std::map<std::string, std::string> replacements);
     void setBottomScreenTMText(int textOffset, int stringNumber, int newMoveIndex);

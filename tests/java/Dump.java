@@ -222,7 +222,11 @@ public class Dump {
             }
             h.setIntroPokemon(h.getSpecies().get(25));
             h.setCatchingTutorial(h.getSpecies().get(263), h.getSpecies().get(258));
-            h.setPCPotionItem(h.getItems().get(com.uprfvx.romio.constants.ItemIDs.superPotion));
+            try {
+                h.setPCPotionItem(h.getItems().get(com.uprfvx.romio.constants.ItemIDs.superPotion));
+            } catch (UnsupportedOperationException e) {
+                // Gen 4 no lo tiene
+            }
             h.enableGuaranteedPokemonCatching();
             h.saveRom(args[1], 0, false);  // guardado completo de FVX
             System.setOut(realOut);

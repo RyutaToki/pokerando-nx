@@ -25,4 +25,13 @@ for ROM in "$@"; do
     d=$(diff "$OUT/$tag.java.head.txt" "$OUT/$tag.cpp.txt" | grep -c '^<' || true)
     echo "$(basename "$ROM"): $d líneas distintas de $n · $(cat "$OUT/$tag.cpp.err")"
     [ "$d" = 0 ] || diff "$OUT/$tag.java.head.txt" "$OUT/$tag.cpp.txt" | head -8
+    # reescribir todo sin cambios (mismas llamadas que Dump.java) debe dar la misma ROM que FVX
+    if [ -s "$OUT/$tag.rw.nds" ]; then
+        if ./build/cli/pokerando-cli rewrite "$ROM" "$OUT/$tag.rwcpp.nds" 2> "$OUT/$tag.rw.err"; then
+            if cmp -s "$OUT/$tag.rw.nds" "$OUT/$tag.rwcpp.nds"; then echo "  reescritura: idéntica a FVX"
+            else echo "  reescritura: DISTINTA ($(cmp -l "$OUT/$tag.rw.nds" "$OUT/$tag.rwcpp.nds" 2>/dev/null | wc -l) bytes)"; fi
+        else echo "  reescritura: error · $(cat "$OUT/$tag.rw.err")"; fi
+    else
+        echo "  reescritura: FVX no generó la ROM"
+    fi
 done

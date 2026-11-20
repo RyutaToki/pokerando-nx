@@ -221,6 +221,36 @@ void dumpMore(const pr::RomHandler& h) {
     }
 }
 
+// reescribe datos de tamaño variable sin cambiarlos (mismas llamadas y en el mismo orden que tests/java/Dump.java)
+void rewriteAll(pr::RomHandler& h) {
+    h.setMovesLearnt(h.getMovesLearnt());
+    h.setEggMoves(h.getEggMoves());
+    h.setStarters(h.getStarters());
+    h.setStarterHeldItems(h.getStarterHeldItems());
+    h.setStaticPokemon(h.getStaticPokemon());
+    h.setTMMoves(h.getTMMoves());
+    h.setTMHMCompatibility(h.getTMHMCompatibility());
+    h.setMoveTutorMoves(h.getMoveTutorMoves());
+    h.setMoveTutorCompatibility(h.getMoveTutorCompatibility());
+    h.setFieldItems(h.getFieldItems());
+    h.setShops(h.getShops());
+    h.setShopPrices(h.getShopPrices());
+    h.setPickupItems(h.getPickupItems());
+    h.setInGameTrades(h.getInGameTrades());
+    // ajustes: mismas llamadas y en el mismo orden que tests/java/Dump.java
+    h.setTypeTable(h.getTypeTable());
+    h.removeImpossibleEvolutions(true, false);
+    h.makeEvolutionsEasier(true, false);
+    int avail = h.miscTweaksAvailable();
+    for (const auto& t : pr::misctweak::allTweaks) {
+        if ((avail & t.value) && t.value != pr::misctweak::BAN_LUCKY_EGG.value) h.applyMiscTweak(t);
+    }
+    h.setIntroPokemon(h.getSpecies()[25]);
+    h.setCatchingTutorial(h.getSpecies()[263], h.getSpecies()[258]);
+    if (h.generationOfPokemon() != 4) h.setPCPotionItem(pr::items::superPotion);  // Gen 4 no lo tiene
+    h.enableGuaranteedPokemonCatching();
+}
+
 }  // namespace
 
 int main(int argc, char** argv) {
@@ -254,6 +284,9 @@ int main(int argc, char** argv) {
                         std::fprintf(stderr, "%s\n", e.what());
                     }
                 } else if (cmd == "resave" && argc >= 4) {
+                    h.saveRomTo(argv[3]);
+                } else if (cmd == "rewrite" && argc >= 4) {
+                    rewriteAll(h);
                     h.saveRomTo(argv[3]);
                 } else {
                     std::fprintf(stderr, "orden no disponible todavía para Gen 4\n");
@@ -292,33 +325,7 @@ int main(int argc, char** argv) {
                 gr.randomize(argv[5], std::stoll(argv[4]));
             }
         } else if (cmd == "rewrite" && argc >= 4) {
-            // reescribe datos de tamaño variable sin cambiarlos y guarda como FVX
-            h.setMovesLearnt(h.getMovesLearnt());
-            h.setEggMoves(h.getEggMoves());
-            h.setStarters(h.getStarters());
-            h.setStarterHeldItems(h.getStarterHeldItems());
-            h.setStaticPokemon(h.getStaticPokemon());
-            h.setTMMoves(h.getTMMoves());
-            h.setTMHMCompatibility(h.getTMHMCompatibility());
-            h.setMoveTutorMoves(h.getMoveTutorMoves());
-            h.setMoveTutorCompatibility(h.getMoveTutorCompatibility());
-            h.setFieldItems(h.getFieldItems());
-            h.setShops(h.getShops());
-            h.setShopPrices(h.getShopPrices());
-            h.setPickupItems(h.getPickupItems());
-            h.setInGameTrades(h.getInGameTrades());
-            // ajustes: mismas llamadas y en el mismo orden que tests/java/Dump.java
-            h.setTypeTable(h.getTypeTable());
-            h.removeImpossibleEvolutions(true, false);
-            h.makeEvolutionsEasier(true, false);
-            int avail = h.miscTweaksAvailable();
-            for (const auto& t : pr::misctweak::allTweaks) {
-                if ((avail & t.value) && t.value != pr::misctweak::BAN_LUCKY_EGG.value) h.applyMiscTweak(t);
-            }
-            h.setIntroPokemon(h.getSpecies()[25]);
-            h.setCatchingTutorial(h.getSpecies()[263], h.getSpecies()[258]);
-            h.setPCPotionItem(pr::items::superPotion);
-            h.enableGuaranteedPokemonCatching();
+            rewriteAll(h);
             h.saveRom(argv[3]);
         } else {
             std::fprintf(stderr, "orden desconocida\n");
