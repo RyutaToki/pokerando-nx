@@ -17,6 +17,11 @@ for ROM in "$@"; do
     ./build/cli/pokerando-cli dump "$ROM" > "$OUT/$tag.cpp.txt" 2> "$OUT/$tag.cpp.err" || true
     n=$(grep -c "" "$OUT/$tag.cpp.txt")
     head -n "$n" "$OUT/$tag.java.txt" > "$OUT/$tag.java.head.txt"
+    # SENSIBLE: las bayas por tipo salen de un HashMap<Type> de Java (hash de identidad, orden irreproducible):
+    # se comparan los números ordenados
+    for f in "$OUT/$tag.java.head.txt" "$OUT/$tag.cpp.txt"; do
+        python3 -I tests/sort_sensible.py "$f"
+    done
     d=$(diff "$OUT/$tag.java.head.txt" "$OUT/$tag.cpp.txt" | grep -c '^<' || true)
     echo "$(basename "$ROM"): $d líneas distintas de $n · $(cat "$OUT/$tag.cpp.err")"
     [ "$d" = 0 ] || diff "$OUT/$tag.java.head.txt" "$OUT/$tag.cpp.txt" | head -8

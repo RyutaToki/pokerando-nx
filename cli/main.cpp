@@ -69,7 +69,7 @@ void dump(const pr::RomHandler& h) {
     }
 }
 
-void dumpPickup(pr::gen3::Gen3RomHandler& h) {
+void dumpPickup(pr::RomHandler& h) {
     std::printf("== PICKUP\n");
     for (const auto& p : h.getPickupItems()) {
         std::printf("%d:", p.item);
@@ -78,7 +78,7 @@ void dumpPickup(pr::gen3::Gen3RomHandler& h) {
     }
 }
 
-void dumpStatics(pr::gen3::Gen3RomHandler& h) {
+void dumpStatics(pr::RomHandler& h) {
     std::printf("== STATICS\n");
     std::function<void(const pr::StaticEncounter&, int)> pr1 = [&](const pr::StaticEncounter& se, int depth) {
         std::printf("%*s%d@%d egg=%d max=%d\n", depth * 2, "", se.species()->number(), se.level, se.isEgg, se.maxLevel);
@@ -247,6 +247,8 @@ int main(int argc, char** argv) {
                     // se vuelca hasta la primera sección que aún no esté portada
                     try {
                         dumpMore(h);
+                        dumpStatics(h);
+                        dumpPickup(h);
                     } catch (const std::logic_error& e) {
                         std::fflush(stdout);
                         std::fprintf(stderr, "%s\n", e.what());

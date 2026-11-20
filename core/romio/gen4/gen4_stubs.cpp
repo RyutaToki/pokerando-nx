@@ -8,32 +8,7 @@
 namespace pr::gen4 {
 
 void Gen4RomHandler::setEncounters(bool useTimeOfDay, const std::vector<EncounterArea>& areas) { throw std::logic_error("Gen 4: pendiente: setEncounters"); }
-std::vector<StaticEncounter> Gen4RomHandler::getStaticPokemon() { throw std::logic_error("Gen 4: pendiente: getStaticPokemon"); }
-bool Gen4RomHandler::setStaticPokemon(const std::vector<StaticEncounter>& statics) { throw std::logic_error("Gen 4: pendiente: setStaticPokemon"); }
-ItemSet Gen4RomHandler::getEvolutionItems() const { throw std::logic_error("Gen 4: pendiente: getEvolutionItems"); }
-ItemSet Gen4RomHandler::getOPShopItems() const { throw std::logic_error("Gen 4: pendiente: getOPShopItems"); }
-ItemSet Gen4RomHandler::getAllConsumableHeldItems() const { throw std::logic_error("Gen 4: pendiente: getAllConsumableHeldItems"); }
-ItemSet Gen4RomHandler::getRequiredFieldTMs() const { throw std::logic_error("Gen 4: pendiente: getRequiredFieldTMs"); }
-std::vector<int> Gen4RomHandler::getFieldItems() const { throw std::logic_error("Gen 4: pendiente: getFieldItems"); }
-void Gen4RomHandler::setFieldItems(const std::vector<int>& fieldItems) { throw std::logic_error("Gen 4: pendiente: setFieldItems"); }
-bool Gen4RomHandler::hasShopSupport() const { throw std::logic_error("Gen 4: pendiente: hasShopSupport"); }
-bool Gen4RomHandler::canChangeShopSizes() const { throw std::logic_error("Gen 4: pendiente: canChangeShopSizes"); }
-std::vector<Shop> Gen4RomHandler::getShops() const { throw std::logic_error("Gen 4: pendiente: getShops"); }
-void Gen4RomHandler::setShops(const std::vector<Shop>& shops) { throw std::logic_error("Gen 4: pendiente: setShops"); }
-std::vector<int> Gen4RomHandler::getShopPrices() const { throw std::logic_error("Gen 4: pendiente: getShopPrices"); }
-void Gen4RomHandler::setShopPrices(const std::vector<int>& prices) { throw std::logic_error("Gen 4: pendiente: setShopPrices"); }
-void Gen4RomHandler::setBalancedShopPrices() { throw std::logic_error("Gen 4: pendiente: setBalancedShopPrices"); }
-std::vector<PickupItem> Gen4RomHandler::getPickupItems() { throw std::logic_error("Gen 4: pendiente: getPickupItems"); }
-void Gen4RomHandler::setPickupItems(const std::vector<PickupItem>& items) { throw std::logic_error("Gen 4: pendiente: setPickupItems"); }
-std::vector<InGameTrade> Gen4RomHandler::getInGameTrades() const { throw std::logic_error("Gen 4: pendiente: getInGameTrades"); }
-void Gen4RomHandler::setInGameTrades(const std::vector<InGameTrade>& trades) { throw std::logic_error("Gen 4: pendiente: setInGameTrades"); }
-std::vector<std::optional<int>> Gen4RomHandler::getSensibleHeldItemsFor(const TrainerPokemon& tp, bool consumableOnly,
-                                                            const std::array<int, 4>& pokeMoves) const { throw std::logic_error("Gen 4: pendiente: getSensibleHeldItemsFor"); }
-ItemSet Gen4RomHandler::getAllHeldItems() const { throw std::logic_error("Gen 4: pendiente: getAllHeldItems"); }
 std::vector<int> Gen4RomHandler::getDoublesTrainerClasses() const { throw std::logic_error("Gen 4: pendiente: getDoublesTrainerClasses"); }
-std::vector<int> Gen4RomHandler::getMainGameLegendaries() const { throw std::logic_error("Gen 4: pendiente: getMainGameLegendaries"); }
-std::vector<int> Gen4RomHandler::getSpecialMusicStatics() const { throw std::logic_error("Gen 4: pendiente: getSpecialMusicStatics"); }
-bool Gen4RomHandler::hasStaticMusicFix() const { throw std::logic_error("Gen 4: pendiente: hasStaticMusicFix"); }
 void Gen4RomHandler::removeImpossibleEvolutions(bool changeMoveEvos, bool useEstimatedLevels) { throw std::logic_error("Gen 4: pendiente: removeImpossibleEvolutions"); }
 void Gen4RomHandler::makeEvolutionsEasier(bool changeWithOtherEvos, bool useEstimatedLevels) { throw std::logic_error("Gen 4: pendiente: makeEvolutionsEasier"); }
 void Gen4RomHandler::removeEvosForPokemonPool(const SpeciesSet& included) { throw std::logic_error("Gen 4: pendiente: removeEvosForPokemonPool"); }

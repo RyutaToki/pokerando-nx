@@ -198,6 +198,27 @@ private:
     void readHeadbuttEncounters(std::vector<EncounterArea>& areas) const;
     void readBugCatchingContestEncounters(std::vector<EncounterArea>& areas) const;
     void savePokemonPalettes();
+    // objetos
+    int itcmSrcOffset() const;
+    int readARM9Pointer(int offset) const;
+    void writeARM9Pointer(int offset, int pointer);
+    ItemSet itemIdsToSet(const std::vector<int>& ids) const;
+    std::vector<int> getFieldItemIds() const;
+    void writeFieldItemsIds(const std::vector<int>& fieldItems);
+    // estáticos
+    Species* staticGetPokemon(const DSStaticPokemon& s) const;
+    void staticSetPokemon(const DSStaticPokemon& s, Species* pk);
+    int staticGetLevel(const DSStaticPokemon& s, int i) const;
+    void staticSetLevel(const DSStaticPokemon& s, int level, int i);
+    bool isMysteryEggCommandImproved(const Bytes& ov) const;
+    void improveMysteryEggCommand(Bytes& ov);
+    JavaHashSet<int> getEffectiveEggMoves(const Species* pk) const;
+    std::optional<int> getMysteryEggMove(const Species* pk) const;
+    void setMysteryEgg(const StaticEncounter& se);
+    void applyDiamondPearlRoamerPatch();
+    void getRoamers(std::vector<StaticEncounter>& statics);
+    void setRoamers(std::vector<StaticEncounter>::const_iterator& it);
+    void patchDistortionWorldGroundCheck();
     // textos
     void replaceAllStringsInEntry(int entry, std::map<std::string, std::string> replacements);
     void setBottomScreenTMText(int textOffset, int stringNumber, int newMoveIndex);
@@ -209,6 +230,7 @@ private:
     bool arm9Extended_ = false;
     FreedSpace arm9FreedSpace_;
     int tcmCopyingPointersOffset_ = -1;
+    int pickupItemsTableOffset_ = 0, rarePickupItemsTableOffset_ = 0;
 
     std::vector<std::unique_ptr<Species>> speciesStorage_;
     std::vector<Species*> pokes_;  // incluye las formas (índice > pokemonCount)
