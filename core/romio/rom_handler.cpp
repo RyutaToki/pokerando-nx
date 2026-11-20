@@ -243,4 +243,71 @@ int RomHandler::getAbilityForTrainerPokemon(const TrainerPokemon& tp) const {
     return ab[slot - 1];
 }
 
+// ---- evoluciones compartidas por Gen 4+ (AbstractRomHandler) ----
+
+void RomHandler::addNoneEvolutionBetween(Species* from, Species* to) {
+    auto evo = std::make_shared<Evolution>(from, to, EvolutionType::NONE, 0);
+    from->evolutionsFrom().push_back(evo);
+    to->evolutionsTo().push_back(evo);
+}
+
+void RomHandler::addBurmyAltFormeEvolutions() {
+    // para que Wormadam-Arena y Wormadam-Basura cuenten como evoluciones divididas de Burmy
+    const auto& sp = getSpecies();
+    addNoneEvolutionBetween(sp.at(412), sp.at(413)->getForme(1));
+    addNoneEvolutionBetween(sp.at(412), sp.at(413)->getForme(2));
+}
+
+namespace {
+// List.remove(Object): quita el primer elemento igual (equals)
+void removeFirstEqual(std::vector<EvolutionPtr>& v, const Evolution& e) {
+    for (auto it = v.begin(); it != v.end(); ++it) {
+        if ((*it)->sameAs(e)) {
+            v.erase(it);
+            return;
+        }
+    }
+}
+}  // namespace
+
+void RomHandler::splitLevelItemEvolutions() {
+    for (Species* pk : getSpecies()) {
+        if (!pk) continue;
+        std::vector<EvolutionPtr> levelItemEvos;
+        for (auto& evo : pk->evolutionsFrom())
+            if (evo->type() == EvolutionType::ITEM) levelItemEvos.push_back(evo);
+        for (auto& e : levelItemEvos) {
+            e->updateEvolutionMethod(EvolutionType::ITEM_DAY, e->extraInfo());
+            auto night = std::make_shared<Evolution>(*e);
+            night->updateEvolutionMethod(EvolutionType::ITEM_NIGHT, e->extraInfo());
+            night->from()->evolutionsFrom().push_back(night);
+            night->to()->evolutionsTo().push_back(night);
+        }
+    }
+}
+
+void RomHandler::mergeLevelItemEvolutions() {
+    for (Species* pk : getSpecies()) {
+        if (!pk) continue;
+        std::vector<EvolutionPtr> dayEvos, nightEvos;
+        for (auto& evo : pk->evolutionsFrom()) {
+            if (evo->type() == EvolutionType::ITEM_DAY) dayEvos.push_back(evo);
+            else if (evo->type() == EvolutionType::ITEM_NIGHT) nightEvos.push_back(evo);
+        }
+        for (auto& dayEvo : dayEvos) {
+            bool merged = false;
+            dayEvo->updateEvolutionMethod(EvolutionType::ITEM_NIGHT, dayEvo->extraInfo());
+            for (auto& nightEvo : nightEvos) {
+                if (dayEvo->sameAs(*nightEvo)) {
+                    dayEvo->updateEvolutionMethod(EvolutionType::ITEM, dayEvo->extraInfo());
+                    removeFirstEqual(nightEvo->from()->evolutionsFrom(), *nightEvo);
+                    removeFirstEqual(nightEvo->to()->evolutionsTo(), *nightEvo);
+                    merged = true;
+                }
+            }
+            if (!merged) dayEvo->updateEvolutionMethod(EvolutionType::ITEM_DAY, dayEvo->extraInfo());
+        }
+    }
+}
+
 }  // namespace pr

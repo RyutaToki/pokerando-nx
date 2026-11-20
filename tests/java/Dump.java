@@ -38,7 +38,7 @@ public class Dump {
                     it.isBad() ? 1 : 0, it.isTM() ? 1 : 0);
         }
         out.println("== ABILITIES");
-        for (int i = 0; i <= 77; i++) out.printf("%d|%s%n", i, h.abilityName(i));
+        for (int i = 0; i <= h.highestAbilityIndex(); i++) out.printf("%d|%s%n", i, h.abilityName(i));
         out.println("== MOVES perfectAccuracy=" + h.getPerfectAccuracy());
         for (Move m : h.getMoves()) {
             if (m == null) continue;

@@ -13,6 +13,7 @@
 #include "constants/item_ids.hpp"
 #include "random/game_randomizer.hpp"
 #include "romio/gen3/gen3_rom_handler.hpp"
+#include "romio/gen4/gen4_rom_handler.hpp"
 #include "settings/settings.hpp"
 #include "util/java_compat.hpp"
 
@@ -24,22 +25,22 @@ std::vector<uint8_t> readFile(const std::string& path) {
     return {std::istreambuf_iterator<char>(f), std::istreambuf_iterator<char>()};
 }
 
-std::string itemName(const pr::gen3::Gen3RomHandler& h, const std::optional<int>& id) {
+std::string itemName(const pr::RomHandler& h, const std::optional<int>& id) {
     if (!id) return "null";
-    return h.items().at(*id)->name;
+    return h.getItems().at(*id)->name;
 }
 
-void dump(const pr::gen3::Gen3RomHandler& h) {
+void dump(const pr::RomHandler& h) {
     std::printf("ROM %s [%s] valida=%s\n", h.romName().c_str(), h.romCode().c_str(), h.isRomValid() ? "true" : "false");
     std::printf("== ITEMS\n");
-    for (const auto& it : h.items()) {
+    for (const auto& it : h.getItems()) {
         if (!it) continue;
         std::printf("%d|%s|allowed=%d|bad=%d|tm=%d\n", it->id, it->name.c_str(), it->allowed, it->bad, it->tm);
     }
     std::printf("== ABILITIES\n");
-    for (int i = 0; i <= 77; i++) std::printf("%d|%s\n", i, h.abilityName(i).c_str());
-    std::printf("== MOVES perfectAccuracy=%d\n", h.perfectAccuracy());
-    for (const auto& m : h.moves()) {
+    for (int i = 0; i <= h.highestAbilityIndex(); i++) std::printf("%d|%s\n", i, h.abilityName(i).c_str());
+    std::printf("== MOVES perfectAccuracy=%d\n", h.getPerfectAccuracy());
+    for (const auto& m : h.getMoves()) {
         if (!m) continue;
         std::printf("%d|%s|pw=%d|pp=%d|acc=%.2f|%s|%s|eff=%d|tgt=%d|pri=%d|contact=%d|sound=%d|hits=%.2f|%s",
                     m->number, m->name.c_str(), m->power, m->pp, m->hitratio, m->type ? pr::typeName(*m->type) : "null",
@@ -52,7 +53,7 @@ void dump(const pr::gen3::Gen3RomHandler& h) {
                     m->isChargeMove, m->isRechargeMove, m->isTrapMove);
     }
     std::printf("== SPECIES\n");
-    for (const auto* pk : h.species()) {
+    for (const auto* pk : h.getSpecies()) {
         if (!pk) continue;
         const auto& bs = pk->baseStats();
         const auto& bi = pk->breedingInfo;
@@ -88,7 +89,7 @@ void dumpStatics(pr::gen3::Gen3RomHandler& h) {
 
 void dumpMore(const pr::gen3::Gen3RomHandler& h) {
     std::printf("== PALETTES\n");
-    for (const auto* pk : h.species()) {
+    for (const auto* pk : h.getSpecies()) {
         if (!pk) continue;
         std::printf("%d ", pk->number());
         for (auto b : pk->normalPalette->toBytes()) std::printf("%02x", b);
@@ -97,7 +98,7 @@ void dumpMore(const pr::gen3::Gen3RomHandler& h) {
         std::printf("\n");
     }
     std::printf("== EVOLUTIONS\n");
-    for (const auto* pk : h.species()) {
+    for (const auto* pk : h.getSpecies()) {
         if (!pk) continue;
         for (const auto& e : pk->evolutionsFrom())
             std::printf("%d>%d|%s|%d|est=%d\n", e->from()->number(), e->to()->number(), pr::evolutionTypeName(e->type()),
@@ -229,6 +230,29 @@ int main(int argc, char** argv) {
     }
     std::string cmd = argv[1], path = argv[2];
     try {
+        // ROM de DS (4.ª generación)
+        {
+            std::ifstream f(path, std::ios::binary);
+            char hdr[0x20] = {};
+            f.read(hdr, sizeof hdr);
+            std::string code(hdr + 0x0C, 4);
+            if (pr::gen4::Gen4RomHandler::isLoadable(code, static_cast<int8_t>(hdr[0x1E]))) {
+                pr::gen4::Gen4RomHandler h;
+                h.loadRom(path);
+                if (cmd == "info") {
+                    std::printf("%s [%s] gen%d valida=%s\n", h.romName().c_str(), h.romCode().c_str(), h.generationOfPokemon(),
+                                h.isRomValid() ? "true" : "false");
+                } else if (cmd == "dump") {
+                    dump(h);
+                } else if (cmd == "resave" && argc >= 4) {
+                    h.saveRomTo(argv[3]);
+                } else {
+                    std::fprintf(stderr, "orden no disponible todavía para Gen 4\n");
+                    return 2;
+                }
+                return 0;
+            }
+        }
         auto bytes = readFile(path);
         std::vector<uint8_t> header(bytes.begin(), bytes.begin() + std::min<size_t>(bytes.size(), 0x100000));
         if (!pr::gen3::Gen3RomHandler::isLoadable(header, bytes.size())) {

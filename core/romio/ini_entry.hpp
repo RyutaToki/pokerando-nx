@@ -23,8 +23,10 @@ public:
     int getInt(const std::string& key) const;
     void putInt(const std::string& key, int value) { ints_[key] = value; }
     const std::string& getString(const std::string& key);
+    const std::string& getString(const std::string& key) const;  // "" si no existe
     void putString(const std::string& key, std::string value) { strings_[key] = std::move(value); }
     const std::vector<int>& getArray(const std::string& key);
+    const std::vector<int>& getArray(const std::string& key) const;  // [] si no existe
     void putArray(const std::string& key, std::vector<int> value) { arrays_[key] = std::move(value); }
     bool hasInt(const std::string& key) const { return ints_.count(key) > 0; }
 

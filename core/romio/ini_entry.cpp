@@ -13,6 +13,16 @@ int IniEntry::getInt(const std::string& key) const {
 }
 const std::string& IniEntry::getString(const std::string& key) { return strings_[key]; }
 const std::vector<int>& IniEntry::getArray(const std::string& key) { return arrays_[key]; }
+const std::string& IniEntry::getString(const std::string& key) const {
+    static const std::string empty;
+    auto it = strings_.find(key);
+    return it == strings_.end() ? empty : it->second;
+}
+const std::vector<int>& IniEntry::getArray(const std::string& key) const {
+    static const std::vector<int> empty;
+    auto it = arrays_.find(key);
+    return it == arrays_.end() ? empty : it->second;
+}
 
 void IniEntry::copyFrom(const IniEntry& o) {
     // putAll: lo del otro sobrescribe lo que ya hubiera

@@ -242,6 +242,11 @@ public:
 
 protected:
     void estimateEvolutionLevels();
+    // AbstractRomHandler (Gen 4+)
+    void addBurmyAltFormeEvolutions();
+    static void addNoneEvolutionBetween(Species* from, Species* to);
+    void splitLevelItemEvolutions();
+    void mergeLevelItemEvolutions();
     void markImprovedEvolutions(Species* pk);
     bool hadEvolutionOfType(Species* pk, std::optional<EvolutionType> et) const;
 

@@ -21,6 +21,13 @@ std::string formatTextWithReplacements(std::string text, const std::vector<std::
                                        const std::string& newpara, int maxLineLength, const StringSizeDeterminer& ssd);
 std::string camelCase(const std::string& original);
 
+// RomFunctions.hexToBytes: "0A1B" -> {0x0A, 0x1B}
+std::vector<uint8_t> hexToBytes(const std::string& hex);
+// RomFunctions.search: posiciones (sin solapamientos) de needle en haystack[begin, end)
+std::vector<int> search(const std::vector<uint8_t>& haystack, const std::vector<uint8_t>& needle, int begin = 0, int end = -1);
+// RomFunctions.searchForFirst: primera posición desde begin, o -1
+int searchForFirst(const std::vector<uint8_t>& haystack, int begin, const std::vector<uint8_t>& needle);
+
 // Aplica un parche IPS incrustado (ruta relativa a core/data/patches, sin ".ips")
 void applyPatch(std::vector<uint8_t>& rom, const std::string& patchName);
 

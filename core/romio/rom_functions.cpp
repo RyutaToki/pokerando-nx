@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "romio/rom_functions.hpp"
 
 #include <stdexcept>
@@ -177,6 +178,35 @@ void applyPatch(std::vector<uint8_t>& rom, const std::string& patchName) {
         }
     }
     throw std::runtime_error("improperly terminated IPS file");
+}
+
+std::vector<uint8_t> hexToBytes(const std::string& hex) {
+    std::vector<uint8_t> out;
+    for (size_t i = 0; i + 1 < hex.size(); i += 2) out.push_back(static_cast<uint8_t>(std::stoi(hex.substr(i, 2), nullptr, 16)));
+    return out;
+}
+
+std::vector<int> search(const std::vector<uint8_t>& hay, const std::vector<uint8_t>& needle, int begin, int end) {
+    std::vector<int> out;
+    if (end < 0) end = static_cast<int>(hay.size());
+    if (needle.empty()) return out;
+    int i = begin;
+    while (i + static_cast<int>(needle.size()) <= end) {
+        if (std::equal(needle.begin(), needle.end(), hay.begin() + i)) {
+            out.push_back(i);
+            i += static_cast<int>(needle.size());
+        } else {
+            i++;
+        }
+    }
+    return out;
+}
+
+int searchForFirst(const std::vector<uint8_t>& hay, int begin, const std::vector<uint8_t>& needle) {
+    if (needle.empty()) return -1;
+    for (int i = begin; i + static_cast<int>(needle.size()) <= static_cast<int>(hay.size()); i++)
+        if (std::equal(needle.begin(), needle.end(), hay.begin() + i)) return i;
+    return -1;
 }
 
 }  // namespace pr::romfn
