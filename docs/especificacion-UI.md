@@ -2,7 +2,6 @@
 
 Documento de referencia para implementar la interfaz de la app homebrew **PokéRando NX** (Nintendo Switch, `.nro`, Atmosphère), un randomizer de ROMs de Pokémon de GBA y DS que funciona en la propia consola. La lógica se porta de **Universal Pokemon Randomizer FVX** (GPLv3).
 
-Maqueta visual de referencia: https://claude.ai/artifact/Rr5b55twFow6RzPHK8U1C6
 
 ---
 

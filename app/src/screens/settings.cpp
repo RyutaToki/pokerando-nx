@@ -89,7 +89,7 @@ public:
             ui::dialog("Acerca de PokéRando NX",
                        "Versión " PR_VERSION ". Randomizer de Pokémon GBA y DS para Nintendo Switch.\n\n"
                        "La lógica es un port de Universal Pokemon Randomizer (Dabomstew), "
-                       "Universal Pokemon Randomizer ZX (Ajarmar) y Universal Pokemon Randomizer FVX (voliol y colaboradores).\n\n"
+                       "Universal Pokemon Randomizer ZX (Ajarmar) y Universal Pokemon Randomizer FVX (foxoftheasterisk, voliol y colaboradores).\n\n"
                        "Licencia GPLv3. Interfaz hecha con Borealis. No incluye ROMs ni material de Nintendo, Game Freak o The Pokémon Company.",
                        "Aceptar", nullptr);
         });
