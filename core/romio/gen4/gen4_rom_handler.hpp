@@ -57,6 +57,11 @@ public:
     SpeciesSet getBannedForWildEncounters() const override;
     SpeciesSet getBannedFormesForTrainerPokemon() const override;
     bool hasEncounterLocations() const override { return true; }
+    // capacidades que Gen4RomHandler/AbstractDSRomHandler definen distinto de los valores de Gen 3
+    bool hasTimeBasedEncounters() const override { return romEntry_->romType() == 2; }  // Type_HGSS
+    bool hasPhysicalSpecialSplit() const override { return true; }
+    bool hasGuaranteedWildHeldItems() const override { return true; }  // AbstractRomHandler
+    bool isTrainerPokemonUseBaseFormeAbilities() const override { return true; }
 
     // --- entrenadores ---
     std::vector<int> getEliteFourTrainers(bool isChallengeMode) const override;
