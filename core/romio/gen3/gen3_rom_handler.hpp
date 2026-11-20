@@ -17,6 +17,8 @@
 #include "gamedata/shop_trade.hpp"
 #include "gamedata/static_encounter.hpp"
 #include "gamedata/trainer.hpp"
+#include "gamedata/type_table.hpp"
+#include "romio/misc_tweak.hpp"
 #include "romio/rom_functions.hpp"
 #include "gamedata/types.hpp"
 #include "romio/gb/freed_space.hpp"
@@ -153,6 +155,30 @@ public:
     int getMaxMoveNameLength() const { return 12; }
     bool isEnglish() const { return romCode().size() >= 4 && romCode()[3] == 'E'; }
 
+    // Tipos, ajustes y evoluciones
+    TypeTable getTypeTable() const;
+    void setTypeTable(const TypeTable& t);
+    bool hasTypeEffectivenessSupport() const { return true; }
+    void removeImpossibleEvolutions(bool changeMoveEvos, bool useEstimatedLevels);
+    void makeEvolutionsEasier(bool changeWithOtherEvos, bool useEstimatedLevels);
+    void removeEvosForPokemonPool(const SpeciesSet& included);
+    int miscTweaksAvailable() const;
+    void applyMiscTweak(const MiscTweak& t);
+    bool setIntroPokemon(Species* pk);
+    bool setCatchingTutorial(Species* opponent, Species* player);
+    void setPCPotionItem(int item);
+    void enableGuaranteedPokemonCatching();
+    // Map<Integer, Integer> (estático original -> nuevo), en el orden de iteración del mapa de Java
+    void applyCorrectStaticMusic(const std::vector<std::pair<int, int>>& changes);
+    ItemSet getAllHeldItems() const;
+    std::vector<int> getFieldMoves() const;
+    std::vector<int> getEarlyRequiredHMMoves() const;
+    bool hasRivalFinalBattle() const { return romEntry_->romType() == 3; }  // RomType_FRLG
+    bool isTMsReusable() const { return tmsReusable_; }
+    bool canTMsBeHeld() const { return true; }
+    bool supportsFourStartingMoves() const { return true; }
+    bool hasDVs() const { return false; }
+
 private:
     void initRomEntry();
     void initTextTables();
@@ -209,6 +235,11 @@ private:
     int lengthOfCompressedDataAt(int offset) const;
     void rewriteCompressedData(int pointerOffset, const std::vector<uint8_t>& uncompressed,
                                const std::vector<int>& secondary = {});
+    std::string_view getRunningShoesCheckPrefix() const;
+    void writeHexString(std::string_view hex, int offset);
+    std::vector<int> findMultiple(std::string_view hex) const;
+    std::string pointerToHexString(int pointer) const;
+    void patchForNationalDex();
     void prepareSaveRom();
     void saveSpeciesStats();
     void saveBasicPokeStats(const Species& pk, int offset);
@@ -269,6 +300,7 @@ private:
     std::vector<int> itemOffs_;
     std::vector<std::vector<std::string>> mapNames_;
     int pickupItemsTableOffset_ = 0;
+    bool tmsReusable_ = false;
 };
 
 }  // namespace pr::gen3

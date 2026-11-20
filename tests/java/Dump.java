@@ -103,6 +103,13 @@ public class Dump {
         for (EncounterArea a : h.getSortedEncounters(false)) out.println(a.getDisplayName());
         out.println("== WILDBANNED");
         for (Species b : h.getBannedForWildEncounters()) out.println(b.getNumber());
+        out.println("== TWEAKS " + h.miscTweaksAvailable());
+        out.println("== TYPETABLE");
+        TypeTable tt = h.getTypeTable();
+        for (Type a : tt.getTypes()) {
+            for (Type d : tt.getTypes()) out.print(tt.getEffectiveness(a, d).ordinal());
+            out.println();
+        }
         out.println("== TRAINERCLASSES");
         for (TrainerClass tc : h.getTrainerClasses()) out.println(tc.getID() + "|" + tc.getName());
         out.println("== TRAINERS");
@@ -206,6 +213,17 @@ public class Dump {
             h.setShopPrices(h.getShopPrices());
             h.setPickupItems(h.getPickupItems());
             h.setInGameTrades(h.getInGameTrades());
+            h.setTypeTable(h.getTypeTable());
+            h.removeImpossibleEvolutions(true, false);
+            h.makeEvolutionsEasier(true, false);
+            int avail = h.miscTweaksAvailable();
+            for (com.uprfvx.romio.MiscTweak t : com.uprfvx.romio.MiscTweak.allTweaks) {
+                if ((avail & t.getValue()) != 0 && t != com.uprfvx.romio.MiscTweak.BAN_LUCKY_EGG) h.applyMiscTweak(t);
+            }
+            h.setIntroPokemon(h.getSpecies().get(25));
+            h.setCatchingTutorial(h.getSpecies().get(263), h.getSpecies().get(258));
+            h.setPCPotionItem(h.getItems().get(com.uprfvx.romio.constants.ItemIDs.superPotion));
+            h.enableGuaranteedPokemonCatching();
             h.saveRom(args[1], 0, false);  // guardado completo de FVX
             System.setOut(realOut);
         }

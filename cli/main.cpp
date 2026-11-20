@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "constants/item_ids.hpp"
 #include "romio/gen3/gen3_rom_handler.hpp"
 #include "util/java_compat.hpp"
 
@@ -129,6 +130,13 @@ void dumpMore(const pr::gen3::Gen3RomHandler& h) {
     for (const auto& a : h.getSortedEncounters(false)) std::printf("%s\n", a.displayName.c_str());
     std::printf("== WILDBANNED\n");
     for (auto* b : h.getBannedForWildEncounters().toVector()) std::printf("%d\n", b->number());
+    std::printf("== TWEAKS %d\n", h.miscTweaksAvailable());
+    std::printf("== TYPETABLE\n");
+    auto tt = h.getTypeTable();
+    for (auto a : tt.types()) {
+        for (auto d : tt.types()) std::printf("%d", static_cast<int>(tt.getEffectiveness(a, d)));
+        std::printf("\n");
+    }
     std::printf("== TRAINERCLASSES\n");
     for (const auto& tc : h.getTrainerClasses()) std::printf("%d|%s\n", tc->id, tc->name.c_str());
     std::printf("== TRAINERS\n");
@@ -253,6 +261,18 @@ int main(int argc, char** argv) {
             h.setShopPrices(h.getShopPrices());
             h.setPickupItems(h.getPickupItems());
             h.setInGameTrades(h.getInGameTrades());
+            // ajustes: mismas llamadas y en el mismo orden que tests/java/Dump.java
+            h.setTypeTable(h.getTypeTable());
+            h.removeImpossibleEvolutions(true, false);
+            h.makeEvolutionsEasier(true, false);
+            int avail = h.miscTweaksAvailable();
+            for (const auto& t : pr::misctweak::allTweaks) {
+                if ((avail & t.value) && t.value != pr::misctweak::BAN_LUCKY_EGG.value) h.applyMiscTweak(t);
+            }
+            h.setIntroPokemon(h.getSpecies()[25]);
+            h.setCatchingTutorial(h.getSpecies()[263], h.getSpecies()[258]);
+            h.setPCPotionItem(pr::items::superPotion);
+            h.enableGuaranteedPokemonCatching();
             h.saveRom(argv[3]);
         } else {
             std::fprintf(stderr, "orden desconocida\n");
