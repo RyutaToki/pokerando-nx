@@ -5,7 +5,7 @@ namespace pr {
 using S = Settings;
 
 GameRandomizer::GameRandomizer(Settings& settings, RomHandler& rh)
-    : settings_(settings), rh_(rh), bs_(rh, settings, nonCosmetic_), evo_(rh, settings, nonCosmetic_), types_(rh, settings, nonCosmetic_), abilities_(rh, settings, nonCosmetic_), starter_(rh, settings, nonCosmetic_), wild_(rh, settings, nonCosmetic_), trainerPoke_(rh, settings, nonCosmetic_) {}
+    : settings_(settings), rh_(rh), bs_(rh, settings, nonCosmetic_), evo_(rh, settings, nonCosmetic_), encItems_(rh, settings, nonCosmetic_), intro_(rh, settings, nonCosmetic_), misc_(rh, settings, nonCosmetic_), types_(rh, settings, nonCosmetic_), abilities_(rh, settings, nonCosmetic_), starter_(rh, settings, nonCosmetic_), wild_(rh, settings, nonCosmetic_), trainerPoke_(rh, settings, nonCosmetic_) {}
 
 void GameRandomizer::notPorted(const char* what) {
     throw std::runtime_error(std::string("Opción aún no portada: ") + what);
@@ -39,13 +39,13 @@ void GameRandomizer::applyRandomizers() {
     if (settings_.randomizeMovePowers || settings_.randomizeMoveAccuracies || settings_.randomizeMovePPs ||
         settings_.randomizeMoveTypes || settings_.randomizeMoveNames)
         notPorted("datos de movimientos");
-    if (settings_.currentMiscTweaks != 0) notPorted("ajustes varios");
+    if (settings_.currentMiscTweaks != 0) misc_.applyMiscTweaks();
     if (settings_.standardizeEXPCurves) bs_.standardizeEXPCurves();
     if (settings_.evolutionsMod != S::EvolutionsMod::UNCHANGED) evo_.randomizeEvolutions();
     if (settings_.bstMod != S::BSTMod::UNCHANGED) bs_.randomizeBSTs();
     if (settings_.adjustEvolutionLevels) evo_.adjustEvolutionLevels();
     if (settings_.speciesTypesMod != S::SpeciesTypesMod::UNCHANGED) types_.randomizeSpeciesTypes();
-    if (settings_.randomizeWildPokemonHeldItems) notPorted("objetos de salvajes");
+    if (settings_.randomizeWildPokemonHeldItems) encItems_.randomizeWildHeldItems();
     if (settings_.baseStatisticsMod == S::BaseStatisticsMod::SHUFFLE) bs_.shuffleSpeciesStats();
     else if (settings_.baseStatisticsMod == S::BaseStatisticsMod::RANDOM) bs_.randomizeSpeciesStats();
     if (settings_.abilitiesMod == S::AbilitiesMod::RANDOMIZE) abilities_.randomizeAbilities();
@@ -94,7 +94,7 @@ void GameRandomizer::applyRandomizers() {
     if (settings_.addCheapRareCandiesToShops) notPorted("Caramelos Raros baratos");
     if (settings_.pickupItemsMod == S::PickupItemsMod::RANDOM) notPorted("Recogida");
     if (settings_.pokemonPalettesMod == S::PokemonPalettesMod::RANDOM) notPorted("paletas");
-    if (settings_.randomizeIntroMon) notPorted("Pokémon de la introducción");
+    if (settings_.randomizeIntroMon) intro_.randomizeIntroPokemon();
 }
 
 void GameRandomizer::maybeApplyEvolutionImprovements() {

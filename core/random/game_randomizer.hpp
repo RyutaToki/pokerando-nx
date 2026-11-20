@@ -5,6 +5,7 @@
 #include <string>
 
 #include "random/evolution_randomizer.hpp"
+#include "random/misc_randomizers.hpp"
 #include "random/species_base_stat_randomizer.hpp"
 #include "random/species_type_ability_randomizers.hpp"
 #include "random/starter_randomizer.hpp"
@@ -39,6 +40,9 @@ private:
     JavaRandom nonCosmetic_, cosmetic_;
     SpeciesBaseStatRandomizer bs_;
     EvolutionRandomizer evo_;
+    EncounterHeldItemRandomizer encItems_;
+    IntroPokemonRandomizer intro_;
+    MiscTweakRandomizer misc_;
     SpeciesTypeRandomizer types_;
     SpeciesAbilityRandomizer abilities_;
     StarterRandomizer starter_;
