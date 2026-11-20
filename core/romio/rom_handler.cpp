@@ -1,5 +1,9 @@
 #include "romio/rom_handler.hpp"
 
+#include <stdexcept>
+
+#include "constants/ability_ids.hpp"
+
 #include <algorithm>
 #include <cmath>
 #include <stdexcept>
@@ -226,6 +230,17 @@ std::array<int, 4> RomHandler::getMovesAtLevel(const Species& pk,
         }
     }
     return cur;
+}
+
+int RomHandler::getAbilityForTrainerPokemon(const TrainerPokemon& tp) const {
+    if (abilitiesPerSpecies() == 0) throw std::logic_error("No abilities in this game.");
+    if (tp.abilitySlot > abilitiesPerSpecies()) throw std::logic_error("tp.abilitySlot too high for this game.");
+    // antes de randomizar, el hueco 0 significa "habilidad 1 o 2"
+    if (tp.abilitySlot == 0) return abilities::undefined;
+    Species* pk = !tp.species()->isBaseForme() && isTrainerPokemonUseBaseFormeAbilities() ? tp.species()->baseForme() : tp.species();
+    int ab[3] = {pk->ability1, pk->ability2, pk->ability3};
+    int slot = isTrainerPokemonAlwaysUseAbility1() ? 1 : tp.abilitySlot;
+    return ab[slot - 1];
 }
 
 }  // namespace pr

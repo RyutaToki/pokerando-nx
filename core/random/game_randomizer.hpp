@@ -12,6 +12,7 @@
 #include "random/species_type_ability_randomizers.hpp"
 #include "random/starter_randomizer.hpp"
 #include "random/tmhm_compat_randomizer.hpp"
+#include "random/trainer_moveset_randomizer.hpp"
 #include "random/static_pokemon_randomizer.hpp"
 #include "random/trade_item_randomizers.hpp"
 #include "random/trainer_pokemon_randomizer.hpp"
@@ -52,6 +53,7 @@ private:
     MoveDataRandomizer moveData_;
     TMTutorMoveRandomizer tmt_;
     TMHMTutorCompatibilityRandomizer comp_;
+    TrainerMovesetRandomizer trainerMoves_;
     SpeciesTypeRandomizer types_;
     SpeciesAbilityRandomizer abilities_;
     StarterRandomizer starter_;

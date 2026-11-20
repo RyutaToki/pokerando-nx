@@ -175,6 +175,7 @@ public:
     virtual bool canGiveEverySpeciesOneEvolutionEach() const { return true; }
     virtual bool altFormesCanHaveDifferentEvolutions() const { return false; }
     virtual bool isTrainerPokemonUseBaseFormeAbilities() const { return false; }
+    int getAbilityForTrainerPokemon(const TrainerPokemon& tp) const;
     virtual bool hasGuaranteedWildHeldItems() const { return false; }  // AbstractGBRomHandler
     virtual bool hasDarkGrassHeldItems() const { return false; }
     virtual bool hasMegaEvolutions() const { return false; }
