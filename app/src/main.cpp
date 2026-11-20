@@ -2,6 +2,8 @@
 #include <borealis.hpp>
 #include <cstdlib>
 #include <cstring>
+#include <cstdio>
+#include <exception>
 #include <fstream>
 
 #include "app/session.hpp"
@@ -45,11 +47,37 @@ void saveSnapshot(const char* path) {
 }  // namespace
 
 int main(int argc, char* argv[]) {
+#if defined(__SWITCH__)
+    // registro del arranque en la SD (para diagnosticar cierres sin pantalla de error)
+    app::makeDirs(app::dataDir());
+    if (std::FILE* logf = std::fopen((app::dataDir() + "log.txt").c_str(), "w")) {
+        std::setvbuf(logf, nullptr, _IONBF, 0);
+        brls::Logger::setLogOutput(logf);
+    }
+    std::set_terminate([] {
+        std::string what = "desconocida";
+        if (auto e = std::current_exception()) {
+            try {
+                std::rethrow_exception(e);
+            } catch (const std::exception& ex) {
+                what = ex.what();
+            } catch (...) {
+            }
+        }
+        brls::Logger::error("Excepción no capturada: {}", what);
+        std::abort();
+    });
+    brls::Logger::info("PokéRando NX v" PR_VERSION " arrancando");
+#endif
     for (int i = 1; i < argc; i++)
         if (std::strcmp(argv[i], "-d") == 0) brls::Logger::setLogLevel(brls::LogLevel::LOG_DEBUG);
 
     brls::Platform::APP_LOCALE_DEFAULT = brls::LOCALE_ES;
-    if (!brls::Application::init()) return EXIT_FAILURE;
+    if (!brls::Application::init()) {
+        brls::Logger::error("No se pudo iniciar Borealis");
+        return EXIT_FAILURE;
+    }
+    brls::Logger::info("Borealis iniciado");
     brls::Application::createWindow("PokéRando NX");
     brls::Application::getPlatform()->setThemeVariant(brls::ThemeVariant::DARK);
     brls::Application::setGlobalQuit(false);

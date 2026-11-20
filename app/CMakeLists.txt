@@ -7,6 +7,10 @@ set(BRLS_RESOURCES_DIR ${CMAKE_BINARY_DIR})
 add_subdirectory(${BOREALIS_PATH}/library ${CMAKE_BINARY_DIR}/borealis)
 
 file(GLOB_RECURSE PR_APP_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
+if(PLATFORM_SWITCH)
+    # userAppInit/userAppExit de Borealis: romfs, fuentes del sistema, idioma, red... Sin esto la app se cierra al arrancar.
+    list(APPEND PR_APP_SOURCES ${BOREALIS_PATH}/library/lib/platforms/switch/switch_wrapper.c)
+endif()
 add_executable(pokerandonx ${PR_APP_SOURCES})
 target_include_directories(pokerandonx PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(pokerandonx PRIVATE pokerando_core borealis)
