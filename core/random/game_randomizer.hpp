@@ -6,9 +6,11 @@
 
 #include "random/evolution_randomizer.hpp"
 #include "random/misc_randomizers.hpp"
+#include "random/move_randomizers.hpp"
 #include "random/species_base_stat_randomizer.hpp"
 #include "random/species_type_ability_randomizers.hpp"
 #include "random/starter_randomizer.hpp"
+#include "random/tmhm_compat_randomizer.hpp"
 #include "random/static_pokemon_randomizer.hpp"
 #include "random/trade_item_randomizers.hpp"
 #include "random/trainer_pokemon_randomizer.hpp"
@@ -45,6 +47,9 @@ private:
     EncounterHeldItemRandomizer encItems_;
     IntroPokemonRandomizer intro_;
     MiscTweakRandomizer misc_;
+    MoveDataRandomizer moveData_;
+    TMTutorMoveRandomizer tmt_;
+    TMHMTutorCompatibilityRandomizer comp_;
     SpeciesTypeRandomizer types_;
     SpeciesAbilityRandomizer abilities_;
     StarterRandomizer starter_;

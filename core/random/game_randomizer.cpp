@@ -5,7 +5,7 @@ namespace pr {
 using S = Settings;
 
 GameRandomizer::GameRandomizer(Settings& settings, RomHandler& rh)
-    : settings_(settings), rh_(rh), bs_(rh, settings, nonCosmetic_), evo_(rh, settings, nonCosmetic_), encItems_(rh, settings, nonCosmetic_), intro_(rh, settings, nonCosmetic_), misc_(rh, settings, nonCosmetic_), types_(rh, settings, nonCosmetic_), abilities_(rh, settings, nonCosmetic_), starter_(rh, settings, nonCosmetic_), statics_(rh, settings, nonCosmetic_), trades_(rh, settings, nonCosmetic_), items_(rh, settings, nonCosmetic_), wild_(rh, settings, nonCosmetic_), trainerPoke_(rh, settings, nonCosmetic_) {}
+    : settings_(settings), rh_(rh), bs_(rh, settings, nonCosmetic_), evo_(rh, settings, nonCosmetic_), encItems_(rh, settings, nonCosmetic_), intro_(rh, settings, nonCosmetic_), misc_(rh, settings, nonCosmetic_), moveData_(rh, settings, nonCosmetic_), tmt_(rh, settings, nonCosmetic_), comp_(rh, settings, nonCosmetic_), types_(rh, settings, nonCosmetic_), abilities_(rh, settings, nonCosmetic_), starter_(rh, settings, nonCosmetic_), statics_(rh, settings, nonCosmetic_), trades_(rh, settings, nonCosmetic_), items_(rh, settings, nonCosmetic_), wild_(rh, settings, nonCosmetic_), trainerPoke_(rh, settings, nonCosmetic_) {}
 
 void GameRandomizer::notPorted(const char* what) {
     throw std::runtime_error(std::string("Opción aún no portada: ") + what);
@@ -36,9 +36,12 @@ void GameRandomizer::applyUpdaters() {
 
 void GameRandomizer::applyRandomizers() {
     if (settings_.typeEffectivenessMod != S::TypeEffectivenessMod::UNCHANGED) notPorted("tabla de tipos");
-    if (settings_.randomizeMovePowers || settings_.randomizeMoveAccuracies || settings_.randomizeMovePPs ||
-        settings_.randomizeMoveTypes || settings_.randomizeMoveNames)
-        notPorted("datos de movimientos");
+    if (settings_.randomizeMovePowers) moveData_.randomizeMovePowers();
+    if (settings_.randomizeMoveAccuracies) moveData_.randomizeMoveAccuracies();
+    if (settings_.randomizeMovePPs) moveData_.randomizeMovePPs();
+    if (settings_.randomizeMoveTypes) moveData_.randomizeMoveTypes();
+    if (settings_.randomizeMoveNames) notPorted("nombres de movimientos");
+    if (settings_.randomizeMoveCategory && rh_.hasPhysicalSpecialSplit()) moveData_.randomizeMoveCategory();
     if (settings_.currentMiscTweaks != 0) misc_.applyMiscTweaks();
     if (settings_.standardizeEXPCurves) bs_.standardizeEXPCurves();
     if (settings_.evolutionsMod != S::EvolutionsMod::UNCHANGED) evo_.randomizeEvolutions();
@@ -53,14 +56,32 @@ void GameRandomizer::applyRandomizers() {
     if (settings_.startersMod != S::StartersMod::UNCHANGED) starter_.randomizeStarters();
     if (settings_.randomizeStartersHeldItems) starter_.randomizeStarterHeldItems();
     if (settings_.movesetsMod != S::MovesetsMod::UNCHANGED || settings_.reorderDamagingMoves) notPorted("movimientos por nivel");
-    if (settings_.tmsMod == S::TMsMod::RANDOM) notPorted("MT");
-    if (settings_.tmsHmsCompatibilityMod != S::TMsHMsCompatibilityMod::UNCHANGED || settings_.tmLevelUpMoveSanity ||
-        settings_.fullHMCompat)
-        notPorted("compatibilidad MT/MO");
-    if (rh_.hasMoveTutors() && (settings_.moveTutorMovesMod == S::MoveTutorMovesMod::RANDOM ||
-                                settings_.moveTutorsCompatibilityMod != S::MoveTutorsCompatibilityMod::UNCHANGED ||
-                                settings_.tutorLevelUpMoveSanity))
-        notPorted("tutores");
+    if (settings_.movesetsMod != S::MovesetsMod::METRONOME_ONLY && settings_.tmsMod == S::TMsMod::RANDOM) tmt_.randomizeTMMoves();
+    {
+        using C = S::TMsHMsCompatibilityMod;
+        if (settings_.tmsHmsCompatibilityMod == C::COMPLETELY_RANDOM || settings_.tmsHmsCompatibilityMod == C::RANDOM_PREFER_TYPE)
+            comp_.randomizeTMHMCompatibility();
+        else if (settings_.tmsHmsCompatibilityMod == C::FULL) comp_.fullTMHMCompatibility();
+        if (settings_.tmLevelUpMoveSanity) {
+            comp_.ensureTMCompatSanity();
+            if (settings_.tmsFollowEvolutions) comp_.ensureTMEvolutionSanity();
+        }
+        if (settings_.fullHMCompat) comp_.fullHMCompatibility();
+        if (comp_.tmhmChangesMade) comp_.copyTMCompatibilityToCosmeticFormes();
+    }
+    if (rh_.hasMoveTutors()) {
+        if (settings_.movesetsMod != S::MovesetsMod::METRONOME_ONLY && settings_.moveTutorMovesMod == S::MoveTutorMovesMod::RANDOM)
+            tmt_.randomizeMoveTutorMoves();
+        using C = S::MoveTutorsCompatibilityMod;
+        if (settings_.moveTutorsCompatibilityMod == C::COMPLETELY_RANDOM || settings_.moveTutorsCompatibilityMod == C::RANDOM_PREFER_TYPE)
+            comp_.randomizeMoveTutorCompatibility();
+        else if (settings_.moveTutorsCompatibilityMod == C::FULL) comp_.fullMoveTutorCompatibility();
+        if (settings_.tutorLevelUpMoveSanity) {
+            comp_.ensureMoveTutorCompatSanity();
+            if (settings_.tutorFollowEvolutions) comp_.ensureMoveTutorEvolutionSanity();
+        }
+        if (comp_.tutorChangesMade) comp_.copyMoveTutorCompatibilityToCosmeticFormes();
+    }
     if (settings_.useMinimumCatchRate) wild_.changeCatchRates();
     if (settings_.randomizeWildPokemon || settings_.wildLevelsModified) wild_.randomizeEncounters();
     {
