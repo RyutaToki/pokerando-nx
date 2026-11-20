@@ -29,3 +29,19 @@ inline bool bannedForDamagingMove(int m) {
 }
 
 }  // namespace pr::global
+
+namespace pr::global {
+// GlobalConstants.baseFormesWithFormeSuffixes (solo se consulta por clave)
+inline const char* baseFormeSuffix(int species) {
+    switch (species) {
+        case 413: return "-Plant";   // wormadam
+        case 550: return "-Red";     // basculin
+        case 678: return "-M";       // meowstic
+        case 710: return "-S";       // pumpkaboo
+        case 711: return "-S";       // gourgeist
+        case 741: return "-Baile";   // oricorio
+        case 745: return "-Midday";  // lycanroc
+        default: return nullptr;
+    }
+}
+}  // namespace pr::global
