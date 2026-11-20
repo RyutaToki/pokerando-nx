@@ -5,7 +5,7 @@ namespace pr {
 using S = Settings;
 
 GameRandomizer::GameRandomizer(Settings& settings, RomHandler& rh)
-    : settings_(settings), rh_(rh), bs_(rh, settings, nonCosmetic_), evo_(rh, settings, nonCosmetic_), encItems_(rh, settings, nonCosmetic_), intro_(rh, settings, nonCosmetic_), misc_(rh, settings, nonCosmetic_), moveData_(rh, settings, nonCosmetic_), tmt_(rh, settings, nonCosmetic_), comp_(rh, settings, nonCosmetic_), types_(rh, settings, nonCosmetic_), abilities_(rh, settings, nonCosmetic_), starter_(rh, settings, nonCosmetic_), statics_(rh, settings, nonCosmetic_), trades_(rh, settings, nonCosmetic_), items_(rh, settings, nonCosmetic_), wild_(rh, settings, nonCosmetic_), trainerPoke_(rh, settings, nonCosmetic_) {}
+    : settings_(settings), rh_(rh), bs_(rh, settings, nonCosmetic_), movesets_(rh, settings, nonCosmetic_), evo_(rh, settings, nonCosmetic_), encItems_(rh, settings, nonCosmetic_), intro_(rh, settings, nonCosmetic_), misc_(rh, settings, nonCosmetic_), moveData_(rh, settings, nonCosmetic_), tmt_(rh, settings, nonCosmetic_), comp_(rh, settings, nonCosmetic_), types_(rh, settings, nonCosmetic_), abilities_(rh, settings, nonCosmetic_), starter_(rh, settings, nonCosmetic_), statics_(rh, settings, nonCosmetic_), trades_(rh, settings, nonCosmetic_), items_(rh, settings, nonCosmetic_), wild_(rh, settings, nonCosmetic_), trainerPoke_(rh, settings, nonCosmetic_) {}
 
 void GameRandomizer::notPorted(const char* what) {
     throw std::runtime_error(std::string("Opción aún no portada: ") + what);
@@ -55,7 +55,11 @@ void GameRandomizer::applyRandomizers() {
     maybeApplyEvolutionImprovements();
     if (settings_.startersMod != S::StartersMod::UNCHANGED) starter_.randomizeStarters();
     if (settings_.randomizeStartersHeldItems) starter_.randomizeStarterHeldItems();
-    if (settings_.movesetsMod != S::MovesetsMod::UNCHANGED || settings_.reorderDamagingMoves) notPorted("movimientos por nivel");
+    if (settings_.movesetsMod != S::MovesetsMod::UNCHANGED && settings_.movesetsMod != S::MovesetsMod::METRONOME_ONLY) {
+        movesets_.randomizeMovesLearnt();
+        movesets_.randomizeEggMoves();
+    }
+    if (settings_.reorderDamagingMoves) movesets_.orderDamagingMovesByDamage();
     if (settings_.movesetsMod != S::MovesetsMod::METRONOME_ONLY && settings_.tmsMod == S::TMsMod::RANDOM) tmt_.randomizeTMMoves();
     {
         using C = S::TMsHMsCompatibilityMod;
@@ -100,12 +104,12 @@ void GameRandomizer::applyRandomizers() {
     if (settings_.betterBossTrainerMovesets || settings_.betterImportantTrainerMovesets || settings_.betterRegularTrainerMovesets)
         notPorted("movimientos de entrenadores");
     // maybeFixTrainerZCrystals
-    if (trainerPoke_.isChangesMade()) trainerPoke_.randomUsableZCrystals();
+    if (movesets_.isChangesMade() || trainerPoke_.isChangesMade()) trainerPoke_.randomUsableZCrystals();
     if (settings_.randomizeHeldItemsForBossTrainerPokemon || settings_.randomizeHeldItemsForImportantTrainerPokemon ||
         settings_.randomizeHeldItemsForRegularTrainerPokemon)
         trainerPoke_.randomizeTrainerHeldItems();
     if (settings_.randomizeTrainerClassNames || settings_.randomizeTrainerNames) notPorted("nombres de entrenadores");
-    if (settings_.movesetsMod == S::MovesetsMod::METRONOME_ONLY) notPorted("solo Metrónomo");
+    if (settings_.movesetsMod == S::MovesetsMod::METRONOME_ONLY) movesets_.metronomeOnlyMode();
     if (rh_.canChangeStaticPokemon()) {
         if (settings_.staticPokemonMod != S::StaticPokemonMod::UNCHANGED) statics_.randomizeStaticPokemon();
         else if (settings_.staticLevelModified) statics_.onlyChangeStaticLevels();

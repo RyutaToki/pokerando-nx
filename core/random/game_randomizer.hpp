@@ -8,6 +8,7 @@
 #include "random/misc_randomizers.hpp"
 #include "random/move_randomizers.hpp"
 #include "random/species_base_stat_randomizer.hpp"
+#include "random/species_moveset_randomizer.hpp"
 #include "random/species_type_ability_randomizers.hpp"
 #include "random/starter_randomizer.hpp"
 #include "random/tmhm_compat_randomizer.hpp"
@@ -43,6 +44,7 @@ private:
     RomHandler& rh_;
     JavaRandom nonCosmetic_, cosmetic_;
     SpeciesBaseStatRandomizer bs_;
+    SpeciesMovesetRandomizer movesets_;
     EvolutionRandomizer evo_;
     EncounterHeldItemRandomizer encItems_;
     IntroPokemonRandomizer intro_;
