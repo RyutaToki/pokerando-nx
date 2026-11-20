@@ -198,6 +198,9 @@ private:
     void readHeadbuttEncounters(std::vector<EncounterArea>& areas) const;
     void readBugCatchingContestEncounters(std::vector<EncounterArea>& areas) const;
     void savePokemonPalettes();
+    // textos
+    void replaceAllStringsInEntry(int entry, std::map<std::string, std::string> replacements);
+    void setBottomScreenTMText(int textOffset, int stringNumber, int newMoveIndex);
 
     const Gen4RomEntry* romEntry_ = nullptr;
     std::unique_ptr<nds::NDSRom> baseRom_;

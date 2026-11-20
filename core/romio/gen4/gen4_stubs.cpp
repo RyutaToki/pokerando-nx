@@ -8,25 +8,8 @@
 namespace pr::gen4 {
 
 void Gen4RomHandler::setEncounters(bool useTimeOfDay, const std::vector<EncounterArea>& areas) { throw std::logic_error("Gen 4: pendiente: setEncounters"); }
-std::vector<Species*> Gen4RomHandler::getStarters() const { throw std::logic_error("Gen 4: pendiente: getStarters"); }
-bool Gen4RomHandler::setStarters(const std::vector<Species*>& starters) { throw std::logic_error("Gen 4: pendiente: setStarters"); }
-bool Gen4RomHandler::supportsStarterHeldItems() const { throw std::logic_error("Gen 4: pendiente: supportsStarterHeldItems"); }
-std::vector<std::optional<int>> Gen4RomHandler::getStarterHeldItems() const { throw std::logic_error("Gen 4: pendiente: getStarterHeldItems"); }
-void Gen4RomHandler::setStarterHeldItems(const std::vector<std::optional<int>>& items) { throw std::logic_error("Gen 4: pendiente: setStarterHeldItems"); }
 std::vector<StaticEncounter> Gen4RomHandler::getStaticPokemon() { throw std::logic_error("Gen 4: pendiente: getStaticPokemon"); }
 bool Gen4RomHandler::setStaticPokemon(const std::vector<StaticEncounter>& statics) { throw std::logic_error("Gen 4: pendiente: setStaticPokemon"); }
-std::vector<int> Gen4RomHandler::getTMMoves() const { throw std::logic_error("Gen 4: pendiente: getTMMoves"); }
-std::vector<int> Gen4RomHandler::getHMMoves() const { throw std::logic_error("Gen 4: pendiente: getHMMoves"); }
-void Gen4RomHandler::setTMMoves(const std::vector<int>& moveIndexes) { throw std::logic_error("Gen 4: pendiente: setTMMoves"); }
-int Gen4RomHandler::getTMCount() const { throw std::logic_error("Gen 4: pendiente: getTMCount"); }
-int Gen4RomHandler::getHMCount() const { throw std::logic_error("Gen 4: pendiente: getHMCount"); }
-std::map<int, std::vector<bool>> Gen4RomHandler::getTMHMCompatibility() const { throw std::logic_error("Gen 4: pendiente: getTMHMCompatibility"); }
-void Gen4RomHandler::setTMHMCompatibility(const std::map<int, std::vector<bool>>& data) { throw std::logic_error("Gen 4: pendiente: setTMHMCompatibility"); }
-bool Gen4RomHandler::hasMoveTutors() const { throw std::logic_error("Gen 4: pendiente: hasMoveTutors"); }
-std::vector<int> Gen4RomHandler::getMoveTutorMoves() const { throw std::logic_error("Gen 4: pendiente: getMoveTutorMoves"); }
-void Gen4RomHandler::setMoveTutorMoves(const std::vector<int>& moveIndexes) { throw std::logic_error("Gen 4: pendiente: setMoveTutorMoves"); }
-std::map<int, std::vector<bool>> Gen4RomHandler::getMoveTutorCompatibility() const { throw std::logic_error("Gen 4: pendiente: getMoveTutorCompatibility"); }
-void Gen4RomHandler::setMoveTutorCompatibility(const std::map<int, std::vector<bool>>& data) { throw std::logic_error("Gen 4: pendiente: setMoveTutorCompatibility"); }
 ItemSet Gen4RomHandler::getEvolutionItems() const { throw std::logic_error("Gen 4: pendiente: getEvolutionItems"); }
 ItemSet Gen4RomHandler::getOPShopItems() const { throw std::logic_error("Gen 4: pendiente: getOPShopItems"); }
 ItemSet Gen4RomHandler::getAllConsumableHeldItems() const { throw std::logic_error("Gen 4: pendiente: getAllConsumableHeldItems"); }
