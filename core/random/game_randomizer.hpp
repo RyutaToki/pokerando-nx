@@ -1,6 +1,7 @@
 // Port de GameRandomizer: aplica los randomizadores en el mismo orden que FVX y guarda la ROM.
 #pragma once
 #include <cstdint>
+#include <functional>
 #include <iosfwd>
 #include <memory>
 #include <string>
@@ -30,6 +31,10 @@ namespace pr {
 
 class GameRandomizer {
 public:
+    // fases en el orden en que se ejecutan (para mostrar el progreso)
+    enum class Phase { BASE, STARTERS, MOVES, WILD, TRAINERS, STATICS_TRADES, ITEMS, EXTRAS, SAVE };
+    std::function<void(Phase)> onPhase;
+
     GameRandomizer(Settings& settings, RomHandler& romHandler);
     // Lanza excepción si algo falla. Si log no es nulo, escribe ahí el registro (spoiler log).
     void randomize(const std::string& outFile, int64_t seed, std::ostream* log = nullptr);

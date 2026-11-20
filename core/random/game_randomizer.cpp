@@ -25,6 +25,7 @@ void GameRandomizer::randomize(const std::string& outFile, int64_t seed, std::os
     // CheckValueCalculator: en FVX se calcula siempre; leer los estáticos puede aplicar parches
     // a la ROM (p. ej. el de los errantes de Esmeralda), así que hay que hacerlo igual.
     checkValue_ = calculateCheckValue();
+    if (onPhase) onPhase(Phase::SAVE);
     rh_.saveRomTo(outFile);
     if (log) {
         auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start).count();
@@ -44,6 +45,7 @@ void GameRandomizer::applyUpdaters() {
 }
 
 void GameRandomizer::applyRandomizers() {
+    if (onPhase) onPhase(Phase::BASE);
     switch (settings_.typeEffectivenessMod) {
         case S::TypeEffectivenessMod::RANDOM: typeEff_.randomizeTypeEffectiveness(false); break;
         case S::TypeEffectivenessMod::RANDOM_BALANCED: typeEff_.randomizeTypeEffectiveness(true); break;
@@ -68,8 +70,10 @@ void GameRandomizer::applyRandomizers() {
     else if (settings_.baseStatisticsMod == S::BaseStatisticsMod::RANDOM) bs_.randomizeSpeciesStats();
     if (settings_.abilitiesMod == S::AbilitiesMod::RANDOMIZE) abilities_.randomizeAbilities();
     maybeApplyEvolutionImprovements();
+    if (onPhase) onPhase(Phase::STARTERS);
     if (settings_.startersMod != S::StartersMod::UNCHANGED) starter_.randomizeStarters();
     if (settings_.randomizeStartersHeldItems) starter_.randomizeStarterHeldItems();
+    if (onPhase) onPhase(Phase::MOVES);
     if (settings_.movesetsMod != S::MovesetsMod::UNCHANGED && settings_.movesetsMod != S::MovesetsMod::METRONOME_ONLY) {
         movesets_.randomizeMovesLearnt();
         movesets_.randomizeEggMoves();
@@ -101,8 +105,10 @@ void GameRandomizer::applyRandomizers() {
         }
         if (comp_.tutorChangesMade) comp_.copyMoveTutorCompatibilityToCosmeticFormes();
     }
+    if (onPhase) onPhase(Phase::WILD);
     if (settings_.useMinimumCatchRate) wild_.changeCatchRates();
     if (settings_.randomizeWildPokemon || settings_.wildLevelsModified) wild_.randomizeEncounters();
+    if (onPhase) onPhase(Phase::TRAINERS);
     {
         auto& tp = trainerPoke_;
         if (settings_.trainersLevelModified) tp.applyTrainerLevelModifier();
@@ -128,17 +134,20 @@ void GameRandomizer::applyRandomizers() {
         if (settings_.randomizeTrainerNames) trainerNames_.randomizeTrainerNames();
     }
     if (settings_.movesetsMod == S::MovesetsMod::METRONOME_ONLY) movesets_.metronomeOnlyMode();
+    if (onPhase) onPhase(Phase::STATICS_TRADES);
     if (rh_.canChangeStaticPokemon()) {
         if (settings_.staticPokemonMod != S::StaticPokemonMod::UNCHANGED) statics_.randomizeStaticPokemon();
         else if (settings_.staticLevelModified) statics_.onlyChangeStaticLevels();
     }
     if (settings_.inGameTradesMod != S::InGameTradesMod::UNCHANGED) trades_.randomizeIngameTrades();
+    if (onPhase) onPhase(Phase::ITEMS);
     if (settings_.fieldItemsMod != S::FieldItemsMod::UNCHANGED) items_.randomizeFieldItems();
     if (settings_.shopItemsMod == S::ShopItemsMod::SHUFFLE) items_.shuffleShopItems();
     else if (settings_.shopItemsMod == S::ShopItemsMod::RANDOM) items_.randomizeShopItems();
     if (settings_.balanceShopPrices) rh_.setBalancedShopPrices();
     if (settings_.addCheapRareCandiesToShops) items_.addCheapRareCandiesToShops();
     if (settings_.pickupItemsMod == S::PickupItemsMod::RANDOM) items_.randomizePickupItems();
+    if (onPhase) onPhase(Phase::EXTRAS);
     if (settings_.pokemonPalettesMod == S::PokemonPalettesMod::RANDOM) palettes_.randomizePokemonPalettes();
     if (settings_.randomizeIntroMon) intro_.randomizeIntroPokemon();
 }
