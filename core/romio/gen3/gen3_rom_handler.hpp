@@ -69,6 +69,13 @@ public:
     SpeciesSet getBannedForWildEncounters() const;
     bool hasEncounterLocations() const { return true; }
 
+    // Entrenadores
+    std::vector<int> getEliteFourTrainers(bool isChallengeMode) const;
+    // HashMap<String, Type> en Java; aquí en el orden de inserción del original
+    std::vector<std::pair<std::string, Type>> getGymAndEliteTypeThemes() const;
+    void saveTrainerClasses();
+    void saveTrainers();
+
 private:
     void initRomEntry();
     void initTextTables();
@@ -94,6 +101,13 @@ private:
     bool hasBattleTrappingAbility(const Species* s) const;
     void tagEncounterAreas(std::vector<EncounterArea>& areas) const;
     void attemptObedienceEvolutionPatches();
+    void loadTrainerClasses();
+    void loadTrainers();
+    void readMossdeepStevenTrainer();
+    void writeMossdeepStevenTrainer();
+    std::vector<uint8_t> trainerPokemonToBytes(const Trainer& t) const;
+    int readTrainerPokemonDataLength(int trainerOffset) const;
+    std::optional<int> itemAt(int internalId) const;  // items.get(itemIDToStandard(x)) puede ser null
     void prepareSaveRom();
     void saveSpeciesStats();
     void saveBasicPokeStats(const Species& pk, int offset);

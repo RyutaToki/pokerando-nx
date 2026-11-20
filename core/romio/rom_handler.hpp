@@ -11,6 +11,7 @@
 #include "gamedata/evolution.hpp"
 #include "gamedata/move.hpp"
 #include "gamedata/species.hpp"
+#include "gamedata/trainer.hpp"
 #include "gamedata/types.hpp"
 
 namespace pr {
@@ -42,6 +43,11 @@ public:
     std::array<int, 4> getMovesAtLevel(const Species& pk, const std::map<int, std::vector<MoveLearnt>>& movesets,
                                        int level) const;
 
+    // --- entrenadores ---
+    const std::vector<std::unique_ptr<TrainerClass>>& getTrainerClasses() const { return trainerClasses_; }
+    const std::vector<TrainerPtr>& getTrainers() const { return trainers_; }
+    std::vector<TrainerPtr>& getTrainers() { return trainers_; }
+
     // --- evoluciones (AbstractRomHandler) ---
     int getHighestEvoLvl() const { return highestEvoLvl_; }
     void condenseLevelEvolutions(int maxLevel);
@@ -56,6 +62,8 @@ protected:
     bool hadEvolutionOfType(Species* pk, std::optional<EvolutionType> et) const;
 
     int perfectAccuracy_ = 100;
+    std::vector<std::unique_ptr<TrainerClass>> trainerClasses_;
+    std::vector<TrainerPtr> trainers_;
 
 private:
     void calculateEstimatedLevels(const std::vector<EvolutionPtr>& targetEvos);

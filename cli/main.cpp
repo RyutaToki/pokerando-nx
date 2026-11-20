@@ -101,7 +101,22 @@ void dumpMore(const pr::gen3::Gen3RomHandler& h) {
     for (const auto& a : h.getSortedEncounters(false)) std::printf("%s\n", a.displayName.c_str());
     std::printf("== WILDBANNED\n");
     for (auto* b : h.getBannedForWildEncounters().toVector()) std::printf("%d\n", b->number());
-    std::printf("== EGGMOVES\n");
+    std::printf("== TRAINERCLASSES\n");
+    for (const auto& tc : h.getTrainerClasses()) std::printf("%d|%s\n", tc->id, tc->name.c_str());
+    std::printf("== TRAINERS\n");
+    for (const auto& t : h.getTrainers()) {
+        std::printf("%d|%x|%d|%s|%s|multi=%d|style=%d|pt=%d|", t->index, t->offset, t->trainerClass ? t->trainerClass->id : -1,
+                    t->name ? t->name->c_str() : "null", t->tag ? t->tag->c_str() : "null",
+                    static_cast<int>(t->multiBattleStatus), static_cast<int>(t->currBattleStyle->style), t->poketype());
+        for (const auto& tp : t->pokemon) {
+            std::printf(" %d@%d/iv%d/it%d/ab%d/m%d,%d,%d,%d", tp->species()->number(), tp->level, tp->IVs,
+                        tp->heldItem ? *tp->heldItem : -1, tp->abilitySlot, tp->moves[0], tp->moves[1], tp->moves[2], tp->moves[3]);
+        }
+        std::printf("\n");
+    }
+    std::printf("== E4 ");
+    for (int i : h.getEliteFourTrainers(false)) std::printf("%d,", i);
+    std::printf("\n== EGGMOVES\n");
     for (const auto& [n, ml] : h.getEggMoves()) {
         std::printf("%d:", n);
         for (int m : ml) std::printf(" %d", m);

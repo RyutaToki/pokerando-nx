@@ -26,7 +26,9 @@ void Gen3RomHandler::writeFixedLengthString(const std::string& str, int offset, 
 void Gen3RomHandler::prepareSaveRom() {
     saveSpeciesStats();
     saveMoves();
-    // TODO(port): saveTrainerClasses, saveTrainers, savePokemonPalettes
+    saveTrainerClasses();
+    saveTrainers();
+    // TODO(port): savePokemonPalettes
 }
 
 void Gen3RomHandler::saveSpeciesStats() {

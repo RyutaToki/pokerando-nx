@@ -85,6 +85,23 @@ public class Dump {
         for (EncounterArea a : h.getSortedEncounters(false)) out.println(a.getDisplayName());
         out.println("== WILDBANNED");
         for (Species b : h.getBannedForWildEncounters()) out.println(b.getNumber());
+        out.println("== TRAINERCLASSES");
+        for (TrainerClass tc : h.getTrainerClasses()) out.println(tc.getID() + "|" + tc.getName());
+        out.println("== TRAINERS");
+        for (Trainer t : h.getTrainers()) {
+            out.printf("%d|%x|%d|%s|%s|multi=%d|style=%d|pt=%d|", t.getIndex(), t.getOffset(),
+                    t.getTrainerclass() == null ? -1 : t.getTrainerclass().getID(), s(t.getName()), s(t.getTag()),
+                    t.getMultiBattleStatus().ordinal(), t.getCurrBattleStyle().getStyle().ordinal(), t.getPoketype());
+            for (TrainerPokemon tp : t.getPokemon()) {
+                int[] m = tp.getMoves();
+                out.printf(" %d@%d/iv%d/it%d/ab%d/m%d,%d,%d,%d", tp.getSpecies().getNumber(), tp.getLevel(), tp.getIVs(),
+                        tp.getHeldItem() == null ? -1 : tp.getHeldItem().getId(), tp.getAbilitySlot(), m[0], m[1], m[2], m[3]);
+            }
+            out.println();
+        }
+        out.print("== E4 ");
+        for (int i : h.getEliteFourTrainers(false)) out.print(i + ",");
+        out.println();
         out.println("== EGGMOVES");
         for (var en : new java.util.TreeMap<>(h.getEggMoves()).entrySet()) {
             out.print(en.getKey() + ":");
@@ -99,6 +116,8 @@ public class Dump {
             var gen3 = (com.uprfvx.romio.romhandlers.Gen3RomHandler) h;
             gen3.saveSpeciesStats();
             gen3.saveMoves();
+            gen3.saveTrainerClasses();
+            gen3.saveTrainers();
             gen3.saveRomFile(args[1], 0);
             System.setOut(realOut);
         }

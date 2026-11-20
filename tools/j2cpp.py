@@ -19,6 +19,8 @@ def convert(line):
         line = re.sub(r"\b" + java + r"\.", ns + "::", line)
     for c in CONST_CLASSES:
         line = re.sub(r"\b" + c + r"\.", "", line)
+    # Clase.Enum.VALOR -> Clase::Enum::VALOR
+    line = re.sub(r"\b([A-Z][A-Za-z0-9]+)\.([A-Z][A-Za-z0-9]+)\.([A-Z][A-Z0-9_]+)\b", r"\1::\2::\3", line)
     # Enum.VALOR -> Enum::VALOR
     line = re.sub(r"\b([A-Z][A-Za-z0-9]+)\.([A-Z][A-Z0-9_]+)\b", r"\1::\2", line)
     for j, c in ROM_ENTRY.items():
