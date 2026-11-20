@@ -8,11 +8,6 @@
 namespace pr::gen4 {
 
 void Gen4RomHandler::setEncounters(bool useTimeOfDay, const std::vector<EncounterArea>& areas) { throw std::logic_error("Gen 4: pendiente: setEncounters"); }
-SpeciesSet Gen4RomHandler::getBannedForWildEncounters() const { throw std::logic_error("Gen 4: pendiente: getBannedForWildEncounters"); }
-std::vector<int> Gen4RomHandler::getEliteFourTrainers(bool isChallengeMode) const { throw std::logic_error("Gen 4: pendiente: getEliteFourTrainers"); }
-std::vector<std::pair<std::string, Type>> Gen4RomHandler::getGymAndEliteTypeThemes() const { throw std::logic_error("Gen 4: pendiente: getGymAndEliteTypeThemes"); }
-void Gen4RomHandler::saveTrainerClasses() { throw std::logic_error("Gen 4: pendiente: saveTrainerClasses"); }
-void Gen4RomHandler::saveTrainers() { throw std::logic_error("Gen 4: pendiente: saveTrainers"); }
 std::vector<Species*> Gen4RomHandler::getStarters() const { throw std::logic_error("Gen 4: pendiente: getStarters"); }
 bool Gen4RomHandler::setStarters(const std::vector<Species*>& starters) { throw std::logic_error("Gen 4: pendiente: setStarters"); }
 bool Gen4RomHandler::supportsStarterHeldItems() const { throw std::logic_error("Gen 4: pendiente: supportsStarterHeldItems"); }
@@ -56,12 +51,9 @@ std::vector<int> Gen4RomHandler::getDoublesTrainerClasses() const { throw std::l
 std::vector<int> Gen4RomHandler::getMainGameLegendaries() const { throw std::logic_error("Gen 4: pendiente: getMainGameLegendaries"); }
 std::vector<int> Gen4RomHandler::getSpecialMusicStatics() const { throw std::logic_error("Gen 4: pendiente: getSpecialMusicStatics"); }
 bool Gen4RomHandler::hasStaticMusicFix() const { throw std::logic_error("Gen 4: pendiente: hasStaticMusicFix"); }
-TypeTable Gen4RomHandler::getTypeTable() const { throw std::logic_error("Gen 4: pendiente: getTypeTable"); }
-void Gen4RomHandler::setTypeTable(const TypeTable& t) { throw std::logic_error("Gen 4: pendiente: setTypeTable"); }
 void Gen4RomHandler::removeImpossibleEvolutions(bool changeMoveEvos, bool useEstimatedLevels) { throw std::logic_error("Gen 4: pendiente: removeImpossibleEvolutions"); }
 void Gen4RomHandler::makeEvolutionsEasier(bool changeWithOtherEvos, bool useEstimatedLevels) { throw std::logic_error("Gen 4: pendiente: makeEvolutionsEasier"); }
 void Gen4RomHandler::removeEvosForPokemonPool(const SpeciesSet& included) { throw std::logic_error("Gen 4: pendiente: removeEvosForPokemonPool"); }
-int Gen4RomHandler::miscTweaksAvailable() const { throw std::logic_error("Gen 4: pendiente: miscTweaksAvailable"); }
 void Gen4RomHandler::applyMiscTweak(const MiscTweak& t) { throw std::logic_error("Gen 4: pendiente: applyMiscTweak"); }
 bool Gen4RomHandler::setIntroPokemon(Species* pk) { throw std::logic_error("Gen 4: pendiente: setIntroPokemon"); }
 bool Gen4RomHandler::setCatchingTutorial(Species* opponent, Species* player) { throw std::logic_error("Gen 4: pendiente: setCatchingTutorial"); }

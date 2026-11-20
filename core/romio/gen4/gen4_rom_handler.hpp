@@ -55,6 +55,7 @@ public:
     std::vector<EncounterArea> getSortedEncounters(bool useTimeOfDay) const override;
     void setEncounters(bool useTimeOfDay, const std::vector<EncounterArea>& areas) override;
     SpeciesSet getBannedForWildEncounters() const override;
+    SpeciesSet getBannedFormesForTrainerPokemon() const override;
     bool hasEncounterLocations() const override { return true; }
 
     // --- entrenadores ---
@@ -183,6 +184,11 @@ private:
     void saveSpeciesStats();
     void saveBasicPokeStats(const Species& pk, Bytes& stats);
     void loadPokemonPalettes();
+    void loadTrainerClasses();
+    void loadTrainers();
+    std::vector<std::string> loadTrainerNames() const;
+    void fixAbilitySlotValuesForHGSS();
+    void saveTrainerNames();
     // encuentros
     void loadWildMapNames() const;
     void tagEncounterAreas(std::vector<EncounterArea>& areas, bool useTimeOfDay) const;
@@ -215,6 +221,7 @@ private:
     mutable JavaHashMap<int, std::string> wildMapNames_;
     mutable std::map<int, std::string> headbuttMapNames_;
     mutable bool loadedWildMapNames_ = false;
+    mutable std::optional<TypeTable> typeTable_;
     uint32_t actualArm9CRC32_ = 0;
     JavaHashMap<int, uint32_t> actualOverlayCRC32s_;
     std::map<std::string, uint32_t> actualFileCRC32s_;

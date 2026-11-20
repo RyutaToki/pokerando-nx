@@ -113,7 +113,8 @@ void Gen4RomHandler::loadedROM() {
     loadItems();
     loadSpeciesStats();
     loadMoves();
-    // TODO Gen 4: loadTrainerClasses(), loadTrainers()
+    loadTrainerClasses();
+    loadTrainers();
     loadPokemonPalettes();
     abilityNames_ = getStrings(romEntry_->getInt("AbilityNamesTextOffset"));
     int rt = romEntry_->romType();
@@ -351,7 +352,8 @@ void Gen4RomHandler::prepareSaveRom() {
     saveMoves();
     saveSpeciesStats();
     savePokemonPalettes();
-    // TODO Gen 4: saveTrainerClasses(), saveTrainers()
+    saveTrainerClasses();
+    saveTrainers();
     // AbstractDSRomHandler: la ARM9
     baseRom_->writeARM9(arm9_);
     // Gen4RomHandler
