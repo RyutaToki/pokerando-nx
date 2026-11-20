@@ -204,6 +204,11 @@ private:
     void writeEventText(const std::vector<EventTextEntry>& entries,
                         const std::function<std::vector<std::string>(int)>& idToReplacers,
                         const std::vector<std::string>& targets, const std::string& description);
+    void loadPokemonPalettes();
+    void savePokemonPalettes();
+    int lengthOfCompressedDataAt(int offset) const;
+    void rewriteCompressedData(int pointerOffset, const std::vector<uint8_t>& uncompressed,
+                               const std::vector<int>& secondary = {});
     void prepareSaveRom();
     void saveSpeciesStats();
     void saveBasicPokeStats(const Species& pk, int offset);

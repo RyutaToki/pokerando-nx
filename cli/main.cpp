@@ -84,6 +84,15 @@ void dumpStatics(pr::gen3::Gen3RomHandler& h) {
 }
 
 void dumpMore(const pr::gen3::Gen3RomHandler& h) {
+    std::printf("== PALETTES\n");
+    for (const auto* pk : h.species()) {
+        if (!pk) continue;
+        std::printf("%d ", pk->number());
+        for (auto b : pk->normalPalette->toBytes()) std::printf("%02x", b);
+        std::printf(" ");
+        for (auto b : pk->shinyPalette->toBytes()) std::printf("%02x", b);
+        std::printf("\n");
+    }
     std::printf("== EVOLUTIONS\n");
     for (const auto* pk : h.species()) {
         if (!pk) continue;

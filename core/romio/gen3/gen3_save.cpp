@@ -28,7 +28,7 @@ void Gen3RomHandler::prepareSaveRom() {
     saveMoves();
     saveTrainerClasses();
     saveTrainers();
-    // TODO(port): savePokemonPalettes
+    savePokemonPalettes();
 }
 
 void Gen3RomHandler::saveSpeciesStats() {

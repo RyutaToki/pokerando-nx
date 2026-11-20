@@ -8,6 +8,7 @@
 #include "gamedata/evolution.hpp"
 #include "gamedata/species_set.hpp"
 #include "gamedata/types.hpp"
+#include "graphics/palette.hpp"
 #include "util/java_hash.hpp"
 
 namespace pr {
@@ -85,6 +86,7 @@ public:
     int frontImageDimensions = 0;
     std::optional<ExpCurve> growthCurve;
     BreedingInfo breedingInfo;
+    std::optional<Palette> normalPalette, shinyPalette;
 
     // --- evoluciones (los mismos objetos en "from" del origen y "to" del destino) ---
     std::vector<EvolutionPtr>& evolutionsFrom() { return evolutionsFrom_; }

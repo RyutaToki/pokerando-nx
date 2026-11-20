@@ -65,6 +65,12 @@ public class Dump {
                     itemName(pk.getCommonHeldItem()), itemName(pk.getRareHeldItem()), pk.getGenderRatio(),
                     s(bi.getPrimaryEggGroup()), s(bi.getSecondaryEggGroup()), bi.getEggCycles());
         }
+        out.println("== PALETTES");
+        for (Species pk : h.getSpecies()) {
+            if (pk == null) continue;
+            out.println(pk.getNumber() + " " + java.util.HexFormat.of().formatHex(pk.getNormalPalette().toBytes()) + " "
+                    + java.util.HexFormat.of().formatHex(pk.getShinyPalette().toBytes()));
+        }
         out.println("== EVOLUTIONS");
         for (Species pk : h.getSpecies()) {
             if (pk == null) continue;
@@ -200,13 +206,7 @@ public class Dump {
             h.setShopPrices(h.getShopPrices());
             h.setPickupItems(h.getPickupItems());
             h.setInGameTrades(h.getInGameTrades());
-            // solo las partes ya portadas a C++ (en vez de saveRom completo)
-            var gen3 = (com.uprfvx.romio.romhandlers.Gen3RomHandler) h;
-            gen3.saveSpeciesStats();
-            gen3.saveMoves();
-            gen3.saveTrainerClasses();
-            gen3.saveTrainers();
-            gen3.saveRomFile(args[1], 0);
+            h.saveRom(args[1], 0, false);  // guardado completo de FVX
             System.setOut(realOut);
         }
     }
