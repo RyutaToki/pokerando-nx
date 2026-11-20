@@ -5,7 +5,7 @@ namespace pr {
 using S = Settings;
 
 GameRandomizer::GameRandomizer(Settings& settings, RomHandler& rh)
-    : settings_(settings), rh_(rh), bs_(rh, settings, nonCosmetic_), movesets_(rh, settings, nonCosmetic_), evo_(rh, settings, nonCosmetic_), encItems_(rh, settings, nonCosmetic_), intro_(rh, settings, nonCosmetic_), misc_(rh, settings, nonCosmetic_), moveData_(rh, settings, nonCosmetic_), tmt_(rh, settings, nonCosmetic_), comp_(rh, settings, nonCosmetic_), trainerMoves_(rh, settings, nonCosmetic_), moveNames_(rh, settings, cosmetic_), trainerNames_(rh, settings, cosmetic_), types_(rh, settings, nonCosmetic_), abilities_(rh, settings, nonCosmetic_), starter_(rh, settings, nonCosmetic_), statics_(rh, settings, nonCosmetic_), trades_(rh, settings, nonCosmetic_), items_(rh, settings, nonCosmetic_), wild_(rh, settings, nonCosmetic_), trainerPoke_(rh, settings, nonCosmetic_) {}
+    : settings_(settings), rh_(rh), bs_(rh, settings, nonCosmetic_), movesets_(rh, settings, nonCosmetic_), evo_(rh, settings, nonCosmetic_), encItems_(rh, settings, nonCosmetic_), intro_(rh, settings, nonCosmetic_), misc_(rh, settings, nonCosmetic_), moveData_(rh, settings, nonCosmetic_), tmt_(rh, settings, nonCosmetic_), comp_(rh, settings, nonCosmetic_), trainerMoves_(rh, settings, nonCosmetic_), moveNames_(rh, settings, cosmetic_), trainerNames_(rh, settings, cosmetic_), typeEff_(rh, settings, nonCosmetic_), typeEffUpdater_(rh), moveUpdater_(rh), bsUpdater_(rh), types_(rh, settings, nonCosmetic_), abilities_(rh, settings, nonCosmetic_), starter_(rh, settings, nonCosmetic_), statics_(rh, settings, nonCosmetic_), trades_(rh, settings, nonCosmetic_), items_(rh, settings, nonCosmetic_), wild_(rh, settings, nonCosmetic_), trainerPoke_(rh, settings, nonCosmetic_) {}
 
 void GameRandomizer::notPorted(const char* what) {
     throw std::runtime_error(std::string("Opción aún no portada: ") + what);
@@ -29,13 +29,19 @@ void GameRandomizer::setupSpeciesRestrictions() {
 }
 
 void GameRandomizer::applyUpdaters() {
-    if (settings_.updateTypeEffectiveness) notPorted("actualizar efectividades de tipos");
-    if (settings_.updateMoves) notPorted("actualizar movimientos");
-    if (settings_.updateBaseStats) notPorted("actualizar stats base");
+    if (settings_.updateTypeEffectiveness) typeEffUpdater_.updateTypeEffectiveness();
+    if (settings_.updateMoves) moveUpdater_.updateMoves(settings_.updateMovesToGeneration);
+    if (settings_.updateBaseStats) bsUpdater_.updateSpeciesStats(settings_.updateBaseStatsToGeneration);
 }
 
 void GameRandomizer::applyRandomizers() {
-    if (settings_.typeEffectivenessMod != S::TypeEffectivenessMod::UNCHANGED) notPorted("tabla de tipos");
+    switch (settings_.typeEffectivenessMod) {
+        case S::TypeEffectivenessMod::RANDOM: typeEff_.randomizeTypeEffectiveness(false); break;
+        case S::TypeEffectivenessMod::RANDOM_BALANCED: typeEff_.randomizeTypeEffectiveness(true); break;
+        case S::TypeEffectivenessMod::KEEP_IDENTITIES: typeEff_.randomizeTypeEffectivenessKeepIdentities(); break;
+        case S::TypeEffectivenessMod::INVERSE: typeEff_.invertTypeEffectiveness(settings_.inverseTypesRandomImmunities); break;
+        default: break;
+    }
     if (settings_.randomizeMovePowers) moveData_.randomizeMovePowers();
     if (settings_.randomizeMoveAccuracies) moveData_.randomizeMoveAccuracies();
     if (settings_.randomizeMovePPs) moveData_.randomizeMovePPs();
