@@ -224,6 +224,8 @@ void dumpMore(const pr::RomHandler& h) {
 // reescribe datos de tamaño variable sin cambiarlos (mismas llamadas y en el mismo orden que tests/java/Dump.java)
 void rewriteAll(pr::RomHandler& h) {
     h.setMovesLearnt(h.getMovesLearnt());
+    h.setEncounters(true, h.getEncounters(true));
+    h.setEncounters(false, h.getEncounters(false));
     h.setEggMoves(h.getEggMoves());
     h.setStarters(h.getStarters());
     h.setStarterHeldItems(h.getStarterHeldItems());

@@ -198,6 +198,15 @@ private:
     void readHeadbuttEncounters(std::vector<EncounterArea>& areas) const;
     void readBugCatchingContestEncounters(std::vector<EncounterArea>& areas) const;
     void savePokemonPalettes();
+    // escritura de encuentros
+    using AreaIter = std::vector<EncounterArea>::const_iterator;
+    void writeMainEncountersDPPt(AreaIter& it, bool useTimeOfDay);
+    void writeExtraEncountersDPPt(AreaIter& it);
+    void updatePokedexAreaDataDPPt(const std::vector<EncounterArea>& areas);
+    void writeMainEncountersHGSS(bool useTimeOfDay, AreaIter& it);
+    void writeHeadbuttEncounters(AreaIter& it);
+    void writeBugCatchContestEncounters(AreaIter& it);
+    void updatePokedexAreaDataHGSS(const std::vector<EncounterArea>& areas);
     // objetos
     int itcmSrcOffset() const;
     int readARM9Pointer(int offset) const;

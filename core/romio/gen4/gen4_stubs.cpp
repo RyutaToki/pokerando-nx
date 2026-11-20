@@ -7,6 +7,6 @@
 
 namespace pr::gen4 {
 
-void Gen4RomHandler::setEncounters(bool useTimeOfDay, const std::vector<EncounterArea>& areas) { throw std::logic_error("Gen 4: pendiente: setEncounters"); }
+
 
 }  // namespace pr::gen4

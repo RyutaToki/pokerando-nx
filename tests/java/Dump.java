@@ -200,6 +200,8 @@ public class Dump {
         if (args.length > 1) {
             System.setOut(new PrintStream(PrintStream.nullOutputStream()));
             h.setMovesLearnt(h.getMovesLearnt());
+            h.setEncounters(true, h.getEncounters(true));
+            h.setEncounters(false, h.getEncounters(false));
             h.setEggMoves(h.getEggMoves());
             h.setStarters(h.getStarters());
             h.setStarterHeldItems(h.getStarterHeldItems());

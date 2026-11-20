@@ -12,6 +12,7 @@ for ROM in "$@"; do
     ROM=$(realpath "$ROM")
     tag=$(basename "$ROM" | tr -c 'A-Za-z0-9\n' '_')
     if [ ! -s "$OUT/$tag.java.txt" ] || [ tests/java/Dump.java -nt "$OUT/$tag.java.txt" ]; then
+        rm -f "$OUT/$tag.rw.nds"  # FVX escribe encima sin truncar: los huecos guardarían basura de antes
         (cd "$OUT" && java -Xmx3g -cp "$OUT/jc:$CP" Dump "$ROM" "$OUT/$tag.rw.nds" > "$OUT/$tag.java.txt" 2>/dev/null) || true
     fi
     ./build/cli/pokerando-cli dump "$ROM" > "$OUT/$tag.cpp.txt" 2> "$OUT/$tag.cpp.err" || true
