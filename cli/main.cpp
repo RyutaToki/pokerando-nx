@@ -65,6 +65,15 @@ void dump(const pr::gen3::Gen3RomHandler& h) {
     }
 }
 
+void dumpPickup(pr::gen3::Gen3RomHandler& h) {
+    std::printf("== PICKUP\n");
+    for (const auto& p : h.getPickupItems()) {
+        std::printf("%d:", p.item);
+        for (int pr : p.probabilities) std::printf(" %d", pr);
+        std::printf("\n");
+    }
+}
+
 void dumpStatics(pr::gen3::Gen3RomHandler& h) {
     std::printf("== STATICS\n");
     std::function<void(const pr::StaticEncounter&, int)> pr1 = [&](const pr::StaticEncounter& se, int depth) {
@@ -147,6 +156,43 @@ void dumpMore(const pr::gen3::Gen3RomHandler& h) {
         for (bool b : f) std::printf("%d", b ? 1 : 0);
         std::printf("\n");
     }
+    auto pset = [](const char* n, const pr::gen3::ItemSet& s) {
+        std::printf("== %s", n);
+        s.forEach([](const int& i) { std::printf(" %d", i); });
+        std::printf("\n");
+    };
+    std::printf("\n");
+    pset("EVOITEMS", h.getEvolutionItems());
+    pset("OPSHOP", h.getOPShopItems());
+    pset("CONSUMABLE", h.getAllConsumableHeldItems());
+    pset("REQTMS", h.getRequiredFieldTMs());
+    std::printf("== FIELD");
+    for (int i : h.getFieldItems()) std::printf(" %d", i);
+    std::printf("\n== SHOPS\n");
+    for (const auto& sh : h.getShops()) {
+        std::printf("%s|main=%d|special=%d|", sh.name.c_str(), sh.isMainGame, sh.isSpecialShop);
+        for (int i : sh.items) std::printf(" %d", i);
+        std::printf("\n");
+    }
+    std::printf("== PRICES");
+    for (int p : h.getShopPrices()) std::printf(" %d", p);
+    std::printf("\n== TRADES\n");
+    for (const auto& t : h.getInGameTrades()) {
+        std::printf("%d>%d|%s|%s|ot=%d|item=%d|iv=", t.requestedSpecies->number(), t.givenSpecies()->number(),
+                    t.nickname.c_str(), t.otName ? t.otName->c_str() : "null", t.otId, t.heldItem ? *t.heldItem : -1);
+        for (int v : t.ivs) std::printf("%d,", v);
+        std::printf("\n");
+    }
+    std::printf("== SENSIBLE\n");
+    for (size_t ti = 0; ti < h.getTrainers().size(); ti += 37) {
+        for (const auto& tp : h.getTrainers()[ti]->pokemon) {
+            for (int co = 0; co < 2; co++) {
+                std::printf("%zu:%d:%d", ti, tp->species()->number(), co);
+                for (auto& i : h.getSensibleHeldItemsFor(*tp, co == 1, tp->moves)) std::printf(" %d", i ? *i : -1);
+                std::printf("\n");
+            }
+        }
+    }
     std::printf("\n== EGGMOVES\n");
     for (const auto& [n, ml] : h.getEggMoves()) {
         std::printf("%d:", n);
@@ -179,6 +225,7 @@ int main(int argc, char** argv) {
             dump(h);
             dumpMore(h);
             dumpStatics(h);
+            dumpPickup(h);
         } else if (cmd == "resave" && argc >= 4) {
             h.saveRomFileOnly(argv[3]);
         } else if (cmd == "rewrite" && argc >= 4) {
@@ -192,6 +239,11 @@ int main(int argc, char** argv) {
             h.setTMHMCompatibility(h.getTMHMCompatibility());
             h.setMoveTutorMoves(h.getMoveTutorMoves());
             h.setMoveTutorCompatibility(h.getMoveTutorCompatibility());
+            h.setFieldItems(h.getFieldItems());
+            h.setShops(h.getShops());
+            h.setShopPrices(h.getShopPrices());
+            h.setPickupItems(h.getPickupItems());
+            h.setInGameTrades(h.getInGameTrades());
             h.saveRom(argv[3]);
         } else {
             std::fprintf(stderr, "orden desconocida\n");

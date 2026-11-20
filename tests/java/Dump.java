@@ -11,6 +11,12 @@ public class Dump {
     static String itemName(Item it) { return it == null ? "null" : it.getName(); }
     static String s(Object o) { return o == null ? "null" : o.toString(); }
 
+    static void pset(PrintStream out, String n, Set<Item> s) {
+        out.print("== " + n);
+        for (Item i : s) out.print(" " + i.getId());
+        out.println();
+    }
+
     static void printStatic(PrintStream out, StaticEncounter se, int depth) {
         out.println(" ".repeat(depth * 2) + se.getSpecies().getNumber() + "@" + se.getLevel() + " egg=" + (se.isEgg() ? 1 : 0)
                 + " max=" + se.getMaxLevel());
@@ -130,6 +136,40 @@ public class Dump {
             out.println();
         }
         out.println();
+        pset(out, "EVOITEMS", h.getEvolutionItems());
+        pset(out, "OPSHOP", h.getOPShopItems());
+        pset(out, "CONSUMABLE", h.getAllConsumableHeldItems());
+        pset(out, "REQTMS", h.getRequiredFieldTMs());
+        out.print("== FIELD");
+        for (Item i : h.getFieldItems()) out.print(" " + i.getId());
+        out.println("\n== SHOPS");
+        for (Shop sh : h.getShops()) {
+            out.print(sh.getName() + "|main=" + (sh.isMainGame() ? 1 : 0) + "|special=" + (sh.isSpecialShop() ? 1 : 0) + "|");
+            for (Item i : sh.getItems()) out.print(" " + i.getId());
+            out.println();
+        }
+        out.print("== PRICES");
+        for (int p : h.getShopPrices()) out.print(" " + p);
+        out.println("\n== TRADES");
+        for (InGameTrade t : h.getInGameTrades()) {
+            out.print(t.getRequestedSpecies().getNumber() + ">" + t.getGivenSpecies().getNumber() + "|" + t.getNickname()
+                    + "|" + s(t.getOtName()) + "|ot=" + t.getOtId() + "|item="
+                    + (t.getHeldItem() == null ? -1 : t.getHeldItem().getId()) + "|iv=");
+            for (int v : t.getIVs()) out.print(v + ",");
+            out.println();
+        }
+        out.println("== SENSIBLE");
+        for (int ti = 0; ti < h.getTrainers().size(); ti += 37) {
+            for (TrainerPokemon tp : h.getTrainers().get(ti).getPokemon()) {
+                for (int co = 0; co < 2; co++) {
+                    out.print(ti + ":" + tp.getSpecies().getNumber() + ":" + co);
+                    for (Item i : h.getSensibleHeldItemsFor(tp, co == 1, h.getMoves(), tp.getMoves()))
+                        out.print(" " + (i == null ? -1 : i.getId()));
+                    out.println();
+                }
+            }
+        }
+        out.println();
         out.println("== EGGMOVES");
         for (var en : new java.util.TreeMap<>(h.getEggMoves()).entrySet()) {
             out.print(en.getKey() + ":");
@@ -138,6 +178,12 @@ public class Dump {
         }
         out.println("== STATICS");
         for (StaticEncounter se : h.getStaticPokemon()) printStatic(out, se, 0);
+        out.println("== PICKUP");
+        for (PickupItem p : h.getPickupItems()) {
+            out.print(p.getItem().getId() + ":");
+            for (int pr : p.getProbabilities()) out.print(" " + pr);
+            out.println();
+        }
         if (args.length > 1) {
             System.setOut(new PrintStream(PrintStream.nullOutputStream()));
             h.setMovesLearnt(h.getMovesLearnt());
@@ -149,6 +195,11 @@ public class Dump {
             h.setTMHMCompatibility(h.getTMHMCompatibility());
             h.setMoveTutorMoves(h.getMoveTutorMoves());
             h.setMoveTutorCompatibility(h.getMoveTutorCompatibility());
+            h.setFieldItems(h.getFieldItems());
+            h.setShops(h.getShops());
+            h.setShopPrices(h.getShopPrices());
+            h.setPickupItems(h.getPickupItems());
+            h.setInGameTrades(h.getInGameTrades());
             // solo las partes ya portadas a C++ (en vez de saveRom completo)
             var gen3 = (com.uprfvx.romio.romhandlers.Gen3RomHandler) h;
             gen3.saveSpeciesStats();

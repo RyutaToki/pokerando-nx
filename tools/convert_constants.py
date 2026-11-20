@@ -80,12 +80,19 @@ def main(src, dst, ns):
         elif jtype == "String":
             lines.append("inline constexpr std::string_view %s = %s;" % (name, flat))
         elif jtype in ("List<Integer>", "Set<Integer>"):
-            m = re.match(r"^(?:Collections\.unmodifiable\w+\()?(?:new HashSet<>\()?Arrays\.asList\((.*)\)\)*$", flat)
+            m = (re.match(r"^(?:Collections\.unmodifiable\w+\()?(?:new HashSet<>\()?Arrays\.asList\((.*)\)\)*$", flat)
+                 or re.match(r"^(?:List|Set)\.of\((.*)\)$", flat)
+                 or re.match(r"^Collections\.singletonList\((.*)\)$", flat))
             if m:
                 ctype = "std::vector<int>" if jtype.startswith("List") else "std::set<int>"
                 lines.append("inline const %s %s = {%s};" % (ctype, name, m.group(1)))
             else:
                 todo.append("%s %s" % (jtype, name))
+        elif jtype.replace(" ", "") == "Map<Integer,Integer>" and flat.startswith("Stream.of(new Integer[][]"):
+            pairs = re.findall(r"\{([^{}]+?),([^{}]+?)\}", flat)
+            body = ", ".join("{%s, %s}" % (a.strip(), b.strip()) for a, b in pairs)
+            lines.append("// HashMap<Integer, Integer> en Java (pares en el orden del código fuente)")
+            lines.append("inline const std::vector<std::pair<int, int>> %s = {%s};" % (name, body))
         elif jtype == "List<String>":
             m = (re.match(r"^Collections\.unmodifiableList\((?:Arrays\.asList|List\.of)\((.*)\)\)$", flat)
                  or re.match(r"^(?:Arrays\.asList|List\.of)\((.*)\)$", flat))
@@ -108,7 +115,7 @@ def main(src, dst, ns):
             todo.append("%s %s" % (jtype, name))
     with open(dst, "w", encoding="utf-8") as f:
         f.write("// Generado por tools/convert_constants.py desde %s (FVX, GPLv3). No editar.\n" % src.split("/")[-1])
-        f.write("#pragma once\n#include <cstdint>\n#include <set>\n#include <string_view>\n#include <vector>\n\n")
+        f.write("#pragma once\n#include <cstdint>\n#include <set>\n#include <string_view>\n#include <utility>\n#include <vector>\n\n")
         f.write('#include "constants/ability_ids.hpp"\n#include "constants/item_ids.hpp"\n')
         f.write('#include "constants/move_ids.hpp"\n#include "constants/species_ids.hpp"\n\n')
         f.write("namespace pr::%s {\n\n" % ns)

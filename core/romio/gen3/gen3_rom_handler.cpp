@@ -461,8 +461,8 @@ void Gen3RomHandler::loadAbilityNames() {
     auto& e = *romEntry_;
     int offs = e.getInt("AbilityNames");
     int len = e.getInt("AbilityNameLength");
-    abilityNames_.assign(highestAbilityIndex + 1, "");
-    for (int i = 0; i <= highestAbilityIndex; i++) abilityNames_[i] = readFixedLengthString(offs + len * i, len);
+    abilityNames_.assign(gen3::highestAbilityIndex + 1, "");
+    for (int i = 0; i <= gen3::highestAbilityIndex; i++) abilityNames_[i] = readFixedLengthString(offs + len * i, len);
 }
 
 }  // namespace pr::gen3

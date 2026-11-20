@@ -14,7 +14,9 @@
 #include "gamedata/encounter.hpp"
 #include "gamedata/move.hpp"
 #include "gamedata/species.hpp"
+#include "gamedata/shop_trade.hpp"
 #include "gamedata/static_encounter.hpp"
+#include "gamedata/trainer.hpp"
 #include "romio/rom_functions.hpp"
 #include "gamedata/types.hpp"
 #include "romio/gb/freed_space.hpp"
@@ -22,6 +24,15 @@
 #include "romio/gen3/gen3_rom_entry.hpp"
 
 namespace pr::gen3 {
+
+// Set<Item> de Java (HashSet; Item.hashCode() == id): ids en orden de iteración de Java
+using ItemSet = JavaHashSet<int>;
+
+std::vector<int> typeBoostingItems(std::optional<Type> t);
+std::vector<int> speciesBoostingItems(int speciesNumber);
+std::vector<int> allHeldItems();
+std::vector<std::pair<int, std::vector<int>>> abilityVariations();
+std::vector<int> opShopItemsInJavaOrder();
 
 class Gen3RomHandler : public RomHandler {
 public:
@@ -105,6 +116,43 @@ public:
     std::map<int, std::vector<bool>> getMoveTutorCompatibility() const;
     void setMoveTutorCompatibility(const std::map<int, std::vector<bool>>& data);
 
+    // Objetos
+    ItemSet getEvolutionItems() const;
+    ItemSet getOPShopItems() const;
+    ItemSet getAllConsumableHeldItems() const;
+    ItemSet getRequiredFieldTMs() const;
+    std::vector<int> getFieldItems() const;
+    void setFieldItems(const std::vector<int>& fieldItems);
+    bool hasShopSupport() const { return true; }
+    bool canChangeShopSizes() const { return true; }
+    std::vector<Shop> getShops() const;
+    void setShops(const std::vector<Shop>& shops);
+    std::vector<int> getShopPrices() const;
+    void setShopPrices(const std::vector<int>& prices);
+    void setBalancedShopPrices();
+    std::vector<PickupItem> getPickupItems();
+    void setPickupItems(const std::vector<PickupItem>& items);
+    std::vector<InGameTrade> getInGameTrades() const;
+    void setInGameTrades(const std::vector<InGameTrade>& trades);
+    std::vector<std::optional<int>> getSensibleHeldItemsFor(const TrainerPokemon& tp, bool consumableOnly,
+                                                            const std::array<int, 4>& pokeMoves) const;
+
+    // Varios
+    int maxTrainerNameLength() const { return romEntry_->getInt("TrainerNameLength") - 1; }
+    int maxTrainerClassNameLength() const { return romEntry_->getInt("TrainerClassNameLength") - 1; }
+    std::vector<int> getDoublesTrainerClasses() const { return romEntry_->getArray("DoublesTrainerClasses"); }
+    bool hasMainGameLegendaries() const { return true; }  // getArrayValue nunca es null en Java
+    std::vector<int> getMainGameLegendaries() const { return romEntry_->getArray("MainGameLegendaries"); }
+    std::vector<int> getSpecialMusicStatics() const { return romEntry_->getArray("SpecialMusicStatics"); }
+    bool hasStaticMusicFix() const { return romEntry_->hasTweakFile("NewIndexToMusicTweak"); }
+    int abilitiesPerSpecies() const { return 2; }
+    int highestAbilityIndex() const { return 77; }
+    std::vector<int> getUselessAbilities() const;
+    bool isTrainerPokemonAlwaysUseAbility1() const { return true; }
+    int internalStringLength(const std::string& s) const { return static_cast<int>(translateString(s).size()); }
+    int getMaxMoveNameLength() const { return 12; }
+    bool isEnglish() const { return romCode().size() >= 4 && romCode()[3] == 'E'; }
+
 private:
     void initRomEntry();
     void initTextTables();
@@ -136,7 +184,8 @@ private:
     void writeMossdeepStevenTrainer();
     std::vector<uint8_t> trainerPokemonToBytes(const Trainer& t) const;
     int readTrainerPokemonDataLength(int trainerOffset) const;
-    std::optional<int> itemAt(int internalId) const;  // items.get(itemIDToStandard(x)) puede ser null
+    std::optional<int> itemAt(int internalId) const;
+    ItemSet itemIdsToSet(const std::vector<int>& ids) const;  // items.get(itemIDToStandard(x)) puede ser null
     int staticLevel(const StaticPokemonOffsets& sp, int i) const;
     void setStaticSpecies(const StaticPokemonOffsets& sp, Species* s);
     void setStaticLevel(const StaticPokemonOffsets& sp, int level, int i);
@@ -214,6 +263,7 @@ private:
     bool havePatchedObedience_ = false;
     std::vector<int> itemOffs_;
     std::vector<std::vector<std::string>> mapNames_;
+    int pickupItemsTableOffset_ = 0;
 };
 
 }  // namespace pr::gen3
