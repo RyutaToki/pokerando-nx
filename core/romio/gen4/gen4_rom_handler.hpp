@@ -182,6 +182,8 @@ private:
     void saveMoves();
     void saveSpeciesStats();
     void saveBasicPokeStats(const Species& pk, Bytes& stats);
+    void loadPokemonPalettes();
+    void savePokemonPalettes();
 
     const Gen4RomEntry* romEntry_ = nullptr;
     std::unique_ptr<nds::NDSRom> baseRom_;

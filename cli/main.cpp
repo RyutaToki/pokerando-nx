@@ -87,7 +87,7 @@ void dumpStatics(pr::gen3::Gen3RomHandler& h) {
     for (const auto& se : h.getStaticPokemon()) pr1(se, 0);
 }
 
-void dumpMore(const pr::gen3::Gen3RomHandler& h) {
+void dumpMore(const pr::RomHandler& h) {
     std::printf("== PALETTES\n");
     for (const auto* pk : h.getSpecies()) {
         if (!pk) continue;
@@ -244,6 +244,13 @@ int main(int argc, char** argv) {
                                 h.isRomValid() ? "true" : "false");
                 } else if (cmd == "dump") {
                     dump(h);
+                    // se vuelca hasta la primera sección que aún no esté portada
+                    try {
+                        dumpMore(h);
+                    } catch (const std::logic_error& e) {
+                        std::fflush(stdout);
+                        std::fprintf(stderr, "%s\n", e.what());
+                    }
                 } else if (cmd == "resave" && argc >= 4) {
                     h.saveRomTo(argv[3]);
                 } else {

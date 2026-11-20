@@ -1,16 +1,12 @@
 // Funciones de Gen4RomHandler todavía sin portar: lanzan una excepción si se usan.
+// Generado por tools/gen4_stubs.py; se regenera al portar cada función.
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-// Se van quitando de aquí a medida que se portan.
 #include <stdexcept>
 
 #include "romio/gen4/gen4_rom_handler.hpp"
 
 namespace pr::gen4 {
 
-std::map<int, std::vector<MoveLearnt>> Gen4RomHandler::getMovesLearnt() const { throw std::logic_error("Gen 4: pendiente: getMovesLearnt"); }
-void Gen4RomHandler::setMovesLearnt(const std::map<int, std::vector<MoveLearnt>>& movesets) { throw std::logic_error("Gen 4: pendiente: setMovesLearnt"); }
-std::map<int, std::vector<int>> Gen4RomHandler::getEggMoves() const { throw std::logic_error("Gen 4: pendiente: getEggMoves"); }
-void Gen4RomHandler::setEggMoves(const std::map<int, std::vector<int>>& eggMoves) { throw std::logic_error("Gen 4: pendiente: setEggMoves"); }
 std::vector<EncounterArea> Gen4RomHandler::getEncounters(bool useTimeOfDay) const { throw std::logic_error("Gen 4: pendiente: getEncounters"); }
 std::vector<EncounterArea> Gen4RomHandler::getSortedEncounters(bool useTimeOfDay) const { throw std::logic_error("Gen 4: pendiente: getSortedEncounters"); }
 void Gen4RomHandler::setEncounters(bool useTimeOfDay, const std::vector<EncounterArea>& areas) { throw std::logic_error("Gen 4: pendiente: setEncounters"); }

@@ -113,7 +113,8 @@ void Gen4RomHandler::loadedROM() {
     loadItems();
     loadSpeciesStats();
     loadMoves();
-    // TODO Gen 4: loadTrainerClasses(), loadTrainers(), loadPokemonPalettes()
+    // TODO Gen 4: loadTrainerClasses(), loadTrainers()
+    loadPokemonPalettes();
     abilityNames_ = getStrings(romEntry_->getInt("AbilityNamesTextOffset"));
     int rt = romEntry_->romType();
     roamerRandomizationEnabled_ = (rt == Type_DP && !romEntry_->getRoamingPokemon().empty()) ||
@@ -349,7 +350,8 @@ void Gen4RomHandler::prepareSaveRom() {
     // AbstractRomHandler.prepareSaveRom: guarda todo lo cargado
     saveMoves();
     saveSpeciesStats();
-    // TODO Gen 4: savePokemonPalettes(), saveTrainerClasses(), saveTrainers()
+    savePokemonPalettes();
+    // TODO Gen 4: saveTrainerClasses(), saveTrainers()
     // AbstractDSRomHandler: la ARM9
     baseRom_->writeARM9(arm9_);
     // Gen4RomHandler
