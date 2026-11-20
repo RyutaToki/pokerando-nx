@@ -86,7 +86,7 @@ std::string nowString() {
     return buf;
 }
 
-static json readJson(const std::string& path) {
+static json parseFile(const std::string& path) {
     std::ifstream f(path);
     if (!f) return json();
     try {
@@ -94,6 +94,14 @@ static json readJson(const std::string& path) {
     } catch (...) {
         return json();
     }
+}
+
+// Si quedó un .tmp válido (escritura que no llegó a renombrarse: en la Switch rename() no puede
+// sustituir un archivo que ya existe), es la versión más reciente: se usa esa.
+static json readJson(const std::string& path) {
+    json t = parseFile(path + ".tmp");
+    if (!t.is_null()) return t;
+    return parseFile(path);
 }
 
 static bool writeJson(const std::string& path, const json& j) {
@@ -107,6 +115,13 @@ static bool writeJson(const std::string& path, const json& j) {
     }
     std::error_code ec;
     fs::rename(tmp, path, ec);
+    if (ec) {
+        // en la Switch no se puede renombrar encima de un archivo existente: se borra antes
+        ec.clear();
+        fs::remove(path, ec);
+        ec.clear();
+        fs::rename(tmp, path, ec);
+    }
     return !ec;
 }
 
