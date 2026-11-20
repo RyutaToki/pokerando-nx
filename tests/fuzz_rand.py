@@ -69,7 +69,13 @@ for k in range(n):
     args += [f"{e}={gen.choice(v.split())}" for e, v in ENUMS.items() if gen.random() < 0.6]
     args += [f"{i}={gen.randint(*r)}" for i, r in INTS.items() if gen.random() < 0.5]
     seed = gen.randint(0, 2**31)
-    r = subprocess.run(["tests/compare_rand.sh", rom, str(seed)] + args, capture_output=True, text=True)
+    try:
+        r = subprocess.run(["tests/compare_rand.sh", rom, str(seed)] + args, capture_output=True, text=True, timeout=900)
+    except subprocess.TimeoutExpired:
+        subprocess.run(["pkill", "-f", f"Randomize .* {seed} "])  # FVX colgado
+        print(f"[{k + 1}/{n}] TIEMPO AGOTADO (semilla {seed}) {' '.join(args)}", flush=True)
+        stats["MAL"] += 1
+        continue
     line = (r.stdout.strip().splitlines() or [r.stderr.strip()[-300:]])[-1]
     if r.returncode == 0:
         stats["OK"] += 1
