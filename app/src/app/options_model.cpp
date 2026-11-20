@@ -532,7 +532,7 @@ std::vector<TabDef> build() {
             tweakFromGen4("Correr sin Deportivas", mt::RUN_WITHOUT_RUNNING_SHOES),
             tweak("Barras de PS y EXP más rápidas", mt::FASTER_HP_AND_EXP_BARS),
             tweak("Mundo Distorsión más corto", mt::FAST_DISTORTION_WORLD),
-            tweak("Tipos actualizados de las formas de Rotom", mt::UPDATE_ROTOM_FORME_TYPING),
+            tweak("Rotom con tipos actualizados", mt::UPDATE_ROTOM_FORME_TYPING),
             tog("Evoluciones imposibles por nivel", [](const OptState& o) { return o.s.changeImpossibleEvolutions; },
                 [](OptState& o, bool b) { o.s.changeImpossibleEvolutions = b; }),
             tog("Generar log de spoilers", [](const OptState& o) { return o.spoilerLog; }, [](OptState& o, bool b) { o.spoilerLog = b; }),

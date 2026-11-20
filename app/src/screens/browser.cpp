@@ -279,6 +279,23 @@ private:
                     det->integrity = ok && crc == expected ? Detection::Integrity::OK : Detection::Integrity::MODIFIED;
                 });
             });
+        } else if (det_->info.supported && det_->info.platform == "NDS") {
+            // DS: la comprobación de FVX (CRC de la ARM9, los overlays y los archivos clave)
+            det_->integrity = Detection::Integrity::CHECKING;
+            std::string path = e.path;
+            auto det = det_;
+            auto alive = alive_;
+            brls::async([path, det, alive] {
+                bool valid = false;
+                try {
+                    valid = pr::openRom(path)->isRomValid();
+                } catch (...) {
+                }
+                brls::sync([=] {
+                    if (!*alive || det->path != path) return;
+                    det->integrity = valid ? Detection::Integrity::OK : Detection::Integrity::MODIFIED;
+                });
+            });
         } else if (det_->info.supported) {
             det_->integrity = Detection::Integrity::MODIFIED;
         }
