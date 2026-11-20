@@ -5,7 +5,7 @@ namespace pr {
 using S = Settings;
 
 GameRandomizer::GameRandomizer(Settings& settings, RomHandler& rh)
-    : settings_(settings), rh_(rh), starter_(rh, settings, nonCosmetic_) {}
+    : settings_(settings), rh_(rh), starter_(rh, settings, nonCosmetic_), wild_(rh, settings, nonCosmetic_) {}
 
 void GameRandomizer::notPorted(const char* what) {
     throw std::runtime_error(std::string("Opción aún no portada: ") + what);
@@ -60,7 +60,8 @@ void GameRandomizer::applyRandomizers() {
                                 settings_.moveTutorsCompatibilityMod != S::MoveTutorsCompatibilityMod::UNCHANGED ||
                                 settings_.tutorLevelUpMoveSanity))
         notPorted("tutores");
-    if (settings_.useMinimumCatchRate || settings_.randomizeWildPokemon || settings_.wildLevelsModified) notPorted("salvajes");
+    if (settings_.useMinimumCatchRate) wild_.changeCatchRates();
+    if (settings_.randomizeWildPokemon || settings_.wildLevelsModified) wild_.randomizeEncounters();
     if (settings_.trainersLevelModified || settings_.additionalRegularTrainerPokemon > 0 ||
         settings_.additionalImportantTrainerPokemon > 0 || settings_.additionalBossTrainerPokemon > 0 ||
         settings_.settingBattleStyle.isBattleStyleChanged() || settings_.trainersMod != S::TrainersMod::UNCHANGED ||

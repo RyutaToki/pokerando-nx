@@ -5,6 +5,7 @@
 #include <string>
 
 #include "random/starter_randomizer.hpp"
+#include "random/wild_encounter_randomizer.hpp"
 #include "romio/rom_handler.hpp"
 #include "settings/settings.hpp"
 #include "util/java_random.hpp"
@@ -33,6 +34,7 @@ private:
     RomHandler& rh_;
     JavaRandom nonCosmetic_, cosmetic_;
     StarterRandomizer starter_;
+    WildEncounterRandomizer wild_;
     int checkValue_ = 0;
 };
 
