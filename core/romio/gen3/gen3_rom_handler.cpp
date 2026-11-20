@@ -76,7 +76,9 @@ void Gen3RomHandler::loadRom(std::vector<uint8_t> bytes, const std::string& file
     // loadGameData
     loadItems();
     loadSpeciesStats();
-    // TODO(port): loadEvolutions, loadMoves, loadPokemonPalettes, loadTrainerClasses, loadTrainers
+    // TODO(port): loadEvolutions
+    loadMoves();
+    // TODO(port): loadPokemonPalettes, loadTrainerClasses, loadTrainers
     loadAbilityNames();
 }
 

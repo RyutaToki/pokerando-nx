@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "gamedata/move.hpp"
 #include "gamedata/species.hpp"
 #include "gamedata/types.hpp"
 #include "romio/gen3/gen3_rom_entry.hpp"
@@ -37,6 +38,9 @@ public:
     // objetos indexados por id estándar (posiciones vacías = nullopt)
     const std::vector<std::optional<Item>>& items() const { return items_; }
     const std::string& abilityName(int n) const { return abilityNames_.at(n); }
+    // movimientos por número (posición 0 vacía)
+    const std::vector<std::optional<Move>>& moves() const { return moves_; }
+    int perfectAccuracy() const { return perfectAccuracy_; }
 
     const std::vector<uint8_t>& rom() const { return rom_; }
 
@@ -51,6 +55,10 @@ private:
     void constructPokemonList();
     void loadBasicPokeStats(Species& pk, int offset);
     void loadAbilityNames();
+    void loadMoves();
+    void loadStatChangesFromEffect(Move& move, int secondaryEffectChance);
+    void loadStatusFromEffect(Move& move, int secondaryEffectChance);
+    void loadMiscMoveInfoFromEffect(Move& move, int secondaryEffectChance);
     int generationOf(const Species& pk) const;
 
     std::string readString(int offset, int maxLength) const;
@@ -77,6 +85,8 @@ private:
     int numRealPokemon_ = 0;
     std::vector<std::optional<Item>> items_;
     std::vector<std::string> abilityNames_;
+    std::vector<std::optional<Move>> moves_;
+    int perfectAccuracy_ = 100;  // valor por defecto de AbstractRomHandler
     std::vector<std::string> pokeNames_;
     std::vector<int> internalToPokedex_, pokedexToInternal_;
     int pokedexCount_ = 0;

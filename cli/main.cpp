@@ -33,6 +33,19 @@ void dump(const pr::gen3::Gen3RomHandler& h) {
     }
     std::printf("== ABILITIES\n");
     for (int i = 0; i <= 77; i++) std::printf("%d|%s\n", i, h.abilityName(i).c_str());
+    std::printf("== MOVES perfectAccuracy=%d\n", h.perfectAccuracy());
+    for (const auto& m : h.moves()) {
+        if (!m) continue;
+        std::printf("%d|%s|pw=%d|pp=%d|acc=%.2f|%s|%s|eff=%d|tgt=%d|pri=%d|contact=%d|sound=%d|hits=%.2f|%s",
+                    m->number, m->name.c_str(), m->power, m->pp, m->hitratio, m->type ? pr::typeName(*m->type) : "null",
+                    pr::moveCategoryName(m->category), m->effectIndex, m->target, m->priority, m->makesContact,
+                    m->isSoundMove, m->hitCount, pr::statChangeMoveTypeName(m->statChangeMoveType));
+        for (const auto& sc : m->statChanges) std::printf("|%s,%d,%.2f", pr::statChangeTypeName(sc.type), sc.stages, sc.percentChance);
+        std::printf("|%s|%s|%.2f|flinch=%.2f|recoil=%d|absorb=%d|crit=%s|charge=%d|recharge=%d|trap=%d\n",
+                    pr::statusMoveTypeName(m->statusMoveType), pr::statusTypeName(m->statusType), m->statusPercentChance,
+                    m->flinchPercentChance, m->recoilPercent, m->absorbPercent, pr::criticalChanceName(m->criticalChance),
+                    m->isChargeMove, m->isRechargeMove, m->isTrapMove);
+    }
     std::printf("== SPECIES\n");
     for (const auto* pk : h.species()) {
         if (!pk) continue;
