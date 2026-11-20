@@ -209,6 +209,11 @@ public:
     }
 
     // --- entrenadores ---
+    virtual SpeciesSet getBannedFormesForTrainerPokemon() const { return SpeciesSet(); }
+    virtual std::vector<int> getMainPlaythroughTrainers() const { return {}; }
+    virtual void makeDoubleBattleModePossible() {}
+    virtual bool canChangeTrainerText() const { return true; }
+    SpeciesSet getMainGameWildPokemonSpecies(bool useTimeOfDay) const;
     const std::vector<std::unique_ptr<TrainerClass>>& getTrainerClasses() const { return trainerClasses_; }
     const std::vector<TrainerPtr>& getTrainers() const { return trainers_; }
     std::vector<TrainerPtr>& getTrainers() { return trainers_; }

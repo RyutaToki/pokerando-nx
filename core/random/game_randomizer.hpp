@@ -5,6 +5,7 @@
 #include <string>
 
 #include "random/starter_randomizer.hpp"
+#include "random/trainer_pokemon_randomizer.hpp"
 #include "random/wild_encounter_randomizer.hpp"
 #include "romio/rom_handler.hpp"
 #include "settings/settings.hpp"
@@ -35,6 +36,7 @@ private:
     JavaRandom nonCosmetic_, cosmetic_;
     StarterRandomizer starter_;
     WildEncounterRandomizer wild_;
+    TrainerPokemonRandomizer trainerPoke_;
     int checkValue_ = 0;
 };
 

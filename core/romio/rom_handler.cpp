@@ -157,6 +157,18 @@ void RomHandler::markImprovedEvolutions(Species* pk) {
     preImprovedEvolutions_[pk->number()] = std::move(copy);
 }
 
+SpeciesSet RomHandler::getMainGameWildPokemonSpecies(bool useTimeOfDay) const {
+    SpeciesSet wild;
+    for (const auto& area : getEncounters(useTimeOfDay)) {
+        if (area.isPartiallyPostGame()) {
+            for (int i = 0; i < area.partiallyPostGameCutoff; i++) wild.add(area.encounters.at(i)->species());
+        } else if (!area.postGame) {
+            for (const auto& e : area.encounters) wild.add(e->species());
+        }
+    }
+    return wild;
+}
+
 ItemSet RomHandler::getAllowedItems() const {
     ItemSet s;
     for (const auto& it : getItems())

@@ -10,6 +10,14 @@ public class MakeSettings {
         s.setRomName("Pokemon Emerald (S)");
         for (String arg : args) {
             String[] kv = arg.split("=", 2);
+            if (kv[0].equals("battleStyleMod")) {
+                s.getBattleStyle().setModification(com.uprfvx.romio.gamedata.BattleStyle.Modification.valueOf(kv[1]));
+                continue;
+            }
+            if (kv[0].equals("battleStyle")) {
+                s.getBattleStyle().setStyle(com.uprfvx.romio.gamedata.BattleStyle.Style.valueOf(kv[1]));
+                continue;
+            }
             Field f = Settings.class.getDeclaredField(kv[0]);
             f.setAccessible(true);
             Class<?> t = f.getType();

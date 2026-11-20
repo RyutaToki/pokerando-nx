@@ -5,7 +5,7 @@ namespace pr {
 using S = Settings;
 
 GameRandomizer::GameRandomizer(Settings& settings, RomHandler& rh)
-    : settings_(settings), rh_(rh), starter_(rh, settings, nonCosmetic_), wild_(rh, settings, nonCosmetic_) {}
+    : settings_(settings), rh_(rh), starter_(rh, settings, nonCosmetic_), wild_(rh, settings, nonCosmetic_), trainerPoke_(rh, settings, nonCosmetic_) {}
 
 void GameRandomizer::notPorted(const char* what) {
     throw std::runtime_error(std::string("Opción aún no portada: ") + what);
@@ -62,17 +62,26 @@ void GameRandomizer::applyRandomizers() {
         notPorted("tutores");
     if (settings_.useMinimumCatchRate) wild_.changeCatchRates();
     if (settings_.randomizeWildPokemon || settings_.wildLevelsModified) wild_.randomizeEncounters();
-    if (settings_.trainersLevelModified || settings_.additionalRegularTrainerPokemon > 0 ||
-        settings_.additionalImportantTrainerPokemon > 0 || settings_.additionalBossTrainerPokemon > 0 ||
-        settings_.settingBattleStyle.isBattleStyleChanged() || settings_.trainersMod != S::TrainersMod::UNCHANGED ||
-        settings_.trainersEvolveTheirPokemon ||
-        (settings_.startersMod != S::StartersMod::UNCHANGED && settings_.rivalCarriesStarterThroughout))
-        notPorted("entrenadores");
+    {
+        auto& tp = trainerPoke_;
+        if (settings_.trainersLevelModified) tp.applyTrainerLevelModifier();
+        bool added = settings_.additionalRegularTrainerPokemon > 0 || settings_.additionalImportantTrainerPokemon > 0 ||
+                     settings_.additionalBossTrainerPokemon > 0;
+        if (added) tp.addTrainerPokemon();
+        if (settings_.settingBattleStyle.isBattleStyleChanged()) tp.modifyBattleStyle();
+        if ((settings_.trainersMod != S::TrainersMod::UNCHANGED || settings_.startersMod != S::StartersMod::UNCHANGED) &&
+            settings_.rivalCarriesStarterThroughout)
+            tp.makeRivalCarryStarter();
+        if (settings_.trainersMod != S::TrainersMod::UNCHANGED || added) tp.randomizeTrainerPokes();
+        else if (settings_.trainersEvolveTheirPokemon) tp.evolveTrainerPokemonAsFarAsLegal();
+    }
     if (settings_.betterBossTrainerMovesets || settings_.betterImportantTrainerMovesets || settings_.betterRegularTrainerMovesets)
         notPorted("movimientos de entrenadores");
+    // maybeFixTrainerZCrystals
+    if (trainerPoke_.isChangesMade()) trainerPoke_.randomUsableZCrystals();
     if (settings_.randomizeHeldItemsForBossTrainerPokemon || settings_.randomizeHeldItemsForImportantTrainerPokemon ||
         settings_.randomizeHeldItemsForRegularTrainerPokemon)
-        notPorted("objetos de entrenadores");
+        trainerPoke_.randomizeTrainerHeldItems();
     if (settings_.randomizeTrainerClassNames || settings_.randomizeTrainerNames) notPorted("nombres de entrenadores");
     if (settings_.movesetsMod == S::MovesetsMod::METRONOME_ONLY) notPorted("solo Metrónomo");
     if (rh_.canChangeStaticPokemon() && (settings_.staticPokemonMod != S::StaticPokemonMod::UNCHANGED || settings_.staticLevelModified))
