@@ -8,6 +8,7 @@
 #include "random/misc_randomizers.hpp"
 #include "random/move_randomizers.hpp"
 #include "random/name_randomizers.hpp"
+#include "random/palette_randomizer.hpp"
 #include "random/type_effectiveness_randomizer.hpp"
 #include "random/updaters.hpp"
 #include "random/species_base_stat_randomizer.hpp"
@@ -60,6 +61,7 @@ private:
     MoveNameRandomizer moveNames_;
     TrainerNameRandomizer trainerNames_;
     TypeEffectivenessRandomizer typeEff_;
+    Gen3to5PaletteRandomizer palettes_;
     TypeEffectivenessUpdater typeEffUpdater_;
     MoveUpdater moveUpdater_;
     SpeciesBaseStatUpdater bsUpdater_;

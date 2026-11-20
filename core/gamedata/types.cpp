@@ -9,6 +9,12 @@
 
 namespace pr {
 
+std::optional<Type> typeFromName(std::string_view name) {
+    for (int i = 0; i <= static_cast<int>(Type::FAIRY); i++)
+        if (name == typeName(static_cast<Type>(i))) return static_cast<Type>(i);
+    return std::nullopt;
+}
+
 const char* typeName(Type t) {
     static const char* names[] = {"NORMAL", "FIGHTING", "FLYING", "GRASS", "WATER", "FIRE", "ROCK", "GROUND",
                                   "PSYCHIC", "BUG", "DRAGON", "ELECTRIC", "GHOST", "POISON", "ICE", "STEEL",

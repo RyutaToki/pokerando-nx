@@ -223,6 +223,8 @@ public:
     virtual TrainerNameMode trainerNameMode() const { return TrainerNameMode::MAX_LENGTH; }
     virtual std::vector<int> getTCNameLengthsByTrainer() const { return {}; }
     virtual bool fixedTrainerClassNamesLength() const { return false; }
+    // sufijo de los ficheros data/palettes/pokePalettes*.txt; vacío si no hay
+    virtual std::string getPaletteFilesID() const { return ""; }
     SpeciesSet getMainGameWildPokemonSpecies(bool useTimeOfDay) const;
     const std::vector<std::unique_ptr<TrainerClass>>& getTrainerClasses() const { return trainerClasses_; }
     const std::vector<TrainerPtr>& getTrainers() const { return trainers_; }

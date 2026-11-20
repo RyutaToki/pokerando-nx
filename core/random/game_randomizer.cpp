@@ -5,7 +5,7 @@ namespace pr {
 using S = Settings;
 
 GameRandomizer::GameRandomizer(Settings& settings, RomHandler& rh)
-    : settings_(settings), rh_(rh), bs_(rh, settings, nonCosmetic_), movesets_(rh, settings, nonCosmetic_), evo_(rh, settings, nonCosmetic_), encItems_(rh, settings, nonCosmetic_), intro_(rh, settings, nonCosmetic_), misc_(rh, settings, nonCosmetic_), moveData_(rh, settings, nonCosmetic_), tmt_(rh, settings, nonCosmetic_), comp_(rh, settings, nonCosmetic_), trainerMoves_(rh, settings, nonCosmetic_), moveNames_(rh, settings, cosmetic_), trainerNames_(rh, settings, cosmetic_), typeEff_(rh, settings, nonCosmetic_), typeEffUpdater_(rh), moveUpdater_(rh), bsUpdater_(rh), types_(rh, settings, nonCosmetic_), abilities_(rh, settings, nonCosmetic_), starter_(rh, settings, nonCosmetic_), statics_(rh, settings, nonCosmetic_), trades_(rh, settings, nonCosmetic_), items_(rh, settings, nonCosmetic_), wild_(rh, settings, nonCosmetic_), trainerPoke_(rh, settings, nonCosmetic_) {}
+    : settings_(settings), rh_(rh), bs_(rh, settings, nonCosmetic_), movesets_(rh, settings, nonCosmetic_), evo_(rh, settings, nonCosmetic_), encItems_(rh, settings, nonCosmetic_), intro_(rh, settings, nonCosmetic_), misc_(rh, settings, nonCosmetic_), moveData_(rh, settings, nonCosmetic_), tmt_(rh, settings, nonCosmetic_), comp_(rh, settings, nonCosmetic_), trainerMoves_(rh, settings, nonCosmetic_), moveNames_(rh, settings, cosmetic_), trainerNames_(rh, settings, cosmetic_), typeEff_(rh, settings, nonCosmetic_), palettes_(rh, settings, cosmetic_), typeEffUpdater_(rh), moveUpdater_(rh), bsUpdater_(rh), types_(rh, settings, nonCosmetic_), abilities_(rh, settings, nonCosmetic_), starter_(rh, settings, nonCosmetic_), statics_(rh, settings, nonCosmetic_), trades_(rh, settings, nonCosmetic_), items_(rh, settings, nonCosmetic_), wild_(rh, settings, nonCosmetic_), trainerPoke_(rh, settings, nonCosmetic_) {}
 
 void GameRandomizer::notPorted(const char* what) {
     throw std::runtime_error(std::string("Opción aún no portada: ") + what);
@@ -130,7 +130,7 @@ void GameRandomizer::applyRandomizers() {
     if (settings_.balanceShopPrices) rh_.setBalancedShopPrices();
     if (settings_.addCheapRareCandiesToShops) items_.addCheapRareCandiesToShops();
     if (settings_.pickupItemsMod == S::PickupItemsMod::RANDOM) items_.randomizePickupItems();
-    if (settings_.pokemonPalettesMod == S::PokemonPalettesMod::RANDOM) notPorted("paletas");
+    if (settings_.pokemonPalettesMod == S::PokemonPalettesMod::RANDOM) palettes_.randomizePokemonPalettes();
     if (settings_.randomizeIntroMon) intro_.randomizeIntroPokemon();
 }
 

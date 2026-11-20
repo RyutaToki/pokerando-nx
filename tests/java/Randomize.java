@@ -10,6 +10,18 @@ public class Randomize {
     public static void main(String[] a) throws Exception {
         PrintStream realOut = System.out;
         System.setOut(new PrintStream(OutputStream.nullOutputStream()));
+        // FVX calibra su selector de colores con un Random sin semilla (no reproducible);
+        // aquí se fija el valor teórico 3.0, el mismo que usa PokéRando NX
+        java.lang.reflect.Field fSel = Class.forName("com.uprfvx.romio.graphics.palettes.Gen3to5TypeColors")
+                .getDeclaredField("randomColorSelector");
+        fSel.setAccessible(true);
+        Object sel = fSel.get(null);
+        java.lang.reflect.Field fPts = sel.getClass().getDeclaredField("randomPointSelector");
+        fPts.setAccessible(true);
+        Object pts = fPts.get(sel);
+        java.lang.reflect.Field fMax = pts.getClass().getDeclaredField("maxValue");
+        fMax.setAccessible(true);
+        fMax.setDouble(pts, 3.0);
         RomHandler h = new RomOpener().openRomFile(new File(a[0])).getRomHandler();
         Settings s = Settings.fromString(a[1]);
         s.tweakForRom(h);

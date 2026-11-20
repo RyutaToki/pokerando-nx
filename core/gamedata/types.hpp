@@ -11,6 +11,7 @@ enum class Type {
     POISON, ICE, STEEL, DARK, FAIRY
 };
 const char* typeName(Type t);  // nombre como en Java (NORMAL, FIGHTING, ...)
+std::optional<Type> typeFromName(std::string_view name);  // Type.valueOf
 
 enum class ExpCurve { SLOW, MEDIUM_SLOW, MEDIUM_FAST, FAST, ERRATIC, FLUCTUATING };
 std::optional<ExpCurve> expCurveFromByte(int b);
