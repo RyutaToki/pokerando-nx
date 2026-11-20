@@ -5,7 +5,7 @@ namespace pr {
 using S = Settings;
 
 GameRandomizer::GameRandomizer(Settings& settings, RomHandler& rh)
-    : settings_(settings), rh_(rh), bs_(rh, settings, nonCosmetic_), evo_(rh, settings, nonCosmetic_), encItems_(rh, settings, nonCosmetic_), intro_(rh, settings, nonCosmetic_), misc_(rh, settings, nonCosmetic_), types_(rh, settings, nonCosmetic_), abilities_(rh, settings, nonCosmetic_), starter_(rh, settings, nonCosmetic_), wild_(rh, settings, nonCosmetic_), trainerPoke_(rh, settings, nonCosmetic_) {}
+    : settings_(settings), rh_(rh), bs_(rh, settings, nonCosmetic_), evo_(rh, settings, nonCosmetic_), encItems_(rh, settings, nonCosmetic_), intro_(rh, settings, nonCosmetic_), misc_(rh, settings, nonCosmetic_), types_(rh, settings, nonCosmetic_), abilities_(rh, settings, nonCosmetic_), starter_(rh, settings, nonCosmetic_), trades_(rh, settings, nonCosmetic_), items_(rh, settings, nonCosmetic_), wild_(rh, settings, nonCosmetic_), trainerPoke_(rh, settings, nonCosmetic_) {}
 
 void GameRandomizer::notPorted(const char* what) {
     throw std::runtime_error(std::string("Opción aún no portada: ") + what);
@@ -87,12 +87,13 @@ void GameRandomizer::applyRandomizers() {
     if (settings_.movesetsMod == S::MovesetsMod::METRONOME_ONLY) notPorted("solo Metrónomo");
     if (rh_.canChangeStaticPokemon() && (settings_.staticPokemonMod != S::StaticPokemonMod::UNCHANGED || settings_.staticLevelModified))
         notPorted("estáticos");
-    if (settings_.inGameTradesMod != S::InGameTradesMod::UNCHANGED) notPorted("intercambios");
-    if (settings_.fieldItemsMod != S::FieldItemsMod::UNCHANGED) notPorted("objetos del suelo");
-    if (settings_.shopItemsMod != S::ShopItemsMod::UNCHANGED) notPorted("tiendas");
+    if (settings_.inGameTradesMod != S::InGameTradesMod::UNCHANGED) trades_.randomizeIngameTrades();
+    if (settings_.fieldItemsMod != S::FieldItemsMod::UNCHANGED) items_.randomizeFieldItems();
+    if (settings_.shopItemsMod == S::ShopItemsMod::SHUFFLE) items_.shuffleShopItems();
+    else if (settings_.shopItemsMod == S::ShopItemsMod::RANDOM) items_.randomizeShopItems();
     if (settings_.balanceShopPrices) rh_.setBalancedShopPrices();
-    if (settings_.addCheapRareCandiesToShops) notPorted("Caramelos Raros baratos");
-    if (settings_.pickupItemsMod == S::PickupItemsMod::RANDOM) notPorted("Recogida");
+    if (settings_.addCheapRareCandiesToShops) items_.addCheapRareCandiesToShops();
+    if (settings_.pickupItemsMod == S::PickupItemsMod::RANDOM) items_.randomizePickupItems();
     if (settings_.pokemonPalettesMod == S::PokemonPalettesMod::RANDOM) notPorted("paletas");
     if (settings_.randomizeIntroMon) intro_.randomizeIntroPokemon();
 }

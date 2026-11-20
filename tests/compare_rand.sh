@@ -13,7 +13,10 @@ for j in MakeSettings Randomize; do
 done
 cmake --build build >/dev/null
 SETTINGS=$(java -cp "$OUT/jc:$CP" MakeSettings "$@")
-java -cp "$OUT/jc:$CP" Randomize "$ROM" "$SETTINGS" "$SEED" "$OUT/rand_java.bin" "$OUT/rand_java.log" > /dev/null
+# FVX lee las listas de nombres de "data/..." relativo al directorio de trabajo
+ABS=$(pwd)
+ROMABS=$(realpath "$ROM")
+(cd reference/fvx/random/src/main/resources && java -cp "$ABS/$OUT/jc:$(echo $CP | sed "s#reference#$ABS/reference#g")" Randomize "$ROMABS" "$SETTINGS" "$SEED" "$ABS/$OUT/rand_java.bin" "$ABS/$OUT/rand_java.log" > /dev/null)
 ./build/cli/pokerando-cli randomize "$ROM" "$SETTINGS" "$SEED" "$OUT/rand_cpp.bin"
 if cmp -s "$OUT/rand_java.bin" "$OUT/rand_cpp.bin"; then
     echo "OK [$*] semilla $SEED: ROM idéntica a FVX"

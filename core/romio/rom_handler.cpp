@@ -4,6 +4,7 @@
 #include <cmath>
 #include <stdexcept>
 
+#include "constants/global_constants.hpp"
 #include "constants/item_ids.hpp"
 #include "romio/services/restricted_species_service.hpp"
 
@@ -168,6 +169,16 @@ SpeciesSet RomHandler::getMainGameWildPokemonSpecies(bool useTimeOfDay) const {
     }
     return wild;
 }
+
+ItemSet RomHandler::idsToItemSet(const std::vector<int>& ids) const {
+    ItemSet s;
+    const auto& items = getItems();
+    for (int id : ids)
+        if (id < static_cast<int>(items.size()) && items[id]) s.add(id);
+    return s;
+}
+ItemSet RomHandler::getXItems() const { return idsToItemSet(global::xItems); }
+ItemSet RomHandler::getRegularShopItems() const { return idsToItemSet(global::regularShopItems); }
 
 ItemSet RomHandler::getAllowedItems() const {
     ItemSet s;

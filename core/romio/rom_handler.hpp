@@ -198,6 +198,10 @@ public:
 
     // Set<Item> de objetos permitidos / no malos (Collectors.toSet en Java)
     ItemSet getAllowedItems() const;
+    ItemSet idsToItemSet(const std::vector<int>& ids) const;  // itemIdsToSet
+    ItemSet getXItems() const;
+    ItemSet getRegularShopItems() const;
+    virtual ItemSet getMegaStones() const { return ItemSet(); }
     ItemSet getNonBadItems() const;
     // triángulo de tipos de los iniciales
     void setStarterTypeTriangle(const std::vector<Type>& t);
