@@ -1,6 +1,7 @@
 #include "app/session.hpp"
 
 #include <chrono>
+#include <cstdio>
 #include <fstream>
 #include <random>
 
@@ -27,7 +28,7 @@ bool applySettingsString(const std::string& str, std::string* error) {
     try {
         S s = S::fromString(pr::jc::trim(str));
         Session& se = session();
-        if (se.preview) s.tweakForRom(*se.preview);
+        if (se.preview) tweakForRom(s, *se.preview);
         se.opts.s = s;
         return true;
     } catch (const std::exception& e) {
@@ -116,9 +117,10 @@ std::string outputPath(const std::string& romPath, const pr::RomInfo& info, int6
 JobResult runRandomization(const std::string& romPath, const OptState& opts, int64_t seed, const std::function<void(Phase)>& onPhase) {
     JobResult r;
     auto t0 = std::chrono::steady_clock::now();
+    std::string out, logPath;
     try {
         pr::RomInfo info = pr::detectRom(romPath);
-        std::string out = outputPath(romPath, info, seed);
+        out = outputPath(romPath, info, seed);
         if (!makeDirs(parentDir(out))) throw std::runtime_error("No se pudo crear la carpeta " + parentDir(out));
         uint64_t need = info.size + (1u << 20);
         uint64_t free = freeSpace(parentDir(out));
@@ -126,10 +128,10 @@ JobResult runRandomization(const std::string& romPath, const OptState& opts, int
             throw std::runtime_error("No hay espacio suficiente en la SD: hacen falta " + formatSize(need) + " y quedan " + formatSize(free) + ".");
         auto rh = pr::openRom(romPath);
         S s = opts.s;
-        s.tweakForRom(*rh);
+        tweakForRom(s, *rh);
         pr::GameRandomizer gr(s, *rh);
         gr.onPhase = onPhase;
-        std::string logPath = out.substr(0, out.size() - 4) + ".log.txt";
+        logPath = out.substr(0, out.size() - 4) + ".log.txt";
         if (opts.spoilerLog) {
             std::ofstream log(logPath, std::ios::binary);
             gr.randomize(out, seed, &log);
@@ -147,6 +149,9 @@ JobResult runRandomization(const std::string& romPath, const OptState& opts, int
         r.ok = true;
     } catch (const std::exception& e) {
         r.error = e.what();
+        // no dejar archivos a medias
+        if (!out.empty()) std::remove(out.c_str());
+        if (!logPath.empty()) std::remove(logPath.c_str());
     }
     r.seconds = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();
     return r;

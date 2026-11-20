@@ -7,7 +7,19 @@ namespace app {
 using S = pr::Settings;
 namespace mt = pr::misctweak;
 
-pr::Settings defaultSettings() { return pr::Settings(); }
+pr::Settings defaultSettings() {
+    pr::Settings s;
+    s.selectedEXPCurve = pr::ExpCurve::MEDIUM_FAST;
+    return s;
+}
+
+void tweakForRom(pr::Settings& s, const pr::RomHandler& rh) {
+    s.tweakForRom(rh);
+    if (!s.selectedEXPCurve) {
+        auto curves = rh.getExpCurves();
+        if (!curves.empty()) s.selectedEXPCurve = curves[0];
+    }
+}
 
 RomCaps RomCaps::from(const pr::RomHandler& rh) {
     RomCaps c;

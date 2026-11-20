@@ -25,7 +25,17 @@ Focusable::Focusable() {
 void Focusable::setEnabled(bool e) {
     enabled_ = e;
     setFocusable(e);
-    setAlpha(e ? 1.0f : 0.4f);
+}
+
+void Focusable::draw(NVGcontext* vg, float x, float y, float w, float h, brls::Style, brls::FrameContext*) {
+    if (enabled_) {
+        drawContent(vg, x, y, w, h);
+        return;
+    }
+    nvgSave(vg);
+    nvgGlobalAlpha(vg, 0.4f);
+    drawContent(vg, x, y, w, h);
+    nvgRestore(vg);
 }
 
 // ---------- Text ----------
@@ -63,7 +73,7 @@ MenuButton::MenuButton(Icon icon, std::string label) : icon_(icon), label_(std::
     setHeight(72);
 }
 
-void MenuButton::draw(NVGcontext* vg, float x, float y, float w, float h, brls::Style, brls::FrameContext*) {
+void MenuButton::drawContent(NVGcontext* vg, float x, float y, float w, float h) {
     bool f = isFocused();
     fillRRect(vg, x, y, w, h, 10, colors().surface);
     if (f) focusBorder(vg, x, y, w, h, 10);
@@ -76,7 +86,7 @@ FileRow::FileRow(Kind kind, std::string name, std::string right) : kind_(kind), 
     setHeight(60);
 }
 
-void FileRow::draw(NVGcontext* vg, float x, float y, float w, float h, brls::Style, brls::FrameContext*) {
+void FileRow::drawContent(NVGcontext* vg, float x, float y, float w, float h) {
     bool f = isFocused();
     const auto& c = colors();
     if (f) {
@@ -105,7 +115,7 @@ ListRow::ListRow(std::string title, std::string subtitle, std::string badge)
     setHeight(76);
 }
 
-void ListRow::draw(NVGcontext* vg, float x, float y, float w, float h, brls::Style, brls::FrameContext*) {
+void ListRow::drawContent(NVGcontext* vg, float x, float y, float w, float h) {
     bool f = isFocused();
     const auto& c = colors();
     fillRRect(vg, x, y, w, h, 8, c.surface);
@@ -123,7 +133,7 @@ void ListRow::draw(NVGcontext* vg, float x, float y, float w, float h, brls::Sty
 // ---------- TabItem ----------
 TabItem::TabItem(std::string label) : label_(std::move(label)) { setHeight(48); }
 
-void TabItem::draw(NVGcontext* vg, float x, float y, float w, float h, brls::Style, brls::FrameContext*) {
+void TabItem::drawContent(NVGcontext* vg, float x, float y, float w, float h) {
     const auto& c = colors();
     bool f = isFocused();
     if (active_) {
@@ -150,7 +160,7 @@ public:
         setWidth(10);  // base pequeña; flex reparte el ancho
         setOnClick([this] { parent_->setSelected(index_); if (parent_->onChange_) parent_->onChange_(index_); });
     }
-    void draw(NVGcontext* vg, float x, float y, float w, float h, brls::Style, brls::FrameContext*) override {
+    void drawContent(NVGcontext* vg, float x, float y, float w, float h) override {
         bool sel = parent_->selected_ == index_;
         fillRRect(vg, x, y, w, h, 10, colors().surface);
         if (sel || isFocused()) strokeRRect(vg, x, y, w, h, 10, kFocusBorder, sel ? colors().accent : colors().accentHover);
@@ -195,7 +205,7 @@ Toggle::Toggle(std::string label, bool on, std::function<void(bool)> onChange)
     });
 }
 
-void Toggle::draw(NVGcontext* vg, float x, float y, float w, float h, brls::Style, brls::FrameContext*) {
+void Toggle::drawContent(NVGcontext* vg, float x, float y, float w, float h) {
     const auto& c = colors();
     knob_ += ((on_ ? 1.f : 0.f) - knob_) * 0.35f;
     if (std::abs(knob_ - (on_ ? 1.f : 0.f)) < 0.01f) knob_ = on_ ? 1.f : 0.f;
@@ -238,7 +248,7 @@ void Slider::setValue(int v) {
     if (onChange_) onChange_(v);
 }
 
-void Slider::draw(NVGcontext* vg, float x, float y, float w, float h, brls::Style, brls::FrameContext*) {
+void Slider::drawContent(NVGcontext* vg, float x, float y, float w, float h) {
     const auto& c = colors();
     fillRRect(vg, x, y, w, h, 10, c.surface);
     if (isFocused()) focusBorder(vg, x, y, w, h, 10);
@@ -270,7 +280,7 @@ public:
         setWidth(10);
         setOnClick([this] { parent_->selected_ = index_; if (parent_->onChange_) parent_->onChange_(index_); });
     }
-    void draw(NVGcontext* vg, float x, float y, float w, float h, brls::Style, brls::FrameContext*) override {
+    void drawContent(NVGcontext* vg, float x, float y, float w, float h) override {
         const auto& c = colors();
         bool sel = parent_->selected_ == index_;
         if (swatch_) {
@@ -313,7 +323,7 @@ Button::Button(std::string label, bool primary, std::function<void()> onClick) :
     setOnClick(std::move(onClick));
 }
 
-void Button::draw(NVGcontext* vg, float x, float y, float w, float h, brls::Style, brls::FrameContext*) {
+void Button::drawContent(NVGcontext* vg, float x, float y, float w, float h) {
     const auto& c = colors();
     if (primary_) {
         fillRRect(vg, x, y, w, h, 10, isFocused() ? c.accentHover : c.accent);
@@ -355,7 +365,7 @@ float logo(NVGcontext* vg, float x, float cy, bool withName) {
     nvgFill(vg);
     if (!withName) return 44;
     float w = text(vg, x + 44 + 16, cy, "PokéRando NX", font::title, 30, c.text);
-    float v = text(vg, x + 44 + 16 + w + 12, cy + 4, "v0.1", font::regular, 15, c.textMuted);
+    float v = text(vg, x + 44 + 16 + w + 12, cy + 4, "v" PR_VERSION, font::regular, 15, c.textMuted);
     return 44 + 16 + w + 12 + v;
 }
 

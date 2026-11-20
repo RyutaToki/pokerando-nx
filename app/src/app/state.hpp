@@ -24,6 +24,7 @@ std::string nowString();  // "2026-11-20 14:05"
 struct Config {
     int accent = 0;
     std::string lastDir;
+    bool startAtLast = true;  // carpeta inicial del explorador: la última usada o sdmc:/roms/
     std::vector<std::string> favorites;
     bool hideUnsupported = false;
     std::string gbaEmulator = "mgba";       // mgba | retroarch

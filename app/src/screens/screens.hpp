@@ -24,7 +24,7 @@ void pushBrowser();
 void pushOptions();
 void pushRandomize();
 void pushResult(const app::HistoryEntry& e, bool fresh);
-void pushPresets();
+void pushPresets(bool fromOptions = false);  // fromOptions: al cargar, recrea Opciones
 void pushHistory();
 void pushSettings();
 void pushLog(const std::string& path);

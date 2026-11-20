@@ -8,7 +8,9 @@ namespace app {
 using S = pr::Settings;
 
 namespace {
-Preset make(const char* name, const S& s) {
+Preset make(const char* name, S s) {
+    // como en la interfaz de FVX, la curva de EXP siempre tiene valor (la primera del juego: Medium Fast)
+    if (!s.selectedEXPCurve) s.selectedEXPCurve = pr::ExpCurve::MEDIUM_FAST;
     Preset p;
     p.name = name;
     p.settings = s.toString();

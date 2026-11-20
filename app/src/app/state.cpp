@@ -122,6 +122,7 @@ void loadConfig() {
     Config& c = config();
     c.accent = j.value("accent", c.accent);
     c.lastDir = j.value("lastDir", c.lastDir);
+    c.startAtLast = j.value("startAtLast", c.startAtLast);
     c.favorites = j.value("favorites", c.favorites);
     c.hideUnsupported = j.value("hideUnsupported", c.hideUnsupported);
     c.gbaEmulator = j.value("gbaEmulator", c.gbaEmulator);
@@ -133,7 +134,7 @@ void loadConfig() {
 
 void saveConfig() {
     const Config& c = config();
-    json j = {{"accent", c.accent},           {"lastDir", c.lastDir},         {"favorites", c.favorites},
+    json j = {{"accent", c.accent},           {"lastDir", c.lastDir}, {"startAtLast", c.startAtLast},         {"favorites", c.favorites},
               {"hideUnsupported", c.hideUnsupported}, {"gbaEmulator", c.gbaEmulator}, {"ndsEmulator", c.ndsEmulator},
               {"hideStarters", c.hideStarters}, {"spoilerLog", c.spoilerLog}, {"language", c.language}};
     writeJson(dataDir() + "config.json", j);

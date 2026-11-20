@@ -72,10 +72,13 @@ int main(int argc, char* argv[]) {
         try {
             se.preview = pr::openRom(rom);
             se.caps = app::RomCaps::from(*se.preview);
-            se.opts.s.tweakForRom(*se.preview);
+            app::tweakForRom(se.opts.s, *se.preview);
         } catch (...) {
         }
     }
+    if (const char* pre = std::getenv("PR_PRESET"))
+        for (const auto& p : app::loadPresets())
+            if (p.name == pre) app::applyPreset(p);
     std::string s = start ? start : "home";
     if (s == "home") screens::pushHome();
     else if (s == "browser") screens::pushBrowser();
@@ -84,6 +87,8 @@ int main(int argc, char* argv[]) {
     else if (s == "history") screens::pushHistory();
     else if (s == "settings") screens::pushSettings();
     else if (s == "randomize") screens::pushRandomize();
+    else if (s == "log" && std::getenv("PR_LOG")) screens::pushLog(std::getenv("PR_LOG"));
+    else if (s == "starters") screens::pushStarterPicker(nullptr);
     else screens::pushHome();
 
 #if !defined(__SWITCH__)

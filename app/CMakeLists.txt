@@ -11,6 +11,7 @@ add_executable(pokerandonx ${PR_APP_SOURCES})
 target_include_directories(pokerandonx PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(pokerandonx PRIVATE pokerando_core borealis)
 target_compile_options(pokerandonx PRIVATE -Wall -ffunction-sections -fdata-sections)
+target_compile_definitions(pokerandonx PRIVATE PR_VERSION="${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
 
 add_custom_target(pr_resources ALL
     COMMAND ${CMAKE_COMMAND} -E make_directory ${PR_RES_DIR}

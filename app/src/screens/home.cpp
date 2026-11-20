@@ -14,7 +14,7 @@ public:
         setMarginBottom(12);
         setOnClick([this] { pushResult(e_, false); });
     }
-    void draw(NVGcontext* vg, float x, float y, float w, float h, brls::Style, brls::FrameContext*) override {
+    void drawContent(NVGcontext* vg, float x, float y, float w, float h) override {
         const auto& c = colors();
         fillRRect(vg, x, y, w, h, 10, c.bg);
         if (isFocused()) strokeRRect(vg, x, y, w, h, 10, 3, c.accent);

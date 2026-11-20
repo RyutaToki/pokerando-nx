@@ -20,10 +20,34 @@ public:
     void click() {
         if (enabled_ && onClick_) onClick_();
     }
+    // dibuja el contenido atenuado al 40 % si está desactivado
+    void draw(NVGcontext* vg, float x, float y, float w, float h, brls::Style s, brls::FrameContext* c) final;
+    virtual void drawContent(NVGcontext* vg, float x, float y, float w, float h) = 0;
 
 protected:
     std::function<void()> onClick_;
     bool enabled_ = true;
+};
+
+// Ancla invisible: aparca el foco mientras se reconstruye una lista (para que Borealis no
+// se quede apuntando a una vista borrada). Solo es enfocable mientras se usa.
+class FocusAnchor : public brls::View {
+public:
+    FocusAnchor() {
+        setWidth(0);
+        setHeight(0);
+        setFocusable(false);
+        setHideHighlight(true);
+    }
+    void park() {
+        setFocusable(true);
+        brls::Application::giveFocus(this);
+    }
+    void release(brls::View* next) {
+        if (next) brls::Application::giveFocus(next);
+        setFocusable(false);
+    }
+    void draw(NVGcontext*, float, float, float, float, brls::Style, brls::FrameContext*) override {}
 };
 
 // Texto simple de una línea (o varias si wrap), con fuente, tamaño y color propios.
@@ -66,7 +90,7 @@ private:
 class MenuButton : public Focusable {
 public:
     MenuButton(Icon icon, std::string label);
-    void draw(NVGcontext* vg, float x, float y, float w, float h, brls::Style, brls::FrameContext*) override;
+    void drawContent(NVGcontext* vg, float x, float y, float w, float h) override;
 
 private:
     Icon icon_;
@@ -78,8 +102,9 @@ class FileRow : public Focusable {
 public:
     enum class Kind { UP, FOLDER, FILE, UNSUPPORTED };
     FileRow(Kind kind, std::string name, std::string right = "");
-    void draw(NVGcontext* vg, float x, float y, float w, float h, brls::Style, brls::FrameContext*) override;
+    void drawContent(NVGcontext* vg, float x, float y, float w, float h) override;
     void setStar(bool s) { star_ = s; }
+    void setName(const std::string& n) { name_ = n; }
 
 private:
     Kind kind_;
@@ -91,7 +116,7 @@ private:
 class ListRow : public Focusable {
 public:
     ListRow(std::string title, std::string subtitle, std::string badge = "");
-    void draw(NVGcontext* vg, float x, float y, float w, float h, brls::Style, brls::FrameContext*) override;
+    void drawContent(NVGcontext* vg, float x, float y, float w, float h) override;
     void setTitle(const std::string& t) { title_ = t; }
 
 private:
@@ -103,7 +128,7 @@ class TabItem : public Focusable {
 public:
     explicit TabItem(std::string label);
     void setActive(bool a) { active_ = a; }
-    void draw(NVGcontext* vg, float x, float y, float w, float h, brls::Style, brls::FrameContext*) override;
+    void drawContent(NVGcontext* vg, float x, float y, float w, float h) override;
 
 private:
     std::string label_;
@@ -130,7 +155,7 @@ public:
     Toggle(std::string label, bool on, std::function<void(bool)> onChange);
     void setOn(bool on) { on_ = on; }
     bool on() const { return on_; }
-    void draw(NVGcontext* vg, float x, float y, float w, float h, brls::Style, brls::FrameContext*) override;
+    void drawContent(NVGcontext* vg, float x, float y, float w, float h) override;
 
 private:
     std::string label_;
@@ -144,7 +169,7 @@ class Slider : public Focusable {
 public:
     Slider(std::string label, int value, std::function<void(int)> onChange, int min = -50, int max = 50, int step = 5);
     void setValue(int v);
-    void draw(NVGcontext* vg, float x, float y, float w, float h, brls::Style, brls::FrameContext*) override;
+    void drawContent(NVGcontext* vg, float x, float y, float w, float h) override;
 
 private:
     std::string label_;
@@ -173,7 +198,7 @@ class Button : public Focusable {
 public:
     Button(std::string label, bool primary, std::function<void()> onClick);
     void setLabel(const std::string& l) { label_ = l; }
-    void draw(NVGcontext* vg, float x, float y, float w, float h, brls::Style, brls::FrameContext*) override;
+    void drawContent(NVGcontext* vg, float x, float y, float w, float h) override;
 
 private:
     std::string label_;

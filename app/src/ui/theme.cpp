@@ -79,8 +79,11 @@ float text(NVGcontext* vg, float x, float y, const std::string& s, const char* f
     nvgTextAlign(vg, h | NVG_ALIGN_MIDDLE);
     nvgFillColor(vg, c);
     float end = nvgText(vg, x, y, s.c_str(), nullptr);
+    float w = end - x;
+    // con alineación a la derecha o al centro nvgText no devuelve el ancho: se mide aparte
+    if (a != Align::LEFT) w = nvgTextBounds(vg, 0, 0, s.c_str(), nullptr, nullptr);
     nvgTextLetterSpacing(vg, 0);
-    return end - x;
+    return w;
 }
 
 float textWidth(NVGcontext* vg, const std::string& s, const char* fontName, float size, float letterSpacing) {

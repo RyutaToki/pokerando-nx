@@ -13,8 +13,10 @@
 namespace app {
 
 // lo que la app guarda además de Settings
+pr::Settings defaultSettings();
+
 struct OptState {
-    pr::Settings s;
+    pr::Settings s = defaultSettings();
     int shiny = 0;          // índice en kShinyOdds
     bool spoilerLog = true;
 };
@@ -72,6 +74,7 @@ struct TabDef {
 const std::vector<TabDef>& tabs();
 
 // presets de serie
-pr::Settings defaultSettings();
+// tweakForRom + lo que la interfaz de FVX rellena al cargar la ROM (curva de EXP = la primera del juego)
+void tweakForRom(pr::Settings& s, const pr::RomHandler& rh);
 
 }  // namespace app
