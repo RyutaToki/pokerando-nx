@@ -23,6 +23,16 @@ std::string sdRoot() {
 #endif
 }
 
+std::string displayPath(const std::string& path) {
+#ifdef __SWITCH__
+    return path;
+#else
+    std::string root = sdRoot();
+    if (path.compare(0, root.size(), root) == 0) return "sdmc:/" + path.substr(root.size());
+    return path;
+#endif
+}
+
 std::string dataDir() {
 #ifdef __SWITCH__
     return "sdmc:/switch/pokerandonx/";

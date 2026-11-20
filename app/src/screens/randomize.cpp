@@ -181,18 +181,14 @@ public:
         auto* l1 = sectionLabel("GUARDADO EN");
         l1->setMarginBottom(8);
         panel->addView(l1);
-        panel->addView(new PathText(e.romPath));
+        panel->addView(new PathText(app::displayPath(e.romPath)));
 
         auto* spacer = new brls::Box();
         spacer->setGrow(1);
         panel->addView(spacer);
 
+        // «Jugar» solo aparece si hay un emulador instalado
         bool emu = emulatorAvailable(e.platform);
-        if (!emu) {
-            auto* note = new Text("Emulador no encontrado", font::regular, 15, c.textMuted, 24);
-            note->setMarginBottom(6);
-            panel->addView(note);
-        }
         auto* buttons = new brls::Box(brls::Axis::ROW);
         std::string emuName = e.platform == "NDS" ? (app::config().ndsEmulator == "retroarch" ? "RetroArch" : "melonDS")
                                                   : (app::config().gbaEmulator == "retroarch" ? "RetroArch" : "mGBA");
@@ -202,9 +198,11 @@ public:
                            "Aceptar", nullptr, "", nullptr, true);
         });
         play_->setGrow(1);
-        play_->setEnabled(emu && app::exists(e.romPath));
-        buttons->addView(play_);
-        buttons->addView(hspace(12));
+        play_->setEnabled(app::exists(e.romPath));
+        if (emu) {
+            buttons->addView(play_);
+            buttons->addView(hspace(12));
+        }
         log_ = new Button("Ver log de spoilers", false, [this] { pushLog(e_.logPath); });
         log_->setGrow(1);
         log_->setEnabled(!e.logPath.empty() && app::exists(e.logPath));
@@ -225,15 +223,17 @@ public:
             action(brls::BUTTON_B, [] { brls::Application::popActivity(); });
         }
     }
+    ~ResultScreen() override {
+        if (!play_->getParent()) delete play_;
+    }
     void onContentAvailable() override {
-        if (play_->enabled()) brls::Application::giveFocus(play_);
-        else if (log_->enabled()) brls::Application::giveFocus(log_);
-        else brls::Application::giveFocus(play_);
+        if (play_->getParent() && play_->enabled()) brls::Application::giveFocus(play_);
+        else brls::Application::giveFocus(log_);
     }
 
 private:
     app::HistoryEntry e_;
-    Button* play_;
+    Button* play_;  // no se añade a la vista si no hay emulador (se borra en el destructor)
     Button* log_;
 };
 

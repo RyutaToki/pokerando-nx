@@ -11,6 +11,8 @@ namespace app {
 std::string dataDir();       // sdmc:/switch/pokerandonx/
 std::string defaultRomDir();  // sdmc:/roms/ o sdmc:/
 std::string sdRoot();
+// ruta para mostrar: en el PC, la carpeta de usuario se muestra como «sdmc:/» (igual que en la consola)
+std::string displayPath(const std::string& path);
 bool exists(const std::string& path);
 bool isDir(const std::string& path);
 bool makeDirs(const std::string& path);

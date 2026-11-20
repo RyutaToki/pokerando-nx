@@ -92,7 +92,7 @@ public:
         const auto& c = colors();
         frame->header->title = app::session().pendingPreset ? "Elegir ROM · " + app::session().pendingPreset->name : "Elegir ROM";
         frame->header->drawRight = [this](NVGcontext* vg, float x, float y, float w, float h) {
-            text(vg, x + w, y + h / 2, ellipsizeLeft(vg, dir_, w - 260), font::mono, 16, colors().textMuted, Align::RIGHT);
+            text(vg, x + w, y + h / 2, ellipsizeLeft(vg, app::displayPath(dir_), w - 260), font::mono, 16, colors().textMuted, Align::RIGHT);
         };
         frame->footer->hints = {{"A", "Abrir"}, {"B", "Atrás"}, {"Y", "Favoritos"}};
 
@@ -139,6 +139,10 @@ public:
             });
         }
 #endif
+    }
+    // al abrir, el foco va a la primera ROM (o a la carpeta pedida), no a «.. (subir)»
+    void onContentAvailable() override {
+        if (initialFocus_) brls::Application::giveFocus(initialFocus_);
     }
     ~BrowserScreen() override {
         *alive_ = false;
@@ -234,6 +238,7 @@ private:
         det_->path.clear();
         continue_->setEnabled(false);
         if (shown) anchor_->release(focus);
+        else initialFocus_ = focus;
     }
 
     bool isFavorite(const std::string& p) const {
@@ -324,7 +329,7 @@ private:
             } catch (const std::exception& e) {
                 err = e.what();
             }
-            brls::sync([=] {
+            brls::sync([=, this] {
                 if (!*alive) return;
                 if (!rh) {
                     ui::dialog("No se pudo abrir la ROM", err, "Aceptar", nullptr, "", nullptr, true);
@@ -360,6 +365,7 @@ private:
     brls::Box* list_;
     Button* continue_;
     FocusAnchor* anchor_;
+    brls::View* initialFocus_ = nullptr;
 };
 }  // namespace
 
