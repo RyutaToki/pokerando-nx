@@ -18,6 +18,7 @@ public:
     void randomizeShopItems();
     void addCheapRareCandiesToShops();
     void randomizePickupItems();
+    bool fieldChangesMade = false, shopChangesMade = false, pickupChangesMade = false;
 
 private:
     void randomizeTMFieldItems(std::vector<int>& tms);

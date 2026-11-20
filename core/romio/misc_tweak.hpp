@@ -48,6 +48,39 @@ inline const std::vector<MiscTweak> allTweaks = {
     BALANCE_STATIC_LEVELS, RETAIN_ALT_FORMES, RUN_WITHOUT_RUNNING_SHOES, FASTER_HP_AND_EXP_BARS,
     FAST_DISTORTION_WORLD, UPDATE_ROTOM_FORME_TYPING, DISABLE_LOW_HP_MUSIC, REUSABLE_TMS, FORGETTABLE_HMS,
     NO_EV_YIELDS};
+
+// Nombre en español (para la interfaz y el registro)
+inline const char* nameEs(const MiscTweak& t) {
+    switch (t.value) {
+        case 1: return "Parche de experiencia de B/N";
+        case 1 << 1: return "Debilitar Ataque X";
+        case 1 << 2: return "\"Arreglar\" probabilidad de crítico";
+        case 1 << 3: return "Texto lo más rápido posible";
+        case 1 << 4: return "Deportivas en interiores";
+        case 1 << 5: return "Objeto aleatorio en el PC";
+        case 1 << 6: return "Permitir evolucionar a Pikachu";
+        case 1 << 7: return "Pokédex Nacional desde el principio";
+        case 1 << 8: return "Huevos que eclosionan rápido";
+        case 1 << 9: return "Forzar modo desafío";
+        case 1 << 10: return "Nombres de Pokémon en minúsculas";
+        case 1 << 11: return "Tutorial de captura aleatorio";
+        case 1 << 12: return "Prohibir Huevo Suerte";
+        case 1 << 13: return "Sin Huevo Suerte gratis";
+        case 1 << 14: return "Prohibir objetos para vender caros";
+        case 1 << 15: return "Todos los salvajes piden ayuda (SOS)";
+        case 1 << 16: return "Equilibrar niveles de estáticos";
+        case 1 << 17: return "No revertir formas temporales";
+        case 1 << 18: return "Correr sin deportivas";
+        case 1 << 19: return "Barras de PS y EXP más rápidas";
+        case 1 << 20: return "Mundo Distorsión rápido";
+        case 1 << 21: return "Actualizar tipos de las formas de Rotom";
+        case 1 << 22: return "Quitar música de PS bajos";
+        case 1 << 23: return "MT reutilizables";
+        case 1 << 24: return "MO olvidables";
+        case 1 << 25: return "Los Pokémon no dan EV";
+        default: return "?";
+    }
+}
 }  // namespace misctweak
 
 }  // namespace pr

@@ -77,6 +77,7 @@ void TradeRandomizer::randomizeIngameTrades() {
 }
 
 void ItemRandomizer::randomizeFieldItems() {
+    fieldChangesMade = true;
     auto current = romHandler.getFieldItems();
     const auto& items = romHandler.getItems();
     std::vector<int> tms, nonTMs;  // Stack
@@ -151,6 +152,7 @@ void ItemRandomizer::randomizeNonTMFieldItems(std::vector<int>& nonTMs) {
 }
 
 void ItemRandomizer::shuffleShopItems() {
+    shopChangesMade = true;
     auto shops = romHandler.getShops();
     std::vector<int> all;
     for (const auto& s : shops)
@@ -165,6 +167,7 @@ void ItemRandomizer::shuffleShopItems() {
 }
 
 void ItemRandomizer::randomizeShopItems() {
+    shopChangesMade = true;
     const auto& items = romHandler.getItems();
     // setupPossible
     ItemSet possible = ItemSet::fromCollection((settings.banBadRandomShopItems ? romHandler.getNonBadItems() : romHandler.getAllowedItems()).toVector());
@@ -224,6 +227,7 @@ void ItemRandomizer::randomizeShopItems() {
 }
 
 void ItemRandomizer::addCheapRareCandiesToShops() {
+    shopChangesMade = true;
     auto shops = romHandler.getShops();
     for (auto& s : shops) s.items.push_back(items::rareCandy);
     romHandler.setShops(shops);
@@ -233,6 +237,7 @@ void ItemRandomizer::addCheapRareCandiesToShops() {
 }
 
 void ItemRandomizer::randomizePickupItems() {
+    pickupChangesMade = true;
     auto possible = (settings.banBadRandomPickupItems ? romHandler.getNonBadItems() : romHandler.getAllowedItems()).toVector();
     const auto& items = romHandler.getItems();
     if (!romHandler.canTMsBeHeld() || romHandler.isTMsReusable())

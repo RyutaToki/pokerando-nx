@@ -248,11 +248,16 @@ int main(int argc, char** argv) {
         } else if (cmd == "resave" && argc >= 4) {
             h.saveRomFileOnly(argv[3]);
         } else if (cmd == "randomize" && argc >= 6) {
-            // randomize <rom> <settings string> <semilla> <salida>
+            // randomize <rom> <settings string> <semilla> <salida> [registro.txt]
             pr::Settings settings = pr::Settings::fromString(argv[3]);
             settings.tweakForRom(h);
             pr::GameRandomizer gr(settings, h);
-            gr.randomize(argv[5], std::stoll(argv[4]));
+            if (argc >= 7) {
+                std::ofstream log(argv[6], std::ios::binary);
+                gr.randomize(argv[5], std::stoll(argv[4]), &log);
+            } else {
+                gr.randomize(argv[5], std::stoll(argv[4]));
+            }
         } else if (cmd == "rewrite" && argc >= 4) {
             // reescribe datos de tamaño variable sin cambiarlos y guarda como FVX
             h.setMovesLearnt(h.getMovesLearnt());

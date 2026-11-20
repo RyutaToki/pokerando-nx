@@ -111,3 +111,18 @@ void Gen3RomHandler::saveMoves() {
 }
 
 }  // namespace pr::gen3
+
+#include <cstdio>
+
+#include "util/crc32.hpp"
+
+namespace pr::gen3 {
+std::string Gen3RomHandler::romDiagnostics() const {
+    std::string name = loadedFileName_;
+    size_t slash = name.find_last_of("/\\");
+    if (slash != std::string::npos) name = name.substr(slash + 1);
+    char crc[16];
+    std::snprintf(crc, sizeof crc, "%08X", crc32(originalRom_.data(), originalRom_.size()));
+    return "Archivo: " + name + "\nCRC32 de la ROM original: " + crc + "\n";
+}
+}  // namespace pr::gen3

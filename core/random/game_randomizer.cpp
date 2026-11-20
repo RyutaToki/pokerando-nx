@@ -1,17 +1,22 @@
 #include "random/game_randomizer.hpp"
 
+#include <chrono>
+
 namespace pr {
 
 using S = Settings;
 
 GameRandomizer::GameRandomizer(Settings& settings, RomHandler& rh)
-    : settings_(settings), rh_(rh), bs_(rh, settings, nonCosmetic_), movesets_(rh, settings, nonCosmetic_), evo_(rh, settings, nonCosmetic_), encItems_(rh, settings, nonCosmetic_), intro_(rh, settings, nonCosmetic_), misc_(rh, settings, nonCosmetic_), moveData_(rh, settings, nonCosmetic_), tmt_(rh, settings, nonCosmetic_), comp_(rh, settings, nonCosmetic_), trainerMoves_(rh, settings, nonCosmetic_), moveNames_(rh, settings, cosmetic_), trainerNames_(rh, settings, cosmetic_), typeEff_(rh, settings, nonCosmetic_), palettes_(rh, settings, cosmetic_), typeEffUpdater_(rh), moveUpdater_(rh), bsUpdater_(rh), types_(rh, settings, nonCosmetic_), abilities_(rh, settings, nonCosmetic_), starter_(rh, settings, nonCosmetic_), statics_(rh, settings, nonCosmetic_), trades_(rh, settings, nonCosmetic_), items_(rh, settings, nonCosmetic_), wild_(rh, settings, nonCosmetic_), trainerPoke_(rh, settings, nonCosmetic_) {}
+    : settings_(settings), rh_(rh), bs_(rh, settings, nonCosmetic_), movesets_(rh, settings, nonCosmetic_), evo_(rh, settings, nonCosmetic_), encItems_(rh, settings, nonCosmetic_), intro_(rh, settings, nonCosmetic_), misc_(rh, settings, nonCosmetic_), moveData_(rh, settings, nonCosmetic_), tmt_(rh, settings, nonCosmetic_), comp_(rh, settings, nonCosmetic_), trainerMoves_(rh, settings, nonCosmetic_), moveNames_(rh, settings, cosmetic_), trainerNames_(rh, settings, cosmetic_), typeEff_(rh, settings, nonCosmetic_), palettes_(rh, settings, cosmetic_), typeEffUpdater_(rh), moveUpdater_(rh), bsUpdater_(rh), types_(rh, settings, nonCosmetic_), abilities_(rh, settings, nonCosmetic_), starter_(rh, settings, nonCosmetic_), statics_(rh, settings, nonCosmetic_), trades_(rh, settings, nonCosmetic_), items_(rh, settings, nonCosmetic_), wild_(rh, settings, nonCosmetic_), trainerPoke_(rh, settings, nonCosmetic_) {
+    captureOriginals();
+}
 
 void GameRandomizer::notPorted(const char* what) {
     throw std::runtime_error(std::string("Opción aún no portada: ") + what);
 }
 
-void GameRandomizer::randomize(const std::string& outFile, int64_t seed) {
+void GameRandomizer::randomize(const std::string& outFile, int64_t seed, std::ostream* log) {
+    auto start = std::chrono::steady_clock::now();
     nonCosmetic_.setSeed(seed);
     cosmetic_.setSeed(seed);
     setupSpeciesRestrictions();
@@ -21,6 +26,10 @@ void GameRandomizer::randomize(const std::string& outFile, int64_t seed) {
     // a la ROM (p. ej. el de los errantes de Esmeralda), así que hay que hacerlo igual.
     checkValue_ = calculateCheckValue();
     rh_.saveRomTo(outFile);
+    if (log) {
+        auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start).count();
+        writeLog(*log, ms, seed);
+    }
 }
 
 void GameRandomizer::setupSpeciesRestrictions() {

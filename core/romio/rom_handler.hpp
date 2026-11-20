@@ -225,6 +225,8 @@ public:
     virtual bool fixedTrainerClassNamesLength() const { return false; }
     // sufijo de los ficheros data/palettes/pokePalettes*.txt; vacío si no hay
     virtual std::string getPaletteFilesID() const { return ""; }
+    // líneas de diagnóstico para el registro (nombre de archivo y CRC32 original)
+    virtual std::string romDiagnostics() const { return ""; }
     SpeciesSet getMainGameWildPokemonSpecies(bool useTimeOfDay) const;
     const std::vector<std::unique_ptr<TrainerClass>>& getTrainerClasses() const { return trainerClasses_; }
     const std::vector<TrainerPtr>& getTrainers() const { return trainers_; }

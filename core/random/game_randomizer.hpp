@@ -1,6 +1,7 @@
 // Port de GameRandomizer: aplica los randomizadores en el mismo orden que FVX y guarda la ROM.
 #pragma once
 #include <cstdint>
+#include <iosfwd>
 #include <memory>
 #include <string>
 
@@ -30,8 +31,8 @@ namespace pr {
 class GameRandomizer {
 public:
     GameRandomizer(Settings& settings, RomHandler& romHandler);
-    // Lanza excepción si algo falla. saveRom recibe la ruta de salida.
-    void randomize(const std::string& outFile, int64_t seed);
+    // Lanza excepción si algo falla. Si log no es nulo, escribe ahí el registro (spoiler log).
+    void randomize(const std::string& outFile, int64_t seed, std::ostream* log = nullptr);
 
     int checkValue() const { return checkValue_; }
     JavaRandom& nonCosmetic() { return nonCosmetic_; }
@@ -44,6 +45,15 @@ private:
     void maybeApplyEvolutionImprovements();
     int calculateCheckValue();
     [[noreturn]] void notPorted(const char* what);
+    void captureOriginals();
+    void writeLog(std::ostream& log, long long elapsedMs, int64_t seed);
+
+    // estado original que necesita el registro (lo guarda RandomizationLogger al construirse)
+    std::vector<int> origMTMoves_;
+    std::vector<std::string> origTrainerNames_;
+    std::vector<StaticEncounter> origStatics_;
+    std::vector<InGameTrade> origTrades_;
+    std::vector<std::optional<std::string>> origMoveNames_;
 
     Settings& settings_;
     RomHandler& rh_;

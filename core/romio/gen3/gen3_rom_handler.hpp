@@ -173,6 +173,7 @@ public:
     ItemSet getAllHeldItems() const override;
     std::vector<int> getFieldMoves() const override;
     std::vector<int> getEarlyRequiredHMMoves() const override;
+    std::string romDiagnostics() const override;
     std::string getPaletteFilesID() const override {
         int t = romEntry_->romType();
         return t == 3 ? "FRLG" : (t >= 0 && t <= 2 ? "E" : "");  // Ruby/Zafiro usan las de Esmeralda
