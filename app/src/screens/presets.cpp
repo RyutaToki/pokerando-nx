@@ -74,8 +74,7 @@ class PresetsScreen : public ListScreen {
 public:
     explicit PresetsScreen(bool fromOptions) : fromOptions_(fromOptions) {
         frame->header->title = "Presets guardados";
-        bool canLoad = !app::session().romPath.empty();
-        frame->header->rightText = canLoad ? "Para " + app::session().info.gameName : "Abre una ROM para cargar un preset";
+        frame->header->rightText = fromOptions ? "Para " + app::session().info.gameName : "Elige un preset y después la ROM";
         frame->footer->hints = {{"A", "Cargar"}, {"X", "Renombrar"}, {"Y", "Duplicar"}, {"−", "Borrar"}, {"B", "Atrás"}};
         action(brls::BUTTON_X, [this] { rename(); });
         action(brls::BUTTON_Y, [this] { duplicate(); });
@@ -102,9 +101,11 @@ private:
 
     void load(size_t i) {
         auto& se = app::session();
-        if (se.romPath.empty()) {
-            ui::dialog("Primero abre una ROM", "Los presets se cargan sobre la ROM elegida. Ve a Abrir ROM y vuelve aquí desde el menú rápido (−) de Opciones.",
-                       "Aceptar", nullptr);
+        if (!fromOptions_) {
+            // desde Inicio: primero el preset, después se elige la ROM y se abren las opciones con el preset aplicado
+            se.pendingPreset = presets_[i];
+            brls::Application::popActivity(brls::TransitionAnimation::NONE);
+            pushBrowser();
             return;
         }
         if (!app::applyPreset(presets_[i])) {
@@ -114,7 +115,7 @@ private:
         ui::toast("Preset «" + presets_[i].name + "» cargado");
         // vuelve a Opciones (recreada para que muestre los valores nuevos) o la abre si se llegó desde Inicio
         brls::Application::popActivity(brls::TransitionAnimation::NONE);
-        if (fromOptions_) brls::Application::popActivity(brls::TransitionAnimation::NONE);
+        brls::Application::popActivity(brls::TransitionAnimation::NONE);
         pushOptions();
     }
 

@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -24,6 +25,8 @@ struct Session {
     int presetShiny = 0;
     int64_t seed = 0;
     bool dirty = false;  // cambios sin guardar como preset
+    // preset elegido desde Inicio: se aplica cuando se elija la ROM en el explorador
+    std::optional<Preset> pendingPreset;
 };
 Session& session();
 int64_t newSeed();

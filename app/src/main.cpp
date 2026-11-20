@@ -104,6 +104,9 @@ int main(int argc, char* argv[]) {
         } catch (...) {
         }
     }
+    if (const char* pend = std::getenv("PR_PENDING"))
+        for (const auto& p : app::loadPresets())
+            if (p.name == pend) app::session().pendingPreset = p;
     if (const char* pre = std::getenv("PR_PRESET"))
         for (const auto& p : app::loadPresets())
             if (p.name == pre) app::applyPreset(p);

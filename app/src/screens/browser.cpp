@@ -3,6 +3,7 @@
 #include <sys/stat.h>
 
 #include <algorithm>
+#include <cstdlib>
 #include <atomic>
 #include <memory>
 
@@ -89,7 +90,7 @@ class BrowserScreen : public Screen {
 public:
     BrowserScreen() : det_(std::make_shared<Detection>()), alive_(std::make_shared<std::atomic<bool>>(true)) {
         const auto& c = colors();
-        frame->header->title = "Elegir ROM";
+        frame->header->title = app::session().pendingPreset ? "Elegir ROM · " + app::session().pendingPreset->name : "Elegir ROM";
         frame->header->drawRight = [this](NVGcontext* vg, float x, float y, float w, float h) {
             text(vg, x + w, y + h / 2, ellipsizeLeft(vg, dir_, w - 260), font::mono, 16, colors().textMuted, Align::RIGHT);
         };
@@ -127,8 +128,23 @@ public:
         std::string start = app::config().startAtLast ? app::config().lastDir : "";
         if (start.empty() || !app::isDir(start)) start = app::defaultRomDir();
         load(withSlash(start));
+#if !defined(__SWITCH__)
+        // prueba en el PC: PR_AUTOOPEN=ruta abre esa ROM como si se pulsara «Continuar»
+        if (const char* auto_ = std::getenv("PR_AUTOOPEN")) {
+            std::string path = auto_;
+            brls::delay(300, [this, path] {
+                det_->path = path;
+                det_->info = pr::detectRom(path);
+                openSelected();
+            });
+        }
+#endif
     }
-    ~BrowserScreen() override { *alive_ = false; }
+    ~BrowserScreen() override {
+        *alive_ = false;
+        // si se sale del explorador sin elegir ROM, el preset pendiente se descarta
+        app::session().pendingPreset.reset();
+    }
 
 private:
     static std::string ellipsizeLeft(NVGcontext* vg, const std::string& s, float maxW) {
@@ -300,7 +316,7 @@ private:
         app::saveConfig();
         auto alive = alive_;
         ui::toast("Cargando la ROM…");
-        brls::async([path, alive] {
+        brls::async([this, path, alive] {
             std::shared_ptr<pr::RomHandler> rh;
             std::string err;
             try {
@@ -323,6 +339,13 @@ private:
                 // si cambia de juego, se mantienen las opciones pero ajustadas al nuevo juego
                 app::tweakForRom(se.opts.s, *rh);
                 if (!sameGame) se.seed = app::newSeed();
+                if (se.pendingPreset) {
+                    app::Preset p = *se.pendingPreset;
+                    se.pendingPreset.reset();
+                    frame->header->title = "Elegir ROM";  // si vuelve atrás, ya es un explorador normal
+                    if (app::applyPreset(p)) ui::toast("Preset «" + p.name + "» aplicado");
+                    else ui::dialog("Preset no válido", "No se pudo leer la configuración de este preset.", "Aceptar", nullptr, "", nullptr, true);
+                }
                 pushOptions();
             });
         });
