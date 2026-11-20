@@ -11,7 +11,7 @@ mkdir -p "$OUT/jc"
 cmake --build build >/dev/null
 CP=$(ls reference/fvx/*/build/libs/*.jar | tr '\n' ':')
 javac -d "$OUT/jc" -cp "$CP" tests/java/Dump.java
-java -cp "$OUT/jc:$CP" Dump "$ROM" > "$OUT/java.txt"
+java -cp "$OUT/jc:$CP" Dump "$ROM" "$OUT/rewrite_java.bin" > "$OUT/java.txt"
 ./build/cli/pokerando-cli dump "$ROM" > "$OUT/cpp.txt"
 if diff -u "$OUT/java.txt" "$OUT/cpp.txt" > "$OUT/diff.txt"; then
     echo "OK: volcados idénticos ($(wc -l < "$OUT/cpp.txt") líneas)"
@@ -21,3 +21,10 @@ else
 fi
 ./build/cli/pokerando-cli resave "$ROM" "$OUT/resave.bin"
 cmp -s "$ROM" "$OUT/resave.bin" && echo "OK: guardar sin cambios da una ROM idéntica" || { echo "FALLO: la ROM guardada difiere"; exit 1; }
+./build/cli/pokerando-cli rewrite "$ROM" "$OUT/rewrite_cpp.bin"
+if cmp -s "$OUT/rewrite_java.bin" "$OUT/rewrite_cpp.bin"; then
+    echo "OK: reescribir datos da la misma ROM que FVX"
+else
+    echo "FALLO: la ROM reescrita difiere de la de FVX ($(cmp -l "$OUT/rewrite_java.bin" "$OUT/rewrite_cpp.bin" | wc -l) bytes)"
+    exit 1
+fi

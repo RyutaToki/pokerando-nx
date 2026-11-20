@@ -53,5 +53,36 @@ public class Dump {
                     itemName(pk.getCommonHeldItem()), itemName(pk.getRareHeldItem()), pk.getGenderRatio(),
                     s(bi.getPrimaryEggGroup()), s(bi.getSecondaryEggGroup()), bi.getEggCycles());
         }
+        out.println("== EVOLUTIONS");
+        for (Species pk : h.getSpecies()) {
+            if (pk == null) continue;
+            for (Evolution e : pk.getEvolutionsFrom())
+                out.printf("%d>%d|%s|%d|est=%d%n", e.getFrom().getNumber(), e.getTo().getNumber(), e.getType().name(),
+                        e.getExtraInfo(), e.getEstimatedEvoLvl());
+            out.printf("%d to:%d%n", pk.getNumber(), pk.getEvolutionsTo().size());
+        }
+        out.println("== MOVESETS");
+        for (var en : new java.util.TreeMap<>(h.getMovesLearnt()).entrySet()) {
+            out.print(en.getKey() + ":");
+            for (MoveLearnt m : en.getValue()) out.print(" " + m.move + "@" + m.level);
+            out.println();
+        }
+        out.println("== EGGMOVES");
+        for (var en : new java.util.TreeMap<>(h.getEggMoves()).entrySet()) {
+            out.print(en.getKey() + ":");
+            for (int m : en.getValue()) out.print(" " + m);
+            out.println();
+        }
+        if (args.length > 1) {
+            System.setOut(new PrintStream(PrintStream.nullOutputStream()));
+            h.setMovesLearnt(h.getMovesLearnt());
+            h.setEggMoves(h.getEggMoves());
+            // solo las partes ya portadas a C++ (en vez de saveRom completo)
+            var gen3 = (com.uprfvx.romio.romhandlers.Gen3RomHandler) h;
+            gen3.saveSpeciesStats();
+            gen3.saveMoves();
+            gen3.saveRomFile(args[1], 0);
+            System.setOut(realOut);
+        }
     }
 }

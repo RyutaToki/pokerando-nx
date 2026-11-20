@@ -297,12 +297,17 @@ class JavaHashSet {
 public:
     JavaHashSet() = default;
     explicit JavaHashSet(int initialCapacity) : map_(initialCapacity) {}
+    // HashMap.newHashMap(numMappings) como mapa interno
+    static JavaHashSet withMappings(int numMappings) {
+        JavaHashSet s;
+        s.map_ = JavaHashMap<K, JavaEmpty, H, Eq>::newHashMap(numMappings);
+        return s;
+    }
     // new HashSet<>(collection)
     template <class Range>
     static JavaHashSet fromCollection(const Range& c) {
         int n = static_cast<int>(std::size(c));
-        JavaHashSet s;
-        s.map_ = JavaHashMap<K, JavaEmpty, H, Eq>::newHashMap(n > 12 ? n : 12);
+        JavaHashSet s = withMappings(n > 12 ? n : 12);
         for (const auto& e : c) s.add(e);
         return s;
     }

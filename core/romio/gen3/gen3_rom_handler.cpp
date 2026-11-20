@@ -71,18 +71,27 @@ void Gen3RomHandler::loadRom(std::vector<uint8_t> bytes, const std::string& file
     // midLoadingSetUp (parte común)
     initRomEntry();
     initTextTables();
-    // TODO(port): basicBPRE10HackSupport, determineMapBankSizes, preprocessMaps, freeAllUnusedSpace
+    isRomHack_ = false;
+    jamboMovesetHack_ = false;
+    // TODO(port): basicBPRE10HackSupport (solo hacks de Rojo Fuego U 1.0), determineMapBankSizes, preprocessMaps
+    freeAllUnusedSpace();
 
     // loadGameData
     loadItems();
     loadSpeciesStats();
-    // TODO(port): loadEvolutions
+    loadEvolutions();
     loadMoves();
     // TODO(port): loadPokemonPalettes, loadTrainerClasses, loadTrainers
     loadAbilityNames();
+    estimateEvolutionLevels();
 }
 
-void Gen3RomHandler::saveRom(const std::string& fileName) const {
+void Gen3RomHandler::saveRom(const std::string& fileName) {
+    prepareSaveRom();
+    saveRomFileOnly(fileName);
+}
+
+void Gen3RomHandler::saveRomFileOnly(const std::string& fileName) const {
     std::ofstream f(fileName, std::ios::binary);
     if (!f) throw std::runtime_error("No se puede escribir en " + fileName);
     f.write(reinterpret_cast<const char*>(rom_.data()), static_cast<std::streamsize>(rom_.size()));

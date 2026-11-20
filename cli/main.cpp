@@ -63,6 +63,29 @@ void dump(const pr::gen3::Gen3RomHandler& h) {
     }
 }
 
+void dumpMore(const pr::gen3::Gen3RomHandler& h) {
+    std::printf("== EVOLUTIONS\n");
+    for (const auto* pk : h.species()) {
+        if (!pk) continue;
+        for (const auto& e : pk->evolutionsFrom())
+            std::printf("%d>%d|%s|%d|est=%d\n", e->from()->number(), e->to()->number(), pr::evolutionTypeName(e->type()),
+                        e->extraInfo(), e->estimatedEvoLvl());
+        std::printf("%d to:%zu\n", pk->number(), pk->evolutionsTo().size());
+    }
+    std::printf("== MOVESETS\n");
+    for (const auto& [n, ml] : h.getMovesLearnt()) {
+        std::printf("%d:", n);
+        for (const auto& m : ml) std::printf(" %d@%d", m.move, m.level);
+        std::printf("\n");
+    }
+    std::printf("== EGGMOVES\n");
+    for (const auto& [n, ml] : h.getEggMoves()) {
+        std::printf("%d:", n);
+        for (int m : ml) std::printf(" %d", m);
+        std::printf("\n");
+    }
+}
+
 }  // namespace
 
 int main(int argc, char** argv) {
@@ -85,7 +108,13 @@ int main(int argc, char** argv) {
                         h.generationOfPokemon(), h.isRomValid() ? "true" : "false", h.actualCRC32());
         } else if (cmd == "dump") {
             dump(h);
+            dumpMore(h);
         } else if (cmd == "resave" && argc >= 4) {
+            h.saveRomFileOnly(argv[3]);
+        } else if (cmd == "rewrite" && argc >= 4) {
+            // reescribe datos de tamaño variable sin cambiarlos y guarda como FVX
+            h.setMovesLearnt(h.getMovesLearnt());
+            h.setEggMoves(h.getEggMoves());
             h.saveRom(argv[3]);
         } else {
             std::fprintf(stderr, "orden desconocida\n");
