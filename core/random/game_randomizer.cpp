@@ -5,7 +5,7 @@ namespace pr {
 using S = Settings;
 
 GameRandomizer::GameRandomizer(Settings& settings, RomHandler& rh)
-    : settings_(settings), rh_(rh), bs_(rh, settings, nonCosmetic_), types_(rh, settings, nonCosmetic_), abilities_(rh, settings, nonCosmetic_), starter_(rh, settings, nonCosmetic_), wild_(rh, settings, nonCosmetic_), trainerPoke_(rh, settings, nonCosmetic_) {}
+    : settings_(settings), rh_(rh), bs_(rh, settings, nonCosmetic_), evo_(rh, settings, nonCosmetic_), types_(rh, settings, nonCosmetic_), abilities_(rh, settings, nonCosmetic_), starter_(rh, settings, nonCosmetic_), wild_(rh, settings, nonCosmetic_), trainerPoke_(rh, settings, nonCosmetic_) {}
 
 void GameRandomizer::notPorted(const char* what) {
     throw std::runtime_error(std::string("Opción aún no portada: ") + what);
@@ -41,9 +41,9 @@ void GameRandomizer::applyRandomizers() {
         notPorted("datos de movimientos");
     if (settings_.currentMiscTweaks != 0) notPorted("ajustes varios");
     if (settings_.standardizeEXPCurves) bs_.standardizeEXPCurves();
-    if (settings_.evolutionsMod != S::EvolutionsMod::UNCHANGED) notPorted("evoluciones");
+    if (settings_.evolutionsMod != S::EvolutionsMod::UNCHANGED) evo_.randomizeEvolutions();
     if (settings_.bstMod != S::BSTMod::UNCHANGED) bs_.randomizeBSTs();
-    if (settings_.adjustEvolutionLevels) notPorted("ajustar niveles de evolución");
+    if (settings_.adjustEvolutionLevels) evo_.adjustEvolutionLevels();
     if (settings_.speciesTypesMod != S::SpeciesTypesMod::UNCHANGED) types_.randomizeSpeciesTypes();
     if (settings_.randomizeWildPokemonHeldItems) notPorted("objetos de salvajes");
     if (settings_.baseStatisticsMod == S::BaseStatisticsMod::SHUFFLE) bs_.shuffleSpeciesStats();

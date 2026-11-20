@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 
+#include "random/evolution_randomizer.hpp"
 #include "random/species_base_stat_randomizer.hpp"
 #include "random/species_type_ability_randomizers.hpp"
 #include "random/starter_randomizer.hpp"
@@ -37,6 +38,7 @@ private:
     RomHandler& rh_;
     JavaRandom nonCosmetic_, cosmetic_;
     SpeciesBaseStatRandomizer bs_;
+    EvolutionRandomizer evo_;
     SpeciesTypeRandomizer types_;
     SpeciesAbilityRandomizer abilities_;
     StarterRandomizer starter_;
