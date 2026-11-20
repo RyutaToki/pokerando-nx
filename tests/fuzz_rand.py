@@ -33,7 +33,7 @@ ENUMS = {
     "bstMod": "UNCHANGED RANDOM_BUFF_NERF SHUFFLE RANDOM", "baseStatisticsMod": "UNCHANGED SHUFFLE RANDOM",
     "expCurveMod": "LEGENDARIES STRONG_LEGENDARIES ALL", "abilitiesMod": "UNCHANGED RANDOMIZE",
     "startersMod": "UNCHANGED COMPLETELY_RANDOM RANDOM_WITH_TWO_EVOLUTIONS RANDOM_BASIC",
-    "startersTypeMod": "NONE FIRE_WATER_GRASS UNIQUE SINGLE_TYPE"  # TRIANGLE: FVX depende de hashes de identidad,
+    "startersTypeMod": "NONE FIRE_WATER_GRASS UNIQUE SINGLE_TYPE",  # TRIANGLE: FVX depende de hashes de identidad
     "speciesTypesMod": "UNCHANGED RANDOM_FOLLOW_EVOLUTIONS COMPLETELY_RANDOM",
     "evolutionsMod": "UNCHANGED RANDOM RANDOM_EVERY_LEVEL",
     "movesetsMod": "UNCHANGED RANDOM_PREFER_SAME_TYPE COMPLETELY_RANDOM METRONOME_ONLY",
@@ -58,6 +58,10 @@ INTS = {
 }
 
 rom, n = sys.argv[1], int(sys.argv[2])
+if rom.lower().endswith(".nds"):
+    # Gen 4: FVX ordena las bayas de los objetos «sensatos» con un HashMap<Type> (hash de identidad,
+    # irreproducible), así que esa opción no puede dar la misma ROM
+    BOOLS.remove("sensibleItemsOnlyForTrainerPokemon")
 gen = random.Random(int(sys.argv[3]) if len(sys.argv) > 3 else None)
 stats = {"OK": 0, "AMBOS": 0, "MAL": 0}
 for k in range(n):

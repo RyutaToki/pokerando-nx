@@ -56,6 +56,13 @@ ToggleDef tweak(std::string label, const pr::MiscTweak& t) {
                [v](const RomCaps& c) { return (c.tweaks & v) != 0; });
 }
 
+ToggleDef tweakFromGen4(std::string label, const pr::MiscTweak& t) {
+    ToggleDef d = tweak(std::move(label), t);
+    auto avail = d.available;
+    d.available = [avail](const RomCaps& c) { return c.gen >= 4 && avail(c); };
+    return d;
+}
+
 bool randomStarters(const OptState& o) {
     return o.s.startersMod == S::StartersMod::COMPLETELY_RANDOM || o.s.startersMod == S::StartersMod::RANDOM_BASIC ||
            o.s.startersMod == S::StartersMod::RANDOM_WITH_TWO_EVOLUTIONS;
@@ -521,12 +528,18 @@ std::vector<TabDef> build() {
         tab.toggles = {
             tweak("Texto rápido", mt::FASTEST_TEXT),
             tweak("Correr en interiores", mt::RUNNING_SHOES_INDOORS),
+            // solo DS (en Gen 3 la interfaz queda como estaba)
+            tweakFromGen4("Correr sin Deportivas", mt::RUN_WITHOUT_RUNNING_SHOES),
+            tweak("Barras de PS y EXP más rápidas", mt::FASTER_HP_AND_EXP_BARS),
+            tweak("Mundo Distorsión más corto", mt::FAST_DISTORTION_WORLD),
+            tweak("Tipos actualizados de las formas de Rotom", mt::UPDATE_ROTOM_FORME_TYPING),
             tog("Evoluciones imposibles por nivel", [](const OptState& o) { return o.s.changeImpossibleEvolutions; },
                 [](OptState& o, bool b) { o.s.changeImpossibleEvolutions = b; }),
             tog("Generar log de spoilers", [](const OptState& o) { return o.spoilerLog; }, [](OptState& o, bool b) { o.spoilerLog = b; }),
         };
         tab.reset = [d](OptState& o) {
-            int mask = mt::FASTEST_TEXT.value | mt::RUNNING_SHOES_INDOORS.value;
+            int mask = mt::FASTEST_TEXT.value | mt::RUNNING_SHOES_INDOORS.value | mt::RUN_WITHOUT_RUNNING_SHOES.value |
+                       mt::FASTER_HP_AND_EXP_BARS.value | mt::FAST_DISTORTION_WORLD.value | mt::UPDATE_ROTOM_FORME_TYPING.value;
             o.s.currentMiscTweaks = (o.s.currentMiscTweaks & ~mask) | (d.currentMiscTweaks & mask);
             o.s.changeImpossibleEvolutions = d.changeImpossibleEvolutions;
             o.shiny = 0;

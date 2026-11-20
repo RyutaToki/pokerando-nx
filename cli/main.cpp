@@ -253,6 +253,19 @@ void rewriteAll(pr::RomHandler& h) {
     h.enableGuaranteedPokemonCatching();
 }
 
+void randomizeCmd(pr::RomHandler& h, int argc, char** argv) {
+    // randomize <rom> <settings string> <semilla> <salida> [registro.txt]
+    pr::Settings settings = pr::Settings::fromString(argv[3]);
+    settings.tweakForRom(h);
+    pr::GameRandomizer gr(settings, h);
+    if (argc >= 7) {
+        std::ofstream log(argv[6], std::ios::binary);
+        gr.randomize(argv[5], std::stoll(argv[4]), &log);
+    } else {
+        gr.randomize(argv[5], std::stoll(argv[4]));
+    }
+}
+
 }  // namespace
 
 int main(int argc, char** argv) {
@@ -290,6 +303,8 @@ int main(int argc, char** argv) {
                 } else if (cmd == "rewrite" && argc >= 4) {
                     rewriteAll(h);
                     h.saveRomTo(argv[3]);
+                } else if (cmd == "randomize" && argc >= 6) {
+                    randomizeCmd(h, argc, argv);
                 } else {
                     std::fprintf(stderr, "orden no disponible todavía para Gen 4\n");
                     return 2;
@@ -316,16 +331,7 @@ int main(int argc, char** argv) {
         } else if (cmd == "resave" && argc >= 4) {
             h.saveRomFileOnly(argv[3]);
         } else if (cmd == "randomize" && argc >= 6) {
-            // randomize <rom> <settings string> <semilla> <salida> [registro.txt]
-            pr::Settings settings = pr::Settings::fromString(argv[3]);
-            settings.tweakForRom(h);
-            pr::GameRandomizer gr(settings, h);
-            if (argc >= 7) {
-                std::ofstream log(argv[6], std::ios::binary);
-                gr.randomize(argv[5], std::stoll(argv[4]), &log);
-            } else {
-                gr.randomize(argv[5], std::stoll(argv[4]));
-            }
+            randomizeCmd(h, argc, argv);
         } else if (cmd == "rewrite" && argc >= 4) {
             rewriteAll(h);
             h.saveRom(argv[3]);

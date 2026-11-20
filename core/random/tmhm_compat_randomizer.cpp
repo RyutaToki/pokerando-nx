@@ -53,7 +53,7 @@ void TMHMTutorCompatibilityRandomizer::randomizeGeneric(Compat& compat, const st
         o.withCopySplitEvos(copySplit);
         copyUpEvolutionsHelper.apply(o);
     } else {
-        for (auto& [num, flags] : compat) randomizeCompat(romHandler.getSpecies().at(num), flags, moves, prio, pst);
+        for (auto& [num, flags] : compat) randomizeCompat(romHandler.getSpeciesInclFormes().at(num), flags, moves, prio, pst);
     }
 }
 
@@ -97,7 +97,7 @@ void TMHMTutorCompatibilityRandomizer::evoSanity(Compat& compat) {
 
 void TMHMTutorCompatibilityRandomizer::cosmetic(Compat& compat) {
     for (auto& [n, f] : compat) {
-        Species* pk = romHandler.getSpecies().at(n);
+        Species* pk = romHandler.getSpeciesInclFormes().at(n);
         if (!pk->isEssentiallyCosmetic()) continue;
         const auto& base = compat.at(pk->conceptualBaseForme()->number());
         for (size_t i = 1; i < f.size(); i++) f[i] = base[i];

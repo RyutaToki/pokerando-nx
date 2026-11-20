@@ -8,6 +8,7 @@
 
 #include "romio/gen3/gen3_rom_entry.hpp"
 #include "romio/gen3/gen3_rom_handler.hpp"
+#include "romio/gen4/gen4_rom_handler.hpp"
 #include "util/crc32.hpp"
 
 namespace pr {
@@ -95,9 +96,12 @@ RomInfo detectRom(const std::string& path) {
             }
         }
         if (!info.supported) info.note = "Versión o región no compatible.";
+    } else if (info.generation == 4) {
+        // versión de la cabecera (0x1E), como en FVX
+        info.supported = gen4::Gen4RomHandler::isLoadable(info.code, static_cast<int8_t>(head[0x1E]));
+        if (!info.supported) info.note = "Versión o región no compatible.";
     } else {
-        info.note = info.generation == 4 ? "Los juegos de 4.ª generación llegarán en la fase 2."
-                                         : "Los juegos de 5.ª generación llegarán en la fase 3.";
+        info.note = "Los juegos de 5.ª generación llegarán en la fase 3.";
     }
     return info;
 }
@@ -119,6 +123,11 @@ uint32_t fileCRC32(const std::string& path) {
 std::unique_ptr<RomHandler> openRom(const std::string& path) {
     RomInfo info = detectRom(path);
     if (!info.supported) throw std::runtime_error(info.note.empty() ? "ROM no compatible." : info.note);
+    if (info.generation == 4) {
+        auto h = std::make_unique<gen4::Gen4RomHandler>();
+        h->loadRom(path);
+        return h;
+    }
     std::ifstream f(path, std::ios::binary);
     std::vector<uint8_t> bytes((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
     auto h = std::make_unique<gen3::Gen3RomHandler>();
