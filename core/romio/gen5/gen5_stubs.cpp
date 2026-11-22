@@ -7,7 +7,6 @@
 
 namespace pr::gen5 {
 
-std::vector<StaticEncounter> Gen5RomHandler::getStaticPokemon() { throw std::logic_error("Gen 5: pendiente: getStaticPokemon"); }
-bool Gen5RomHandler::setStaticPokemon(const std::vector<StaticEncounter>& statics) { throw std::logic_error("Gen 5: pendiente: setStaticPokemon"); }
+
 
 }  // namespace pr::gen5

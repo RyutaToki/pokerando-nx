@@ -202,6 +202,10 @@ private:
     std::vector<std::string> loadTrainerNames() const;
     void saveTrainerNames();
     void removeFreeLuckyEgg();
+    // estáticos
+    Species* staticGetPokemon(const DSStaticPokemon& s) const;
+    void fixBoxLegendaryBW1(int species);
+    void applyBlackWhiteRoamerPatch();
     // objetos
     int itcmSrcOffset() const;
     bool isARM9Pointer(const Bytes& data, int offset) const;

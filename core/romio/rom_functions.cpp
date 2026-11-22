@@ -1,3 +1,4 @@
+#include <cctype>
 #include <algorithm>
 #include "romio/rom_functions.hpp"
 
@@ -180,9 +181,14 @@ void applyPatch(std::vector<uint8_t>& rom, const std::string& patchName) {
     throw std::runtime_error("improperly terminated IPS file");
 }
 
-std::vector<uint8_t> hexToBytes(const std::string& hex) {
+std::vector<uint8_t> hexToBytes(const std::string& hexIn) {
+    // como en Java: se quitan los espacios en blanco y la longitud tiene que ser par
+    std::string hex;
+    for (char c : hexIn)
+        if (!std::isspace(static_cast<unsigned char>(c))) hex.push_back(c);
+    if (hex.size() % 2 != 0) throw std::invalid_argument("hex string is not of even length");
     std::vector<uint8_t> out;
-    for (size_t i = 0; i + 1 < hex.size(); i += 2) out.push_back(static_cast<uint8_t>(std::stoi(hex.substr(i, 2), nullptr, 16)));
+    for (size_t i = 0; i < hex.size(); i += 2) out.push_back(static_cast<uint8_t>(std::stoi(hex.substr(i, 2), nullptr, 16)));
     return out;
 }
 
