@@ -41,6 +41,7 @@ public:
     void setConceptualBaseForme(Species* c);
     void addAltForme(int formeNumber, Species* altForme);
     void addCosmeticAltForme(int formeNumber);
+    void setIgnoreCosmeticAltForme(int formeNumber);  // solo formas cosméticas «de verdad»
     Species* getForme(int formeNumber);
     bool isValidFormeNumber(int formeNumber) const { return formes_.containsKey(formeNumber); }
     SpeciesSet altFormes();

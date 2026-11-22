@@ -14,6 +14,7 @@
 #include "random/game_randomizer.hpp"
 #include "romio/gen3/gen3_rom_handler.hpp"
 #include "romio/gen4/gen4_rom_handler.hpp"
+#include "romio/gen5/gen5_rom_handler.hpp"
 #include "settings/settings.hpp"
 #include "util/java_compat.hpp"
 
@@ -248,8 +249,8 @@ void rewriteAll(pr::RomHandler& h) {
         if ((avail & t.value) && t.value != pr::misctweak::BAN_LUCKY_EGG.value) h.applyMiscTweak(t);
     }
     h.setIntroPokemon(h.getSpecies()[25]);
-    h.setCatchingTutorial(h.getSpecies()[263], h.getSpecies()[258]);
-    if (h.generationOfPokemon() != 4) h.setPCPotionItem(pr::items::superPotion);  // Gen 4 no lo tiene
+    if (h.generationOfPokemon() != 5) h.setCatchingTutorial(h.getSpecies()[263], h.getSpecies()[258]);  // Gen 5 no lo tiene
+    if (h.generationOfPokemon() == 3) h.setPCPotionItem(pr::items::superPotion);  // Gen 4 y 5 no lo tienen
     h.enableGuaranteedPokemonCatching();
 }
 
@@ -281,16 +282,16 @@ int main(int argc, char** argv) {
             char hdr[0x20] = {};
             f.read(hdr, sizeof hdr);
             std::string code(hdr + 0x0C, 4);
-            if (pr::gen4::Gen4RomHandler::isLoadable(code, static_cast<int8_t>(hdr[0x1E]))) {
-                pr::gen4::Gen4RomHandler h;
+            int version = static_cast<int8_t>(hdr[0x1E]);
+            auto run = [&](auto& h) {
                 h.loadRom(path);
                 if (cmd == "info") {
                     std::printf("%s [%s] gen%d valida=%s\n", h.romName().c_str(), h.romCode().c_str(), h.generationOfPokemon(),
                                 h.isRomValid() ? "true" : "false");
                 } else if (cmd == "dump") {
-                    dump(h);
                     // se vuelca hasta la primera sección que aún no esté portada
                     try {
+                        dump(h);
                         dumpMore(h);
                         dumpStatics(h);
                         dumpPickup(h);
@@ -306,10 +307,18 @@ int main(int argc, char** argv) {
                 } else if (cmd == "randomize" && argc >= 6) {
                     randomizeCmd(h, argc, argv);
                 } else {
-                    std::fprintf(stderr, "orden no disponible todavía para Gen 4\n");
+                    std::fprintf(stderr, "orden no disponible para DS\n");
                     return 2;
                 }
                 return 0;
+            };
+            if (pr::gen4::Gen4RomHandler::isLoadable(code, version)) {
+                pr::gen4::Gen4RomHandler h;
+                return run(h);
+            }
+            if (pr::gen5::Gen5RomHandler::isLoadable(code, version)) {
+                pr::gen5::Gen5RomHandler h;
+                return run(h);
             }
         }
         auto bytes = readFile(path);

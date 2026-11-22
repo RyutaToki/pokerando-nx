@@ -223,7 +223,11 @@ public class Dump {
                 if ((avail & t.getValue()) != 0 && t != com.uprfvx.romio.MiscTweak.BAN_LUCKY_EGG) h.applyMiscTweak(t);
             }
             h.setIntroPokemon(h.getSpecies().get(25));
-            h.setCatchingTutorial(h.getSpecies().get(263), h.getSpecies().get(258));
+            try {
+                h.setCatchingTutorial(h.getSpecies().get(263), h.getSpecies().get(258));
+            } catch (UnsupportedOperationException e) {
+                // Gen 5 no lo tiene
+            }
             try {
                 h.setPCPotionItem(h.getItems().get(com.uprfvx.romio.constants.ItemIDs.superPotion));
             } catch (UnsupportedOperationException e) {

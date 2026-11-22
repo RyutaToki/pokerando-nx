@@ -64,6 +64,14 @@ void Species::addCosmeticAltForme(int formeNumber) {
     cosmeticFormeNumbers_.push_back(formeNumber);
 }
 
+void Species::setIgnoreCosmeticAltForme(int formeNumber) {
+    if (!inList(cosmeticFormeNumbers_, formeNumber))
+        throw std::logic_error(numberAndFullName() + " no tiene la forma cosmética " + std::to_string(formeNumber));
+    if (!getForme(formeNumber)->isBaseForme())
+        throw std::logic_error(numberAndFullName() + ": la forma " + std::to_string(formeNumber) + " es casi cosmética");
+    ignoreCosmeticFormeNumbers_.push_back(formeNumber);
+}
+
 Species* Species::getForme(int formeNumber) {
     if (!isBaseForme()) throw std::logic_error(numberAndFullName() + " es una forma alternativa");
     Species* const* f = formes_.get(formeNumber);
