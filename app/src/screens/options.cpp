@@ -164,8 +164,9 @@ private:
             customStarters_ = nullptr;
         }
 
-        if (tab.shinyPanel) {
-            bool avail = app::shinyPatchAvailable(se.romPath);
+        // el panel de shiny solo aparece si la ROM admite el parche (por ahora, Esmeralda)
+        if (tab.shinyPanel && app::shinyPatchAvailable(se.romPath)) {
+            bool avail = true;
             auto* p = new Panel(c.surface, 12);
             p->setAxis(brls::Axis::COLUMN);
             p->setPadding(18, 20, 18, 20);
