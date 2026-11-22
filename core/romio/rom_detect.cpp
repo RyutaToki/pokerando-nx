@@ -9,6 +9,7 @@
 #include "romio/gen3/gen3_rom_entry.hpp"
 #include "romio/gen3/gen3_rom_handler.hpp"
 #include "romio/gen4/gen4_rom_handler.hpp"
+#include "romio/gen5/gen5_rom_handler.hpp"
 #include "util/crc32.hpp"
 
 namespace pr {
@@ -101,7 +102,8 @@ RomInfo detectRom(const std::string& path) {
         info.supported = gen4::Gen4RomHandler::isLoadable(info.code, static_cast<int8_t>(head[0x1E]));
         if (!info.supported) info.note = "Versión o región no compatible.";
     } else {
-        info.note = "Los juegos de 5.ª generación llegarán en la fase 3.";
+        info.supported = gen5::Gen5RomHandler::isLoadable(info.code, static_cast<int8_t>(head[0x1E]));
+        if (!info.supported) info.note = "Versión o región no compatible.";
     }
     return info;
 }
@@ -125,6 +127,11 @@ std::unique_ptr<RomHandler> openRom(const std::string& path) {
     if (!info.supported) throw std::runtime_error(info.note.empty() ? "ROM no compatible." : info.note);
     if (info.generation == 4) {
         auto h = std::make_unique<gen4::Gen4RomHandler>();
+        h->loadRom(path);
+        return h;
+    }
+    if (info.generation == 5) {
+        auto h = std::make_unique<gen5::Gen5RomHandler>();
         h->loadRom(path);
         return h;
     }

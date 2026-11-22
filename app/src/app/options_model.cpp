@@ -533,13 +533,17 @@ std::vector<TabDef> build() {
             tweak("Barras de PS y EXP más rápidas", mt::FASTER_HP_AND_EXP_BARS),
             tweak("Mundo Distorsión más corto", mt::FAST_DISTORTION_WORLD),
             tweak("Rotom con tipos actualizados", mt::UPDATE_ROTOM_FORME_TYPING),
+            // solo Gen 5
+            tweak("Modo Desafío siempre activo", mt::FORCE_CHALLENGE_MODE),
+            tweak("Sin música de PS bajos", mt::DISABLE_LOW_HP_MUSIC),
             tog("Evoluciones imposibles por nivel", [](const OptState& o) { return o.s.changeImpossibleEvolutions; },
                 [](OptState& o, bool b) { o.s.changeImpossibleEvolutions = b; }),
             tog("Generar log de spoilers", [](const OptState& o) { return o.spoilerLog; }, [](OptState& o, bool b) { o.spoilerLog = b; }),
         };
         tab.reset = [d](OptState& o) {
             int mask = mt::FASTEST_TEXT.value | mt::RUNNING_SHOES_INDOORS.value | mt::RUN_WITHOUT_RUNNING_SHOES.value |
-                       mt::FASTER_HP_AND_EXP_BARS.value | mt::FAST_DISTORTION_WORLD.value | mt::UPDATE_ROTOM_FORME_TYPING.value;
+                       mt::FASTER_HP_AND_EXP_BARS.value | mt::FAST_DISTORTION_WORLD.value | mt::UPDATE_ROTOM_FORME_TYPING.value |
+                       mt::FORCE_CHALLENGE_MODE.value | mt::DISABLE_LOW_HP_MUSIC.value;
             o.s.currentMiscTweaks = (o.s.currentMiscTweaks & ~mask) | (d.currentMiscTweaks & mask);
             o.s.changeImpossibleEvolutions = d.changeImpossibleEvolutions;
             o.shiny = 0;
