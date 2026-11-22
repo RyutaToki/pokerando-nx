@@ -1,4 +1,5 @@
 // §6.2 Elegir ROM (explorador de la SD)
+#include "app/shiny.hpp"
 #include <dirent.h>
 #include <sys/stat.h>
 
@@ -343,6 +344,7 @@ private:
             std::string err;
             try {
                 rh = pr::openRom(path);
+                app::shinyPatchAvailable(path);  // se deja calculado ya: así Extras abre al instante
             } catch (const std::exception& e) {
                 err = e.what();
             }

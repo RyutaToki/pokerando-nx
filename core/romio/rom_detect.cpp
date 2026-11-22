@@ -135,8 +135,12 @@ std::unique_ptr<RomHandler> openRom(const std::string& path) {
         h->loadRom(path);
         return h;
     }
-    std::ifstream f(path, std::ios::binary);
-    std::vector<uint8_t> bytes((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+    // se lee de una vez (istreambuf_iterator va byte a byte: segundos en la SD de la Switch)
+    std::ifstream f(path, std::ios::binary | std::ios::ate);
+    if (!f) throw std::runtime_error("No se puede leer el archivo.");
+    std::vector<uint8_t> bytes(static_cast<size_t>(f.tellg()));
+    f.seekg(0);
+    f.read(reinterpret_cast<char*>(bytes.data()), static_cast<std::streamsize>(bytes.size()));
     auto h = std::make_unique<gen3::Gen3RomHandler>();
     h->loadRom(std::move(bytes), path);
     return h;

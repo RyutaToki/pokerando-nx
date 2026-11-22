@@ -2,8 +2,8 @@
 
 #include <cstdint>
 #include <fstream>
-#include <iterator>
 #include <map>
+#include <mutex>
 #include <vector>
 
 namespace app {
@@ -41,11 +41,23 @@ std::vector<Site> findSites(const std::vector<uint8_t>& rom) {
     return out;
 }
 
+// de una vez (istreambuf_iterator va byte a byte y en la SD de la Switch tarda segundos)
 bool readFile(const std::string& path, std::vector<uint8_t>& out) {
-    std::ifstream f(path, std::ios::binary);
+    std::ifstream f(path, std::ios::binary | std::ios::ate);
     if (!f) return false;
-    out.assign(std::istreambuf_iterator<char>(f), std::istreambuf_iterator<char>());
-    return true;
+    std::streamsize size = f.tellg();
+    if (size < 0) return false;
+    out.resize(static_cast<size_t>(size));
+    f.seekg(0);
+    return static_cast<bool>(f.read(reinterpret_cast<char*>(out.data()), size));
+}
+
+// ¿Es un juego verificado? Solo mira la cabecera de GBA (código en 0xAC), sin leer la ROM entera.
+bool isVerifiedGame(const std::string& path) {
+    std::ifstream f(path, std::ios::binary);
+    char head[0xB0];
+    if (!f.read(head, sizeof head)) return false;
+    return kVerified.count(std::string(head + 0xAC, 3)) > 0;
 }
 
 // sitios válidos o vacío si el juego no está verificado o no coincide
@@ -62,11 +74,14 @@ std::vector<Site> validSites(const std::vector<uint8_t>& rom) {
 }  // namespace
 
 bool shinyPatchAvailable(const std::string& romFile) {
+    // se llama también desde el hilo que carga la ROM (para que Extras abra sin esperas)
+    static std::mutex m;
+    std::lock_guard<std::mutex> lock(m);
     static std::map<std::string, bool> cache;
     auto c = cache.find(romFile);
     if (c != cache.end()) return c->second;
     std::vector<uint8_t> rom;
-    bool ok = readFile(romFile, rom) && !validSites(rom).empty();
+    bool ok = isVerifiedGame(romFile) && readFile(romFile, rom) && !validSites(rom).empty();
     cache[romFile] = ok;
     return ok;
 }

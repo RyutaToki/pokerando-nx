@@ -8,7 +8,8 @@
 #include <string>
 
 namespace app {
-// ¿Sabemos dónde está la comprobación de shiny en esta ROM? (lee el archivo; el resultado se guarda)
+// ¿Sabemos dónde está la comprobación de shiny en esta ROM? (lee el archivo solo si es un juego verificado;
+// el resultado se guarda; se puede llamar desde otro hilo)
 bool shinyPatchAvailable(const std::string& romFile);
 // Parchea el archivo ya guardado. threshold: 8 = original, 16 = 1/4096 ... 8192 = 1/8.
 bool applyShinyPatch(const std::string& romFile, int threshold, std::string* error);
