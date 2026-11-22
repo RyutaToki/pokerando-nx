@@ -17,7 +17,10 @@ CLI="${CLI:-./build/cli/pokerando-cli}"
 SETTINGS=$(java -cp "$OUT/jc:$CP" MakeSettings "$@")
 # FVX lee las listas de nombres de "data/..." relativo al directorio de trabajo
 ABS=$(pwd)
-ROMABS=$(realpath "$ROM")
+# FVX guarda temporales en tmp_<nombre de la ROM>, compartido entre procesos: con un enlace de nombre
+# único por OUT_DIR, dos pruebas a la vez sobre la misma ROM no se pisan
+ROMABS="$ABS/$OUT/rom_$(echo "$ABS/$OUT" | md5sum | cut -c1-8).${ROM##*.}"
+ln -sfn "$(realpath "$ROM")" "$ROMABS"
 rm -f "$OUT/rand_java.bin" "$OUT/rand_cpp.bin"
 JERR=0; CERR=0
 (cd reference/fvx/random/src/main/resources && java -cp "$ABS/$OUT/jc:$(echo $CP | sed "s#reference#$ABS/reference#g")" Randomize "$ROMABS" "$SETTINGS" "$SEED" "$ABS/$OUT/rand_java.bin" "$ABS/$OUT/rand_java.log" > /dev/null 2> "$ABS/$OUT/java_err.txt") || JERR=1

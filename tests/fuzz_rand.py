@@ -62,6 +62,9 @@ if rom.lower().endswith(".nds"):
     # Gen 4: FVX ordena las bayas de los objetos «sensatos» con un HashMap<Type> (hash de identidad,
     # irreproducible), así que esa opción no puede dar la misma ROM
     BOOLS.remove("sensibleItemsOnlyForTrainerPokemon")
+    # Igual al separar las zonas por tipo de encuentro: FVX agrupa con un HashMap<EncounterType> y el orden
+    # depende del hash de identidad (cambia con la ROM y las opciones). En Gen 5 cada mapa tiene varios tipos.
+    BOOLS.remove("splitWildZoneByEncounterTypes")
 gen = random.Random(int(sys.argv[3]) if len(sys.argv) > 3 else None)
 stats = {"OK": 0, "AMBOS": 0, "MAL": 0}
 for k in range(n):
