@@ -34,4 +34,11 @@ const JavaHashSet<int>& bannedItems();
 const JavaHashSet<int>& badItems();
 const JavaHashSet<int>& opShopItems();
 
+// objetos equipables (Gen4Constants; Gen 5 los reutiliza)
+std::vector<int> allHeldItems();
+std::vector<int> typeBoostingItems(std::optional<Type> t);  // null -> vacía
+const std::vector<int>* moveBoostingItems(int move);        // nullptr si no hay
+int weaknessReducingBerry(Type t);
+std::vector<int> speciesBoostingItems(int species);
+
 }  // namespace pr::gen4

@@ -87,9 +87,9 @@ void Gen5RomHandler::extendARM9(int extendBy, int repointExtendBy, const Bytes& 
     arm9_ = std::move(newARM9);
 }
 
+// en Gen 5, a diferencia de Gen 4, un parche que la ROM no tiene se ignora sin error
 bool Gen5RomHandler::genericIPSPatch(Bytes& data, const std::string& ctName) {
-    if (!romEntry_->hasTweakFile(ctName))
-        throw std::runtime_error("IPS Patch " + ctName + " is not supported by this ROM (" + romEntry_->name() + ").");
+    if (!romEntry_->hasTweakFile(ctName)) return false;
     romfn::applyPatch(data, romEntry_->getTweakFile(ctName));
     return true;
 }

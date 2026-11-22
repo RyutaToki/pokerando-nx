@@ -30,6 +30,9 @@ int readRelativePointer(const Bytes& d, int o) { return readLong(d, o) + o + 4; 
 
 constexpr int ITCM_END = 0x1FFFFFF, ITCM_LENGTH = 0x8000, ITCM_RAM_ADDRESS = 0x1000000;
 
+}  // namespace
+
+// tablas de Gen4Constants que también usa Gen 5 (declaradas en gen4_constants.hpp)
 std::vector<int> allHeldItems() {
     using namespace items;
     std::vector<int> l = {brightPowder, quickClaw, choiceBand, kingsRock, silverPowder, focusBand, scopeLens, metalCoat,
@@ -139,6 +142,7 @@ std::vector<int> speciesBoostingItems(int n) {
     }
 }
 
+namespace {
 const std::vector<std::string>& specialShopNames(int romType) {
     static const std::vector<std::string> dp = {
         "Jubilife Secondary", "Oreburgh Secondary", "Floaroma Secondary", "Eterna Secondary", "Eterna Herbs",

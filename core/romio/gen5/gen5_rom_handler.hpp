@@ -201,6 +201,24 @@ private:
     void loadTrainers();
     std::vector<std::string> loadTrainerNames() const;
     void saveTrainerNames();
+    void removeFreeLuckyEgg();
+    // objetos
+    int itcmSrcOffset() const;
+    bool isARM9Pointer(const Bytes& data, int offset) const;
+    int readARM9Pointer(const Bytes& data, int offset) const;
+    void writeARM9Pointer(Bytes& data, int offset, int pointer) const;
+    std::vector<int> getFieldItemIds() const;
+    void setFieldItemIds(const std::vector<int>& fieldItems);
+    void replaceAllStringsInEntry(int entry, const std::map<std::string, std::string>& replacements);
+    void replaceStarterFiles(nds::NARCArchive& starterNARC, const nds::NARCArchive& pokespritesNARC, int starterIndex, int pokeNumber);
+    // encuentros
+    using AreaIter = std::vector<EncounterArea>::const_iterator;
+    void loadWildMapNames() const;
+    void processEncounterEntry(std::vector<EncounterArea>& areas, const Bytes& entry, int startOffset, int idx) const;
+    void writeEncounterEntry(AreaIter& it, AreaIter end, Bytes& entry, int startOffset);
+    void updatePokedexAreaData(const nds::NARCArchive& encounterNARC);
+    void updateAreaDataFromEncounterEntry(const Bytes& entry, int startOffset, std::vector<Bytes>& areaData, int season,
+                                          int fileNumber) const;
 
     const Gen5RomEntry* romEntry_ = nullptr;
     std::unique_ptr<nds::NDSRom> baseRom_;
