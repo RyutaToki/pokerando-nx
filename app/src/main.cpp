@@ -1,4 +1,4 @@
-// PokéRando NX — randomizer de Pokémon GBA/DS para Nintendo Switch (port de UPR FVX, GPLv3).
+// POKERM NX by RyutaToki — randomizer de Pokémon GBA/DS para Nintendo Switch (port de UPR FVX, GPLv3).
 #include <borealis.hpp>
 #include <cstdlib>
 #include <cstring>
@@ -47,6 +47,7 @@ void saveSnapshot(const char* path) {
 }  // namespace
 
 int main(int argc, char* argv[]) {
+    app::migrateOldDataDir();
 #if defined(__SWITCH__)
     // registro del arranque en la SD (para diagnosticar cierres sin pantalla de error)
     app::makeDirs(app::dataDir());
@@ -67,7 +68,7 @@ int main(int argc, char* argv[]) {
         brls::Logger::error("Excepción no capturada: {}", what);
         std::abort();
     });
-    brls::Logger::info("PokéRando NX v" PR_VERSION " arrancando");
+    brls::Logger::info("POKERM NX v" PR_VERSION " arrancando");
 #endif
     for (int i = 1; i < argc; i++)
         if (std::strcmp(argv[i], "-d") == 0) brls::Logger::setLogLevel(brls::LogLevel::LOG_DEBUG);
@@ -78,7 +79,7 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
     brls::Logger::info("Borealis iniciado");
-    brls::Application::createWindow("PokéRando NX");
+    brls::Application::createWindow("POKERM NX by RyutaToki");
     brls::Application::getPlatform()->setThemeVariant(brls::ThemeVariant::DARK);
     brls::Application::setGlobalQuit(false);
 

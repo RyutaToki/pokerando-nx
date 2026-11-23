@@ -364,8 +364,8 @@ float logo(NVGcontext* vg, float x, float cy, bool withName) {
     nvgFillColor(vg, c.accent);
     nvgFill(vg);
     if (!withName) return 44;
-    float w = text(vg, x + 44 + 16, cy, "PokéRando NX", font::title, 30, c.text);
-    float v = text(vg, x + 44 + 16 + w + 12, cy + 4, "v" PR_VERSION, font::regular, 15, c.textMuted);
+    float w = text(vg, x + 44 + 16, cy, "POKERM NX", font::title, 30, c.text);
+    float v = text(vg, x + 44 + 16 + w + 12, cy + 4, "by RyutaToki  v" PR_VERSION, font::regular, 15, c.textMuted);
     return 44 + 16 + w + 12 + v;
 }
 

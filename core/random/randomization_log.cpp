@@ -214,7 +214,7 @@ void GameRandomizer::writeLog(std::ostream& log, long long elapsedMs, int64_t se
     // ---------- cabecera ----------
     log << " [ Registro de la partida randomizada ]\n\n";
     log << "Juego base: " << rh_.romName() << "\n";
-    log << "Programa: PokéRando NX (port de Universal Pokemon Randomizer FVX)\n";
+    log << "Programa: POKERM NX by RyutaToki (port de Universal Pokemon Randomizer FVX)\n";
     log << "Semilla: " << seed << "\n";
     log << "Cadena de opciones: " << settings_.toString() << "\n\n";
     log << "La misma ROM, semilla y cadena de opciones dan el mismo resultado que FVX en el PC.\n";

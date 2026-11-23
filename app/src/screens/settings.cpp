@@ -17,7 +17,7 @@ public:
     SettingsScreen() {
         auto& cfg = app::config();
         frame->header->title = "Ajustes";
-        frame->header->rightText = "PokéRando NX v" PR_VERSION;
+        frame->header->rightText = "POKERM NX v" PR_VERSION;
         frame->footer->hints = {{"A", "Cambiar"}, {"B", "Atrás"}};
 
         auto* scroll = new brls::ScrollingFrame();
@@ -84,10 +84,10 @@ public:
         body->addView(grid);
         gap(24);
 
-        auto* about = new FileRow(FileRow::Kind::FILE, "Acerca de PokéRando NX");
+        auto* about = new FileRow(FileRow::Kind::FILE, "Acerca de POKERM NX");
         about->setOnClick([] {
-            ui::dialog("Acerca de PokéRando NX",
-                       "Versión " PR_VERSION ". Randomizer de Pokémon GBA y DS para Nintendo Switch.\n\n"
+            ui::dialog("Acerca de POKERM NX",
+                       "POKERM NX by RyutaToki, versión " PR_VERSION ". Randomizer de Pokémon GBA y DS para Nintendo Switch.\n\n"
                        "La lógica es un port de Universal Pokemon Randomizer (Dabomstew), "
                        "Universal Pokemon Randomizer ZX (Ajarmar) y Universal Pokemon Randomizer FVX (foxoftheasterisk, voliol y colaboradores).\n\n"
                        "Licencia GPLv3. Interfaz hecha con Borealis. No incluye ROMs ni material de Nintendo, Game Freak o The Pokémon Company.",

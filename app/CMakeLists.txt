@@ -1,4 +1,4 @@
-# App PokéRando NX (Borealis). Plataforma: -DPLATFORM_DESKTOP=ON o -DPLATFORM_SWITCH=ON
+# App POKERM NX (Borealis). Plataforma: -DPLATFORM_DESKTOP=ON o -DPLATFORM_SWITCH=ON
 set(BOREALIS_PATH ${PROJECT_SOURCE_DIR}/third_party/borealis)
 
 # recursos: los de Borealis que hacen falta + los nuestros (fuentes, textos)
@@ -27,9 +27,9 @@ add_dependencies(pokerandonx pr_resources)
 
 if(PLATFORM_SWITCH)
     set(PR_ICON ${CMAKE_CURRENT_SOURCE_DIR}/icon.jpg)
-    add_custom_target(pokerandonx.nro ALL DEPENDS pokerandonx pr_resources
+    add_custom_target(pokermnx.nro ALL DEPENDS pokerandonx pr_resources
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${PR_RES_DIR}/font
-        COMMAND ${NX_NACPTOOL_EXE} --create "PokéRando NX" "RyutaToki" "${PROJECT_VERSION}" pokerandonx.nacp
-        COMMAND ${NX_ELF2NRO_EXE} pokerandonx.elf pokerandonx.nro --icon=${PR_ICON} --nacp=pokerandonx.nacp --romfsdir=${PR_RES_DIR}
+        COMMAND ${NX_NACPTOOL_EXE} --create "POKERM NX" "RyutaToki" "${PROJECT_VERSION}" pokermnx.nacp
+        COMMAND ${NX_ELF2NRO_EXE} pokerandonx.elf pokermnx.nro --icon=${PR_ICON} --nacp=pokermnx.nacp --romfsdir=${PR_RES_DIR}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 endif()

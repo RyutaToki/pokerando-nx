@@ -1,4 +1,4 @@
-// Programa de pruebas en Linux para el núcleo de PokéRando NX.
+// Programa de pruebas en Linux para el núcleo de POKERM NX.
 //   pokerando-cli info <rom>        detecta el juego
 //   pokerando-cli dump <rom>        vuelca los datos leídos (para comparar con FVX)
 //   pokerando-cli resave <rom> <s>  abre y guarda sin cambios

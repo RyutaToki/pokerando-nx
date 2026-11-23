@@ -8,7 +8,8 @@
 namespace app {
 
 // carpetas
-std::string dataDir();       // sdmc:/switch/pokerandonx/
+std::string dataDir();       // sdmc:/switch/pokermnx/
+void migrateOldDataDir();    // copia config, presets e historial de switch/pokerandonx/ (nombre antiguo)
 std::string defaultRomDir();  // sdmc:/roms/ o sdmc:/
 std::string sdRoot();
 // ruta para mostrar: en el PC, la carpeta de usuario se muestra como «sdmc:/» (igual que en la consola)

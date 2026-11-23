@@ -35,10 +35,24 @@ std::string displayPath(const std::string& path) {
 
 std::string dataDir() {
 #ifdef __SWITCH__
-    return "sdmc:/switch/pokerandonx/";
+    return "sdmc:/switch/pokermnx/";
 #else
-    return sdRoot() + ".local/share/pokerandonx/";
+    return sdRoot() + ".local/share/pokermnx/";
 #endif
+}
+
+// La app se llamaba PokéRando NX y guardaba sus datos en switch/pokerandonx/.
+// Si la carpeta nueva aún no existe, copia allí la configuración, el historial y los presets.
+void migrateOldDataDir() {
+    std::string nuevo = dataDir();
+    std::string viejo = nuevo.substr(0, nuevo.size() - std::string("pokermnx/").size()) + "pokerandonx/";
+    std::error_code ec;
+    if (fs::exists(nuevo, ec) || !fs::is_directory(viejo, ec)) return;
+    fs::create_directories(nuevo, ec);
+    for (const char* f : {"config.json", "history.json"})
+        if (fs::exists(viejo + f, ec)) fs::copy_file(viejo + f, nuevo + f, ec);
+    if (fs::is_directory(viejo + "presets", ec))
+        fs::copy(viejo + "presets", nuevo + "presets", fs::copy_options::recursive, ec);
 }
 
 std::string defaultRomDir() {

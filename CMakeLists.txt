@@ -10,7 +10,7 @@ if(PR_BUILD_APP)
     include(${BOREALIS_LIBRARY}/cmake/toolchain.cmake)
 endif()
 
-project(pokerandonx VERSION 0.1.0 LANGUAGES C CXX)
+project(pokerandonx VERSION 0.2.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

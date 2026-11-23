@@ -1,4 +1,6 @@
-# PokéRando NX
+# POKERM NX by RyutaToki
+
+> Antes se llamaba *PokéRando NX*.
 
 Randomizer de ROMs de Pokémon que funciona en la propia Nintendo Switch (homebrew `.nro` para Atmosphère). Eliges la ROM de tu SD, ajustas las opciones con el mando o la pantalla táctil y la app crea una ROM nueva randomizada junto a la original. No hace falta ordenador.
 
@@ -21,16 +23,16 @@ Todo el mérito de la lógica del randomizer es de [Universal Pokemon Randomizer
 | Generación | Juegos | Estado |
 |---|---|---|
 | 3.ª (GBA) | Esmeralda, Rubí, Zafiro, Rojo Fuego, Verde Hoja | ✅ Compatibles (probado sobre todo con Esmeralda) |
-| 4.ª (DS) | Diamante, Perla, Platino, HeartGold, SoulSilver | 🚧 En preparación |
-| 5.ª (DS) | Negro, Blanco, Negro 2, Blanco 2 | 🚧 En preparación |
+| 4.ª (DS) | Diamante, Perla, Platino, HeartGold, SoulSilver | ✅ Compatibles (resultado idéntico a FVX en Platino, HeartGold y SoulSilver) |
+| 5.ª (DS) | Negro, Blanco, Negro 2, Blanco 2 | ✅ Compatibles (resultado idéntico a FVX en Blanco y Negro 2) |
 
-**Estoy empezando a trabajar para añadir compatibilidad con más juegos de Pokémon.** Por ahora solo funcionan los de GBA; los de DS llegarán en próximas versiones.
+Desde la versión 0.2 funcionan también los juegos de DS de 4.ª y 5.ª generación. Las pestañas de opciones se adaptan a cada juego, y Extras incluye opciones propias de DS (correr sin Deportivas, barras de PS rápidas, Modo Desafío siempre activo…).
 
 Se admiten las mismas versiones e idiomas que en FVX (español, inglés, francés, alemán, italiano y japonés). Las ROMs modificadas o hacks pueden no funcionar bien.
 
 ## Qué hace
 
-- **Todas las opciones de FVX** para Gen 3, organizadas en pestañas (más abajo se explica cada una).
+- **Todas las opciones de FVX** para Gen 3, 4 y 5, organizadas en pestañas (más abajo se explica cada una).
 - **Presets de serie** para no tener que mirar todos los ajustes: *Randomlocke básico*, *Randomlocke completo*, *Randomlocke difícil*, *Caos total*, *Solo salvajes* y *Kaizo*. También puedes guardar los tuyos.
 - **Compatible con las settings strings de FVX**: puedes pegar la cadena de opciones del randomizer del PC.
 - **Probabilidad de shiny** ajustable (de 1/8192 a 1/8), exclusivo de esta app. Por ahora solo en Esmeralda.
@@ -40,11 +42,11 @@ Se admiten las mismas versiones e idiomas que en FVX (español, inglés, francé
 ## Instalación
 
 1. Necesitas una Switch con [Atmosphère](https://github.com/Atmosphere-NX/Atmosphere).
-2. Descarga `pokerandonx.nro` de la sección [Releases](../../releases) y cópialo a la SD en `switch/pokerandonx/pokerandonx.nro`.
-3. Copia tus ROMs `.gba` a cualquier carpeta de la SD (por ejemplo `roms/gba/`).
+2. Descarga `pokermnx.nro` de la sección [Releases](../../releases) y cópialo a la SD en `switch/pokermnx/pokermnx.nro`. Si tenías la versión antigua, puedes borrar la carpeta `switch/pokerandonx/`: la app copia tus ajustes, presets e historial la primera vez que se abre.
+3. Copia tus ROMs `.gba` o `.nds` a cualquier carpeta de la SD (por ejemplo `roms/gba/`).
 4. Abre la app desde el Homebrew Menu (o TICO u otro lanzador). Mejor entrando manteniendo **R** al lanzar un juego, para que la app tenga toda la memoria.
 
-La app guarda su configuración, presets e historial en `switch/pokerandonx/`.
+La app guarda su configuración, presets e historial en `switch/pokermnx/`.
 
 **La app no incluye, no descarga ni enlaza ROMs.** Solo trabaja con las que tengas en tu SD.
 
@@ -263,7 +265,7 @@ Con *Elegir a mano*: elige un hueco a la izquierda y después la especie. **Y** 
 
 Al pulsar **+** la app muestra los pasos que va completando. No se puede cancelar a mitad, para no dejar una ROM estropeada. Al terminar indica dónde se ha guardado la ROM.
 
-- La ROM nueva se llama `{Juego}_{semilla}.gba` y está en la **misma carpeta que la original**, junto a su log.
+- La ROM nueva se llama `{Juego}_{semilla}.gba` (o `.nds`) y está en la **misma carpeta que la original**, junto a su log.
 - **Y**: repetir con las mismas opciones y otra semilla.
 - **B**: volver al inicio.
 - **Ver log de spoilers** abre el log en la propia app:
@@ -293,11 +295,11 @@ Historial de las ROMs creadas. **A** abre su ficha (ruta y log) y **−** la bor
 Hace falta [devkitPro](https://devkitpro.org/) con devkitA64 y los paquetes de Switch (`switch-dev`, `switch-glfw`, `switch-mesa`, `switch-glm`), CMake y Ninja.
 
 ```sh
-git clone --recursive https://github.com/RyutaToki/pokerando-nx.git
-cd pokerando-nx
+git clone --recursive https://github.com/RyutaToki/pokerm-nx.git
+cd pokerm-nx
 # .nro para la Switch
 cmake -S . -B build-nx -G Ninja -DPR_BUILD_APP=ON -DPR_BUILD_CLI=OFF -DPLATFORM_SWITCH=ON -DCMAKE_BUILD_TYPE=Release
-cmake --build build-nx        # -> build-nx/app/pokerandonx.nro
+cmake --build build-nx        # -> build-nx/app/pokermnx.nro
 # versión de escritorio (Linux) para probar la interfaz
 cmake -S . -B build-app -G Ninja -DPR_BUILD_APP=ON -DPR_BUILD_CLI=OFF -DPLATFORM_DESKTOP=ON
 cmake --build build-app
